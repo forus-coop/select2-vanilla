@@ -1,7 +1,6 @@
 define([
-  'jquery',
   './utils'
-], function ($, Utils) {
+], function (Utils) {
   function Results ($element, options, dataAdapter) {
     this.$element = $element;
     this.data = dataAdapter;
@@ -13,12 +12,12 @@ define([
   Utils.Extend(Results, Utils.Observable);
 
   Results.prototype.render = function () {
-    var $results = $(
-      '<ul class="select2-results__options" role="listbox"></ul>'
-    );
+    var $results = document.createElement('ul');
+    $results.className = 'select2-results__options';
+    $results.setAttribute('role', 'listbox');
 
     if (this.options.get('multiple')) {
-      $results.attr('aria-multiselectable', 'true');
+      $results.setAttribute('aria-multiselectable', 'true');
     }
 
     this.$results = $results;
@@ -27,7 +26,7 @@ define([
   };
 
   Results.prototype.clear = function () {
-    this.$results.empty();
+    this.$results.innerHTML = '';
   };
 
   Results.prototype.displayMessage = function (params) {
@@ -36,26 +35,25 @@ define([
     this.clear();
     this.hideLoading();
 
-    var $message = $(
-      '<li role="alert" aria-live="assertive"' +
-      ' class="select2-results__option"></li>'
-    );
+    var $message = document.createElement('li');
+    $message.setAttribute('role', 'alert');
+    $message.setAttribute('aria-live', 'assertive');
+    $message.className = 'select2-results__option';
 
     var message = this.options.get('translations').get(params.message);
 
-    $message.append(
-      escapeMarkup(
-        message(params.args)
-      )
-    );
+    $message.innerHTML = escapeMarkup(message(params.args));
 
-    $message[0].className += ' select2-results__message';
+    $message.className += ' select2-results__message';
 
-    this.$results.append($message);
+    this.$results.appendChild($message);
   };
 
   Results.prototype.hideMessages = function () {
-    this.$results.find('.select2-results__message').remove();
+    var messages = this.$results.querySelectorAll('.select2-results__message');
+    messages.forEach(function (message) {
+      message.remove();
+    });
   };
 
   Results.prototype.append = function (data) {
@@ -64,7 +62,7 @@ define([
     var $options = [];
 
     if (data.results == null || data.results.length === 0) {
-      if (this.$results.children().length === 0) {
+      if (this.$results.children.length === 0) {
         this.trigger('results:message', {
           message: 'noResults'
         });
@@ -83,12 +81,14 @@ define([
       $options.push($option);
     }
 
-    this.$results.append($options);
+    $options.forEach(function ($option) {
+      this.$results.appendChild($option);
+    }, this);
   };
 
   Results.prototype.position = function ($results, $dropdown) {
-    var $resultsContainer = $dropdown.find('.select2-results');
-    $resultsContainer.append($results);
+    var $resultsContainer = $dropdown.querySelector('.select2-results');
+    $resultsContainer.appendChild($results);
   };
 
   Results.prototype.sort = function (data) {
@@ -98,19 +98,16 @@ define([
   };
 
   Results.prototype.highlightFirstItem = function () {
-    var $options = this.$results
-      .find('.select2-results__option--selectable');
+    var $options = this.$results.querySelectorAll('.select2-results__option--selectable');
 
-    var $selected = $options.filter('.select2-results__option--selected');
+    var $selected = Array.prototype.filter.call($options, function (option) {
+      return option.classList.contains('select2-results__option--selected');
+    });
 
-    // Check if there are any selected options
     if ($selected.length > 0) {
-      // If there are selected options, highlight the first
-      $selected.first().trigger('mouseenter');
+      $selected[0].dispatchEvent(new Event('mouseenter'));
     } else {
-      // If there are no selected options, highlight the first option
-      // in the dropdown
-      $options.first().trigger('mouseenter');
+      $options[0].dispatchEvent(new Event('mouseenter'));
     }
 
     this.ensureHighlightVisible();
@@ -124,27 +121,22 @@ define([
         return s.id.toString();
       });
 
-      var $options = self.$results
-        .find('.select2-results__option--selectable');
+      var $options = self.$results.querySelectorAll('.select2-results__option--selectable');
 
-      $options.each(function () {
-        var $option = $(this);
+      $options.forEach(function ($option) {
+        var item = Utils.GetData($option, 'data');
 
-        var item = Utils.GetData(this, 'data');
-
-        // id needs to be converted to a string when comparing
         var id = '' + item.id;
 
         if ((item.element != null && item.element.selected) ||
             (item.element == null && selectedIds.indexOf(id) > -1)) {
-          this.classList.add('select2-results__option--selected');
-          $option.attr('aria-selected', 'true');
+          $option.classList.add('select2-results__option--selected');
+          $option.setAttribute('aria-selected', 'true');
         } else {
-          this.classList.remove('select2-results__option--selected');
-          $option.attr('aria-selected', 'false');
+          $option.classList.remove('select2-results__option--selected');
+          $option.setAttribute('aria-selected', 'false');
         }
       });
-
     });
   };
 
@@ -161,17 +153,19 @@ define([
     var $loading = this.option(loading);
     $loading.className += ' loading-results';
 
-    this.$results.prepend($loading);
+    this.$results.insertBefore($loading, this.$results.firstChild);
   };
 
   Results.prototype.hideLoading = function () {
-    this.$results.find('.loading-results').remove();
+    var loadingResults = this.$results.querySelectorAll('.loading-results');
+    loadingResults.forEach(function (loadingResult) {
+      loadingResult.remove();
+    });
   };
 
   Results.prototype.option = function (data) {
     var option = document.createElement('li');
-    option.classList.add('select2-results__option');
-    option.classList.add('select2-results__option--selectable');
+    option.className = 'select2-results__option select2-results__option--selectable';
 
     var attrs = {
       'role': 'option'
@@ -216,8 +210,6 @@ define([
     }
 
     if (data.children) {
-      var $option = $(option);
-
       var label = document.createElement('strong');
       label.className = 'select2-results__group';
 
@@ -233,15 +225,16 @@ define([
         $children.push($child);
       }
 
-      var $childrenContainer = $('<ul></ul>', {
-        'class': 'select2-results__options select2-results__options--nested',
-        'role': 'none'
+      var $childrenContainer = document.createElement('ul');
+      $childrenContainer.className = 'select2-results__options select2-results__options--nested';
+      $childrenContainer.setAttribute('role', 'none');
+
+      $children.forEach(function ($child) {
+        $childrenContainer.appendChild($child);
       });
 
-      $childrenContainer.append($children);
-
-      $option.append(label);
-      $option.append($childrenContainer);
+      option.appendChild(label);
+      option.appendChild($childrenContainer);
     } else {
       this.template(data, option);
     }
@@ -256,7 +249,7 @@ define([
 
     var id = container.id + '-results';
 
-    this.$results.attr('id', id);
+    this.$results.setAttribute('id', id);
 
     container.on('results:all', function (params) {
       self.clear();
@@ -306,19 +299,17 @@ define([
     });
 
     container.on('open', function () {
-      // When the dropdown is open, aria-expended="true"
-      self.$results.attr('aria-expanded', 'true');
-      self.$results.attr('aria-hidden', 'false');
+      self.$results.setAttribute('aria-expanded', 'true');
+      self.$results.setAttribute('aria-hidden', 'false');
 
       self.setClasses();
       self.ensureHighlightVisible();
     });
 
     container.on('close', function () {
-      // When the dropdown is closed, aria-expended="false"
-      self.$results.attr('aria-expanded', 'false');
-      self.$results.attr('aria-hidden', 'true');
-      self.$results[0].removeAttribute('aria-activedescendant');
+      self.$results.setAttribute('aria-expanded', 'false');
+      self.$results.setAttribute('aria-hidden', 'true');
+      self.$results.removeAttribute('aria-activedescendant');
     });
 
     container.on('results:toggle', function () {
@@ -328,7 +319,7 @@ define([
         return;
       }
 
-      $highlighted.trigger('mouseup');
+      $highlighted[0].dispatchEvent(new Event('mouseup'));
     });
 
     container.on('results:select', function () {
@@ -340,7 +331,7 @@ define([
 
       var data = Utils.GetData($highlighted[0], 'data');
 
-      if ($highlighted.hasClass('select2-results__option--selected')) {
+      if ($highlighted[0].classList.contains('select2-results__option--selected')) {
         self.trigger('close', {});
       } else {
         self.trigger('select', {
@@ -352,65 +343,61 @@ define([
     container.on('results:previous', function () {
       var $highlighted = self.getHighlightedResults();
 
-      var $options = self.$results.find('.select2-results__option--selectable');
+      var $options = self.$results.querySelectorAll('.select2-results__option--selectable');
 
-      var currentIndex = $options.index($highlighted);
+      var currentIndex = Array.prototype.indexOf.call($options, $highlighted[0]);
 
-      // If we are already at the top, don't move further
-      // If no options, currentIndex will be -1
       if (currentIndex <= 0) {
         return;
       }
 
       var nextIndex = currentIndex - 1;
 
-      // If none are highlighted, highlight the first
       if ($highlighted.length === 0) {
         nextIndex = 0;
       }
 
-      var $next = $options.eq(nextIndex);
+      var $next = $options[nextIndex];
 
-      $next.trigger('mouseenter');
+      $next.dispatchEvent(new Event('mouseenter'));
 
-      var currentOffset = self.$results.offset().top;
-      var nextTop = $next.offset().top;
-      var nextOffset = self.$results.scrollTop() + (nextTop - currentOffset);
+      var currentOffset = self.$results.getBoundingClientRect().top;
+      var nextTop = $next.getBoundingClientRect().top;
+      var nextOffset = self.$results.scrollTop + (nextTop - currentOffset);
 
       if (nextIndex === 0) {
-        self.$results.scrollTop(0);
+        self.$results.scrollTop = 0;
       } else if (nextTop - currentOffset < 0) {
-        self.$results.scrollTop(nextOffset);
+        self.$results.scrollTop = nextOffset;
       }
     });
 
     container.on('results:next', function () {
       var $highlighted = self.getHighlightedResults();
 
-      var $options = self.$results.find('.select2-results__option--selectable');
+      var $options = self.$results.querySelectorAll('.select2-results__option--selectable');
 
-      var currentIndex = $options.index($highlighted);
+      var currentIndex = Array.prototype.indexOf.call($options, $highlighted[0]);
 
       var nextIndex = currentIndex + 1;
 
-      // If we are at the last option, stay there
       if (nextIndex >= $options.length) {
         return;
       }
 
-      var $next = $options.eq(nextIndex);
+      var $next = $options[nextIndex];
 
-      $next.trigger('mouseenter');
+      $next.dispatchEvent(new Event('mouseenter'));
 
-      var currentOffset = self.$results.offset().top +
-        self.$results.outerHeight(false);
-      var nextBottom = $next.offset().top + $next.outerHeight(false);
-      var nextOffset = self.$results.scrollTop() + nextBottom - currentOffset;
+      var currentOffset = self.$results.getBoundingClientRect().top +
+        self.$results.offsetHeight;
+      var nextBottom = $next.getBoundingClientRect().top + $next.offsetHeight;
+      var nextOffset = self.$results.scrollTop + nextBottom - currentOffset;
 
       if (nextIndex === 0) {
-        self.$results.scrollTop(0);
+        self.$results.scrollTop = 0;
       } else if (nextBottom > currentOffset) {
-        self.$results.scrollTop(nextOffset);
+        self.$results.scrollTop = nextOffset;
       }
     });
 
@@ -423,38 +410,16 @@ define([
       self.displayMessage(params);
     });
 
-    if ($.fn.mousewheel) {
-      this.$results.on('mousewheel', function (e) {
-        var top = self.$results.scrollTop();
+    this.$results.addEventListener('mouseup', function (evt) {
+      var $target = evt.target.closest('.select2-results__option--selectable');
 
-        var bottom = self.$results.get(0).scrollHeight - top + e.deltaY;
+      if (!$target) {
+        return;
+      }
 
-        var isAtTop = e.deltaY > 0 && top - e.deltaY <= 0;
-        var isAtBottom = e.deltaY < 0 && bottom <= self.$results.height();
+      var data = Utils.GetData($target, 'data');
 
-        if (isAtTop) {
-          self.$results.scrollTop(0);
-
-          e.preventDefault();
-          e.stopPropagation();
-        } else if (isAtBottom) {
-          self.$results.scrollTop(
-            self.$results.get(0).scrollHeight - self.$results.height()
-          );
-
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      });
-    }
-
-    this.$results.on('mouseup', '.select2-results__option--selectable',
-      function (evt) {
-      var $this = $(this);
-
-      var data = Utils.GetData(this, 'data');
-
-      if ($this.hasClass('select2-results__option--selected')) {
+      if ($target.classList.contains('select2-results__option--selected')) {
         if (self.options.get('multiple')) {
           self.trigger('unselect', {
             originalEvent: evt,
@@ -476,24 +441,29 @@ define([
       });
     });
 
-    this.$results.on('mouseenter', '.select2-results__option--selectable',
-      function (evt) {
-      var data = Utils.GetData(this, 'data');
+    this.$results.addEventListener('mouseenter', function (evt) {
+      var $target = evt.target.closest('.select2-results__option--selectable');
 
-      self.getHighlightedResults()
-          .removeClass('select2-results__option--highlighted')
-          .attr('aria-selected', 'false');
+      if (!$target) {
+        return;
+      }
+
+      var data = Utils.GetData($target, 'data');
+
+      self.getHighlightedResults().forEach(function (highlighted) {
+        highlighted.classList.remove('select2-results__option--highlighted');
+        highlighted.setAttribute('aria-selected', 'false');
+      });
 
       self.trigger('results:focus', {
         data: data,
-        element: $(this)
+        element: $target
       });
     });
   };
 
   Results.prototype.getHighlightedResults = function () {
-    var $highlighted = this.$results
-    .find('.select2-results__option--highlighted');
+    var $highlighted = this.$results.querySelectorAll('.select2-results__option--highlighted');
 
     return $highlighted;
   };
@@ -509,21 +479,21 @@ define([
       return;
     }
 
-    var $options = this.$results.find('.select2-results__option--selectable');
+    var $options = this.$results.querySelectorAll('.select2-results__option--selectable');
 
-    var currentIndex = $options.index($highlighted);
+    var currentIndex = Array.prototype.indexOf.call($options, $highlighted[0]);
 
-    var currentOffset = this.$results.offset().top;
-    var nextTop = $highlighted.offset().top;
-    var nextOffset = this.$results.scrollTop() + (nextTop - currentOffset);
+    var currentOffset = this.$results.getBoundingClientRect().top;
+    var nextTop = $highlighted[0].getBoundingClientRect().top;
+    var nextOffset = this.$results.scrollTop + (nextTop - currentOffset);
 
     var offsetDelta = nextTop - currentOffset;
-    nextOffset -= $highlighted.outerHeight(false) * 2;
+    nextOffset -= $highlighted[0].offsetHeight * 2;
 
     if (currentIndex <= 2) {
-      this.$results.scrollTop(0);
-    } else if (offsetDelta > this.$results.outerHeight() || offsetDelta < 0) {
-      this.$results.scrollTop(nextOffset);
+      this.$results.scrollTop = 0;
+    } else if (offsetDelta > this.$results.offsetHeight || offsetDelta < 0) {
+      this.$results.scrollTop = nextOffset;
     }
   };
 
@@ -538,7 +508,7 @@ define([
     } else if (typeof content === 'string') {
       container.innerHTML = escapeMarkup(content);
     } else {
-      $(container).append(content);
+      container.appendChild(content);
     }
   };
 

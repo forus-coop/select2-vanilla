@@ -1,8 +1,7 @@
 define([
   './select',
-  '../utils',
-  'jquery'
-], function (SelectAdapter, Utils, $) {
+  '../utils'
+], function (SelectAdapter, Utils) {
   function ArrayAdapter ($element, options) {
     this._dataToConvert = options.get('data') || [];
 
@@ -18,7 +17,7 @@ define([
   };
 
   ArrayAdapter.prototype.select = function (data) {
-    var $option = this.$element.find('option').filter(function (i, elm) {
+    var $option = this.$element.querySelectorAll('option').filter(function (i, elm) {
       return elm.value == data.id.toString();
     });
 
@@ -34,17 +33,17 @@ define([
   ArrayAdapter.prototype.convertToOptions = function (data) {
     var self = this;
 
-    var $existing = this.$element.find('option');
-    var existingIds = $existing.map(function () {
-      return self.item($(this)).id;
-    }).get();
+    var $existing = this.$element.querySelectorAll('option');
+    var existingIds = Array.from($existing).map(function (option) {
+      return self.item(option).id;
+    });
 
     var $options = [];
 
     // Filter out all items except for the one passed in the argument
     function onlyItem (item) {
-      return function () {
-        return $(this).val() == item.id;
+      return function (option) {
+        return option.value == item.id;
       };
     }
 
@@ -53,10 +52,10 @@ define([
 
       // Skip items which were pre-loaded, only merge the data
       if (existingIds.indexOf(item.id) >= 0) {
-        var $existingOption = $existing.filter(onlyItem(item));
+        var $existingOption = Array.from($existing).filter(onlyItem(item));
 
         var existingData = this.item($existingOption);
-        var newData = $.extend(true, {}, item, existingData);
+        var newData = Object.assign({}, item, existingData);
 
         var $newOption = this.option(newData);
 

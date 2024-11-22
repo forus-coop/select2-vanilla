@@ -86,7 +86,6 @@ define([
         var dataName = attributeName.substring(prefix.length);
 
         // Get the data contents from the consistent source
-        // This is more than likely the jQuery data helper
         var dataValue = Utils.GetData(e, dataName);
 
         // camelCase the attribute name to match the spec
@@ -98,7 +97,6 @@ define([
     }
 
     // Prefer the element's `dataset` attribute if it exists
-    // jQuery 1.x does not correctly handle data attributes with multiple dashes
     if (e.dataset) {
       dataset = Object.assign({}, e.dataset, dataset);
     }

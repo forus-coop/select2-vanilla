@@ -1,7 +1,5 @@
-define([
-  'jquery'
-], function ($) {
-  function Tags (decorated, $element, options) {
+define([], function () {
+  function Tags (decorated, element, options) {
     var tags = options.get('tags');
 
     var createTag = options.get('createTag');
@@ -16,16 +14,16 @@ define([
         this.insertTag = insertTag;
     }
 
-    decorated.call(this, $element, options);
+    decorated.call(this, element, options);
 
     if (Array.isArray(tags)) {
       for (var t = 0; t < tags.length; t++) {
         var tag = tags[t];
         var item = this._normalizeItem(tag);
 
-        var $option = this.option(item);
+        var option = this.option(item);
 
-        this.$element.append($option);
+        element.append(option);
       }
     }
   }
@@ -77,10 +75,10 @@ define([
       var tag = self.createTag(params);
 
       if (tag != null) {
-        var $option = self.option(tag);
-        $option.attr('data-select2-tag', 'true');
+        var option = self.option(tag);
+        option.setAttribute('data-select2-tag', 'true');
 
-        self.addOptions([$option]);
+        self.addOptions([option]);
 
         self.insertTag(data, tag);
       }
@@ -115,14 +113,14 @@ define([
   };
 
   Tags.prototype._removeOldTags = function (_) {
-    var $options = this.$element.find('option[data-select2-tag]');
+    var options = this.element.querySelectorAll('option[data-select2-tag]');
 
-    $options.each(function () {
-      if (this.selected) {
+    options.forEach(function (option) {
+      if (option.selected) {
         return;
       }
 
-      $(this).remove();
+      option.remove();
     });
   };
 

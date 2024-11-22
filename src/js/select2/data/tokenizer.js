@@ -1,21 +1,19 @@
-define([
-  'jquery'
-], function ($) {
-  function Tokenizer (decorated, $element, options) {
+define([], function () {
+  function Tokenizer (decorated, element, options) {
     var tokenizer = options.get('tokenizer');
 
     if (tokenizer !== undefined) {
       this.tokenizer = tokenizer;
     }
 
-    decorated.call(this, $element, options);
+    decorated.call(this, element, options);
   }
 
-  Tokenizer.prototype.bind = function (decorated, container, $container) {
-    decorated.call(this, container, $container);
+  Tokenizer.prototype.bind = function (decorated, container, containerElement) {
+    decorated.call(this, container, containerElement);
 
-    this.$search =  container.dropdown.$search || container.selection.$search ||
-      $container.find('.select2-search__field');
+    this.searchElement = container.dropdown.searchElement || container.selection.searchElement ||
+      containerElement.querySelector('.select2-search__field');
   };
 
   Tokenizer.prototype.query = function (decorated, params, callback) {
@@ -27,17 +25,17 @@ define([
 
       // Check if the data object already exists as a tag
       // Select it if it doesn't
-      var $existingOptions = self.$element.find('option').filter(function () {
-        return $(this).val() === item.id;
+      var existingOptions = Array.from(self.element.querySelectorAll('option')).filter(function (option) {
+        return option.value === item.id;
       });
 
       // If an existing option wasn't found for it, create the option
-      if (!$existingOptions.length) {
-        var $option = self.option(item);
-        $option.attr('data-select2-tag', true);
+      if (existingOptions.length === 0) {
+        var option = self.option(item);
+        option.setAttribute('data-select2-tag', true);
 
         self._removeOldTags();
-        self.addOptions([$option]);
+        self.addOptions([option]);
       }
 
       // Select the item, now that we know there is an option for it
@@ -56,9 +54,9 @@ define([
 
     if (tokenData.term !== params.term) {
       // Replace the search term if we have the search box
-      if (this.$search.length) {
-        this.$search.val(tokenData.term);
-        this.$search.trigger('focus');
+      if (this.searchElement) {
+        this.searchElement.value = tokenData.term;
+        this.searchElement.focus();
       }
 
       params.term = tokenData.term;
@@ -89,7 +87,7 @@ define([
       }
 
       var part = term.substr(0, i);
-      var partParams = $.extend({}, params, {
+      var partParams = Object.assign({}, params, {
         term: part
       });
 
