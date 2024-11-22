@@ -1,56 +1,55 @@
 define([
-  'jquery',
   './options',
   './utils',
   './keys'
-], function ($, Options, Utils, KEYS) {
-  var Select2 = function ($element, options) {
-    if (Utils.GetData($element[0], 'select2') != null) {
-      Utils.GetData($element[0], 'select2').destroy();
+], function (Options, Utils, KEYS) {
+  var Select2 = function (element, options) {
+    if (Utils.GetData(element, 'select2') != null) {
+      Utils.GetData(element, 'select2').destroy();
     }
 
-    this.$element = $element;
+    this.element = element;
 
-    this.id = this._generateId($element);
+    this.id = this._generateId(element);
 
     options = options || {};
 
-    this.options = new Options(options, $element);
+    this.options = new Options(options, element);
 
     Select2.__super__.constructor.call(this);
 
     // Set up the tabindex
 
-    var tabindex = $element.attr('tabindex') || 0;
-    Utils.StoreData($element[0], 'old-tabindex', tabindex);
-    $element.attr('tabindex', '-1');
+    var tabindex = element.getAttribute('tabindex') || 0;
+    Utils.StoreData(element, 'old-tabindex', tabindex);
+    element.setAttribute('tabindex', '-1');
 
     // Set up containers and adapters
 
     var DataAdapter = this.options.get('dataAdapter');
-    this.dataAdapter = new DataAdapter($element, this.options);
+    this.dataAdapter = new DataAdapter(element, this.options);
 
-    var $container = this.render();
+    var container = this.render();
 
-    this._placeContainer($container);
+    this._placeContainer(container);
 
     var SelectionAdapter = this.options.get('selectionAdapter');
-    this.selection = new SelectionAdapter($element, this.options);
-    this.$selection = this.selection.render();
+    this.selection = new SelectionAdapter(element, this.options);
+    this.selectionElement = this.selection.render();
 
-    this.selection.position(this.$selection, $container);
+    this.selection.position(this.selectionElement, container);
 
     var DropdownAdapter = this.options.get('dropdownAdapter');
-    this.dropdown = new DropdownAdapter($element, this.options);
-    this.$dropdown = this.dropdown.render();
+    this.dropdown = new DropdownAdapter(element, this.options);
+    this.dropdownElement = this.dropdown.render();
 
-    this.dropdown.position(this.$dropdown, $container);
+    this.dropdown.position(this.dropdownElement, container);
 
     var ResultsAdapter = this.options.get('resultsAdapter');
-    this.results = new ResultsAdapter($element, this.options, this.dataAdapter);
-    this.$results = this.results.render();
+    this.results = new ResultsAdapter(element, this.options, this.dataAdapter);
+    this.resultsElement = this.results.render();
 
-    this.results.position(this.$results, this.$dropdown);
+    this.results.position(this.resultsElement, this.dropdownElement);
 
     // Bind events
 
@@ -77,27 +76,27 @@ define([
     });
 
     // Hide the original select
-    $element[0].classList.add('select2-hidden-accessible');
-    $element.attr('aria-hidden', 'true');
+    element.classList.add('select2-hidden-accessible');
+    element.setAttribute('aria-hidden', 'true');
 
     // Synchronize any monitored attributes
     this._syncAttributes();
 
-    Utils.StoreData($element[0], 'select2', this);
+    Utils.StoreData(element, 'select2', this);
 
-    // Ensure backwards compatibility with $element.data('select2').
-    $element.data('select2', this);
+    // Ensure backwards compatibility with element.data('select2').
+    element.select2 = this;
   };
 
   Utils.Extend(Select2, Utils.Observable);
 
-  Select2.prototype._generateId = function ($element) {
+  Select2.prototype._generateId = function (element) {
     var id = '';
 
-    if ($element.attr('id') != null) {
-      id = $element.attr('id');
-    } else if ($element.attr('name') != null) {
-      id = $element.attr('name') + '-' + Utils.generateChars(2);
+    if (element.getAttribute('id') != null) {
+      id = element.getAttribute('id');
+    } else if (element.getAttribute('name') != null) {
+      id = element.getAttribute('name') + '-' + Utils.generateChars(2);
     } else {
       id = Utils.generateChars(4);
     }
@@ -108,31 +107,31 @@ define([
     return id;
   };
 
-  Select2.prototype._placeContainer = function ($container) {
-    $container.insertAfter(this.$element);
+  Select2.prototype._placeContainer = function (container) {
+    container.insertAdjacentElement('afterend', this.element);
 
-    var width = this._resolveWidth(this.$element, this.options.get('width'));
+    var width = this._resolveWidth(this.element, this.options.get('width'));
 
     if (width != null) {
-      $container.css('width', width);
+      container.style.width = width;
     }
   };
 
-  Select2.prototype._resolveWidth = function ($element, method) {
+  Select2.prototype._resolveWidth = function (element, method) {
     var WIDTH = /^width:(([-+]?([0-9]*\.)?[0-9]+)(px|em|ex|%|in|cm|mm|pt|pc))/i;
 
     if (method == 'resolve') {
-      var styleWidth = this._resolveWidth($element, 'style');
+      var styleWidth = this._resolveWidth(element, 'style');
 
       if (styleWidth != null) {
         return styleWidth;
       }
 
-      return this._resolveWidth($element, 'element');
+      return this._resolveWidth(element, 'element');
     }
 
     if (method == 'element') {
-      var elementWidth = $element.outerWidth(false);
+      var elementWidth = element.offsetWidth;
 
       if (elementWidth <= 0) {
         return 'auto';
@@ -142,7 +141,7 @@ define([
     }
 
     if (method == 'style') {
-      var style = $element.attr('style');
+      var style = element.getAttribute('style');
 
       if (typeof(style) !== 'string') {
         return null;
@@ -163,7 +162,7 @@ define([
     }
 
     if (method == 'computedstyle') {
-      var computedStyle = window.getComputedStyle($element[0]);
+      var computedStyle = window.getComputedStyle(element);
 
       return computedStyle.width;
     }
@@ -172,17 +171,17 @@ define([
   };
 
   Select2.prototype._bindAdapters = function () {
-    this.dataAdapter.bind(this, this.$container);
-    this.selection.bind(this, this.$container);
+    this.dataAdapter.bind(this, this.container);
+    this.selection.bind(this, this.container);
 
-    this.dropdown.bind(this, this.$container);
-    this.results.bind(this, this.$container);
+    this.dropdown.bind(this, this.container);
+    this.results.bind(this, this.container);
   };
 
   Select2.prototype._registerDomEvents = function () {
     var self = this;
 
-    this.$element.on('change.select2', function () {
+    this.element.addEventListener('change', function () {
       self.dataAdapter.current(function (data) {
         self.trigger('selection:update', {
           data: data
@@ -190,7 +189,7 @@ define([
       });
     });
 
-    this.$element.on('focus.select2', function (evt) {
+    this.element.addEventListener('focus', function (evt) {
       self.trigger('focus', evt);
     });
 
@@ -201,7 +200,7 @@ define([
       self._syncA();
       self._syncS(mutations);
     });
-    this._observer.observe(this.$element[0], {
+    this._observer.observe(this.element, {
       attributes: true,
       childList: true,
       subtree: false
@@ -257,23 +256,23 @@ define([
     var self = this;
 
     this.on('open', function () {
-      self.$container[0].classList.add('select2-container--open');
+      self.container.classList.add('select2-container--open');
     });
 
     this.on('close', function () {
-      self.$container[0].classList.remove('select2-container--open');
+      self.container.classList.remove('select2-container--open');
     });
 
     this.on('enable', function () {
-      self.$container[0].classList.remove('select2-container--disabled');
+      self.container.classList.remove('select2-container--disabled');
     });
 
     this.on('disable', function () {
-      self.$container[0].classList.add('select2-container--disabled');
+      self.container.classList.add('select2-container--disabled');
     });
 
     this.on('blur', function () {
-      self.$container[0].classList.remove('select2-container--focus');
+      self.container.classList.remove('select2-container--focus');
     });
 
     this.on('query', function (params) {
@@ -335,7 +334,7 @@ define([
   };
 
   Select2.prototype._syncAttributes = function () {
-    this.options.set('disabled', this.$element.prop('disabled'));
+    this.options.set('disabled', this.element.disabled);
 
     if (this.isDisabled()) {
       if (this.isOpen()) {
@@ -476,11 +475,11 @@ define([
   };
 
   Select2.prototype.isOpen = function () {
-    return this.$container[0].classList.contains('select2-container--open');
+    return this.container.classList.contains('select2-container--open');
   };
 
   Select2.prototype.hasFocus = function () {
-    return this.$container[0].classList.contains('select2-container--focus');
+    return this.container.classList.contains('select2-container--focus');
   };
 
   Select2.prototype.focus = function (data) {
@@ -489,7 +488,7 @@ define([
       return;
     }
 
-    this.$container[0].classList.add('select2-container--focus');
+    this.container.classList.add('select2-container--focus');
     this.trigger('focus', {});
   };
 
@@ -497,7 +496,7 @@ define([
     if (this.options.get('debug') && window.console && console.warn) {
       console.warn(
         'Select2: The `select2("enable")` method has been deprecated and will' +
-        ' be removed in later Select2 versions. Use $element.prop("disabled")' +
+        ' be removed in later Select2 versions. Use element.disabled' +
         ' instead.'
       );
     }
@@ -508,7 +507,7 @@ define([
 
     var disabled = !args[0];
 
-    this.$element.prop('disabled', disabled);
+    this.element.disabled = disabled;
   };
 
   Select2.prototype.data = function () {
@@ -516,7 +515,7 @@ define([
         arguments.length > 0 && window.console && console.warn) {
       console.warn(
         'Select2: Data can no longer be set using `select2("data")`. You ' +
-        'should consider setting the value instead using `$element.val()`.'
+        'should consider setting the value instead using `element.value`.'
       );
     }
 
@@ -533,12 +532,12 @@ define([
     if (this.options.get('debug') && window.console && console.warn) {
       console.warn(
         'Select2: The `select2("val")` method has been deprecated and will be' +
-        ' removed in later Select2 versions. Use $element.val() instead.'
+        ' removed in later Select2 versions. Use element.value instead.'
       );
     }
 
     if (args == null || args.length === 0) {
-      return this.$element.val();
+      return this.element.value;
     }
 
     var newVal = args[0];
@@ -549,12 +548,14 @@ define([
       });
     }
 
-    this.$element.val(newVal).trigger('input').trigger('change');
+    this.element.value = newVal;
+    this.element.dispatchEvent(new Event('input'));
+    this.element.dispatchEvent(new Event('change'));
   };
 
   Select2.prototype.destroy = function () {
-    Utils.RemoveData(this.$container[0]);
-    this.$container.remove();
+    Utils.RemoveData(this.container);
+    this.container.remove();
 
     this._observer.disconnect();
     this._observer = null;
@@ -562,14 +563,15 @@ define([
     this._syncA = null;
     this._syncS = null;
 
-    this.$element.off('.select2');
-    this.$element.attr('tabindex',
-    Utils.GetData(this.$element[0], 'old-tabindex'));
+    this.element.removeEventListener('change', this._syncA);
+    this.element.removeEventListener('focus', this._syncS);
+    this.element.setAttribute('tabindex',
+    Utils.GetData(this.element, 'old-tabindex'));
 
-    this.$element[0].classList.remove('select2-hidden-accessible');
-    this.$element.attr('aria-hidden', 'false');
-    Utils.RemoveData(this.$element[0]);
-    this.$element.removeData('select2');
+    this.element.classList.remove('select2-hidden-accessible');
+    this.element.setAttribute('aria-hidden', 'false');
+    Utils.RemoveData(this.element);
+    delete this.element.select2;
 
     this.dataAdapter.destroy();
     this.selection.destroy();
@@ -583,23 +585,21 @@ define([
   };
 
   Select2.prototype.render = function () {
-    var $container = $(
-      '<span class="select2 select2-container">' +
-        '<span class="selection"></span>' +
-        '<span class="dropdown-wrapper" aria-hidden="true"></span>' +
-      '</span>'
-    );
+    var container = document.createElement('span');
+    container.className = 'select2 select2-container';
+    container.innerHTML = '<span class="selection"></span>' +
+                          '<span class="dropdown-wrapper" aria-hidden="true"></span>';
 
-    $container.attr('dir', this.options.get('dir'));
+    container.setAttribute('dir', this.options.get('dir'));
 
-    this.$container = $container;
+    this.container = container;
 
-    this.$container[0].classList
+    this.container.classList
       .add('select2-container--' + this.options.get('theme'));
 
-    Utils.StoreData($container[0], 'element', this.$element);
+    Utils.StoreData(container, 'element', this.element);
 
-    return $container;
+    return container;
   };
 
   return Select2;

@@ -1,23 +1,33 @@
 define([
-  'jquery',
-  'jquery-mousewheel',
-
   './select2/core',
   './select2/defaults',
   './select2/utils'
-], function ($, _, Select2, Defaults, Utils) {
-  if ($.fn.select2 == null) {
-    // All methods that should return the element
-    var thisMethods = ['open', 'close', 'destroy'];
+], function (Select2, Defaults, Utils) {
+  if (typeof window.Select2 === 'undefined') {
+    window.Select2 = Select2;
+  }
 
-    $.fn.select2 = function (options) {
+  if (typeof window.Select2.defaults === 'undefined') {
+    window.Select2.defaults = Defaults;
+  }
+
+  if (typeof window.Select2.Utils === 'undefined') {
+    window.Select2.Utils = Utils;
+  }
+
+  if (typeof window.Select2.fn === 'undefined') {
+    window.Select2.fn = {};
+  }
+
+  if (typeof window.Select2.fn.select2 === 'undefined') {
+    window.Select2.fn.select2 = function (options) {
       options = options || {};
 
       if (typeof options === 'object') {
         this.each(function () {
-          var instanceOptions = $.extend(true, {}, options);
+          var instanceOptions = Object.assign({}, options);
 
-          var instance = new Select2($(this), instanceOptions);
+          var instance = new Select2(this, instanceOptions);
         });
 
         return this;
@@ -39,7 +49,7 @@ define([
         });
 
         // Check if we should be returning `this`
-        if (thisMethods.indexOf(options) > -1) {
+        if (['open', 'close', 'destroy'].indexOf(options) > -1) {
           return this;
         }
 
@@ -48,10 +58,6 @@ define([
         throw new Error('Invalid arguments for Select2: ' + options);
       }
     };
-  }
-
-  if ($.fn.select2.defaults == null) {
-    $.fn.select2.defaults = Defaults;
   }
 
   return Select2;

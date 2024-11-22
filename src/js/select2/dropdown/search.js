@@ -1,79 +1,79 @@
-define([
-  'jquery'
-], function ($) {
+define(function () {
   function Search () { }
 
   Search.prototype.render = function (decorated) {
-    var $rendered = decorated.call(this);
+    var rendered = decorated.call(this);
     var searchLabel = this.options.get('translations').get('search');
 
-    var $search = $(
-      '<span class="select2-search select2-search--dropdown">' +
-        '<input class="select2-search__field" type="search" tabindex="-1"' +
-        ' autocorrect="off" autocapitalize="none"' +
-        ' spellcheck="false" role="searchbox" aria-autocomplete="list" />' +
-      '</span>'
-    );
+    var search = document.createElement('span');
+    search.className = 'select2-search select2-search--dropdown';
+    search.innerHTML = '<input class="select2-search__field" type="search" tabindex="-1"' +
+      ' autocorrect="off" autocapitalize="none"' +
+      ' spellcheck="false" role="searchbox" aria-autocomplete="list" />';
 
-    this.$searchContainer = $search;
-    this.$search = $search.find('input');
+    this.searchContainer = search;
+    this.search = search.querySelector('input');
 
-    this.$search.prop('autocomplete', this.options.get('autocomplete'));
-    this.$search.attr('aria-label', searchLabel());
+    this.search.setAttribute('autocomplete', this.options.get('autocomplete'));
+    this.search.setAttribute('aria-label', searchLabel());
 
-    $rendered.prepend($search);
+    rendered.insertBefore(search, rendered.firstChild);
 
-    return $rendered;
+    return rendered;
   };
 
-  Search.prototype.bind = function (decorated, container, $container) {
+  Search.prototype.bind = function (decorated, container, containerElement) {
     var self = this;
 
     var resultsId = container.id + '-results';
 
-    decorated.call(this, container, $container);
+    decorated.call(this, container, containerElement);
 
-    this.$search.on('keydown', function (evt) {
+    this.search.addEventListener('keydown', function (evt) {
       self.trigger('keypress', evt);
 
-      self._keyUpPrevented = evt.isDefaultPrevented();
+      self.keyUpPrevented = evt.defaultPrevented;
     });
 
     // Workaround for browsers which do not support the `input` event
     // This will prevent double-triggering of events for browsers which support
     // both the `keyup` and `input` events.
-    this.$search.on('input', function (evt) {
+    this.search.addEventListener('input', function (evt) {
       // Unbind the duplicated `keyup` event
-      $(this).off('keyup');
+      this.removeEventListener('keyup', arguments.callee);
     });
 
-    this.$search.on('keyup input', function (evt) {
+    this.search.addEventListener('keyup', function (evt) {
+      self.handleSearch(evt);
+    });
+
+    this.search.addEventListener('input', function (evt) {
       self.handleSearch(evt);
     });
 
     container.on('open', function () {
-      self.$search.attr('tabindex', 0);
-      self.$search.attr('aria-controls', resultsId);
+      self.search.setAttribute('tabindex', 0);
+      self.search.setAttribute('aria-controls', resultsId);
 
-      self.$search.trigger('focus');
+      self.search.focus();
 
       window.setTimeout(function () {
-        self.$search.trigger('focus');
+        self.search.focus();
       }, 0);
     });
 
     container.on('close', function () {
-      self.$search.attr('tabindex', -1);
-      self.$search[0].removeAttribute('aria-controls');
-      self.$search[0].removeAttribute('aria-activedescendant');
+      self.search.setAttribute('tabindex', -1);
+      self.search.removeAttribute('aria-controls');
+      self.search.removeAttribute('aria-activedescendant');
 
-      self.$search.val('');
-      self.$search.trigger('blur');
+      self.search.value = '';
+      self.search.blur();
     });
 
     container.on('focus', function () {
       if (!container.isOpen()) {
-        self.$search.trigger('focus');
+        self.search.focus();
       }
     });
 
@@ -82,32 +82,32 @@ define([
         var showSearch = self.showSearch(params);
 
         if (showSearch) {
-          self.$searchContainer[0].classList.remove('select2-search--hide');
+          self.searchContainer.classList.remove('select2-search--hide');
         } else {
-          self.$searchContainer[0].classList.add('select2-search--hide');
+          self.searchContainer.classList.add('select2-search--hide');
         }
       }
     });
 
     container.on('results:focus', function (params) {
       if (params.data._resultId) {
-        self.$search.attr('aria-activedescendant', params.data._resultId);
+        self.search.setAttribute('aria-activedescendant', params.data._resultId);
       } else {
-        self.$search[0].removeAttribute('aria-activedescendant');
+        self.search.removeAttribute('aria-activedescendant');
       }
     });
   };
 
   Search.prototype.handleSearch = function (evt) {
-    if (!this._keyUpPrevented) {
-      var input = this.$search.val();
+    if (!this.keyUpPrevented) {
+      var input = this.search.value;
 
       this.trigger('query', {
         term: input
       });
     }
 
-    this._keyUpPrevented = false;
+    this.keyUpPrevented = false;
   };
 
   Search.prototype.showSearch = function (_, params) {

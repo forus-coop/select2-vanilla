@@ -1,5 +1,4 @@
 define([
-  'jquery',
 
   './results',
 
@@ -36,7 +35,7 @@ define([
   './dropdown/tagsSearchHighlight',
 
   './i18n/en'
-], function ($,
+], function (
 
              ResultsList,
 
@@ -58,7 +57,7 @@ define([
   }
 
   Defaults.prototype.apply = function (options) {
-    options = $.extend(true, {}, this.defaults, options);
+    options = Object.assign({}, this.defaults, options);
 
     if (options.dataAdapter == null) {
       if (options.ajax != null) {
@@ -259,7 +258,7 @@ define([
       if (data.children && data.children.length > 0) {
         // Clone the data object if there are children
         // This is required as we modify the object to remove any non-matches
-        var match = $.extend(true, {}, data);
+        var match = Object.assign({}, data);
 
         // Check each child of the option
         for (var c = data.children.length - 1; c >= 0; c--) {
@@ -323,11 +322,11 @@ define([
     };
   };
 
-  Defaults.prototype.applyFromElement = function (options, $element) {
+  Defaults.prototype.applyFromElement = function (options, element) {
     var optionLanguage = options.language;
     var defaultLanguage = this.defaults.language;
-    var elementLanguage = $element.prop('lang');
-    var parentLanguage = $element.closest('[lang]').prop('lang');
+    var elementLanguage = element.getAttribute('lang');
+    var parentLanguage = element.closest('[lang]').getAttribute('lang');
 
     var languages = Array.prototype.concat.call(
       this._resolveLanguage(elementLanguage),
@@ -346,11 +345,11 @@ define([
       return [];
     }
 
-    if ($.isEmptyObject(language)) {
+    if (Object.keys(language).length === 0) {
       return [];
     }
 
-    if ($.isPlainObject(language)) {
+    if (typeof language === 'object' && language.constructor === Object) {
       return [language];
     }
 
@@ -408,7 +407,7 @@ define([
             }
           }
         }
-      } else if ($.isPlainObject(language)) {
+      } else if (typeof language === 'object' && language.constructor === Object) {
         languageData = new Translation(language);
       } else {
         languageData = language;
@@ -431,7 +430,7 @@ define([
 
     var convertedData = Utils._convertData(data);
 
-    $.extend(true, this.defaults, convertedData);
+    Object.assign(this.defaults, convertedData);
   };
 
   var defaults = new Defaults();

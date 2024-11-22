@@ -1,9 +1,8 @@
 define([
-  'jquery',
   './utils'
-], function ($, Utils) {
-  function Dropdown ($element, options) {
-    this.$element = $element;
+], function (Utils) {
+  function Dropdown (element, options) {
+    this.element = element;
     this.options = options;
 
     Dropdown.__super__.constructor.call(this);
@@ -12,30 +11,28 @@ define([
   Utils.Extend(Dropdown, Utils.Observable);
 
   Dropdown.prototype.render = function () {
-    var $dropdown = $(
-      '<span class="select2-dropdown">' +
-        '<span class="select2-results"></span>' +
-      '</span>'
-    );
+    var dropdown = document.createElement('span');
+    dropdown.className = 'select2-dropdown';
+    dropdown.innerHTML = '<span class="select2-results"></span>';
 
-    $dropdown.attr('dir', this.options.get('dir'));
+    dropdown.setAttribute('dir', this.options.get('dir'));
 
-    this.$dropdown = $dropdown;
+    this.dropdown = dropdown;
 
-    return $dropdown;
+    return dropdown;
   };
 
   Dropdown.prototype.bind = function () {
     // Should be implemented in subclasses
   };
 
-  Dropdown.prototype.position = function ($dropdown, $container) {
+  Dropdown.prototype.position = function (dropdown, container) {
     // Should be implemented in subclasses
   };
 
   Dropdown.prototype.destroy = function () {
     // Remove the dropdown from the DOM
-    this.$dropdown.remove();
+    this.dropdown.remove();
   };
 
   return Dropdown;

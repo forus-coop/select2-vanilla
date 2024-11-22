@@ -1,9 +1,7 @@
-define([
-  'jquery'
-], function ($) {
+define(function () {
   function EventRelay () { }
 
-  EventRelay.prototype.bind = function (decorated, container, $container) {
+  EventRelay.prototype.bind = function (decorated, container, containerElement) {
     var self = this;
     var relayEvents = [
       'open', 'opening',
@@ -17,7 +15,7 @@ define([
       'opening', 'closing', 'selecting', 'unselecting', 'clearing'
     ];
 
-    decorated.call(this, container, $container);
+    decorated.call(this, container, containerElement);
 
     container.on('*', function (name, params) {
       // Ignore events that should not be relayed
@@ -28,19 +26,23 @@ define([
       // The parameters should always be an object
       params = params || {};
 
-      // Generate the jQuery event for the Select2 event
-      var evt = $.Event('select2:' + name, {
-        params: params
+      // Generate the custom event for the Select2 event
+      var evt = new CustomEvent('select2:' + name, {
+        detail: {
+          params: params
+        },
+        bubbles: true,
+        cancelable: true
       });
 
-      self.$element.trigger(evt);
+      self.element.dispatchEvent(evt);
 
       // Only handle preventable events if it was one
       if (preventableEvents.indexOf(name) === -1) {
         return;
       }
 
-      params.prevented = evt.isDefaultPrevented();
+      params.prevented = evt.defaultPrevented;
     });
   };
 
