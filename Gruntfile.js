@@ -4,14 +4,10 @@ module.exports = function (grunt) {
   // Full list of files that must be included by RequireJS
   includes = [
     'jquery.select2',
-    'almond',
-
-    'jquery-mousewheel' // shimmed for non-full builds
+    'almond'
   ];
 
   fullIncludes = [
-    'jquery',
-
     'select2/dropdown/attachContainer',
     'select2/dropdown/stopPropagation',
 
@@ -164,9 +160,7 @@ module.exports = function (grunt) {
           include: includes,
           namespace: 'S2',
           paths: {
-            'almond': require.resolve('almond').slice(0, -3),
-            'jquery': 'jquery.shim',
-            'jquery-mousewheel': 'jquery.mousewheel.shim'
+            'almond': require.resolve('almond').slice(0, -3)
           },
           wrap: {
             startFile: 'src/js/banner.start.js',
@@ -183,9 +177,7 @@ module.exports = function (grunt) {
           include: fullIncludes,
           namespace: 'S2',
           paths: {
-            'almond': require.resolve('almond').slice(0, -3),
-            'jquery': 'jquery.shim',
-            'jquery-mousewheel': require.resolve('jquery-mousewheel').slice(0, -3)
+            'almond': require.resolve('almond').slice(0, -3)
           },
           wrap: {
             startFile: 'src/js/banner.start.js',
