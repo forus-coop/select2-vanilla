@@ -86,6 +86,7 @@ define([
 
     // Ensure backwards compatibility with element.data('select2').
     element.select2 = this;
+    element.insertAdjacentElement("afterend", container);
   };
 
   Utils.Extend(Select2, Utils.Observable);

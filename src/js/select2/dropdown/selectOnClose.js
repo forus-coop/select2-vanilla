@@ -31,7 +31,7 @@ define([
       return;
     }
 
-    var data = Utils.GetData($highlightedResults[0], 'data');
+    var data = Utils.GetData($highlightedResults, 'data');
 
     // Don't re-select already selected resulte
     if (

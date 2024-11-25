@@ -207,13 +207,15 @@ define([], function () {
     return data;
   };
 
-  Utils.hasScroll = function (index, el) {
+  Utils.hasScroll = function (el) {
     // Adapted from the function created by @ShadowScripter
     // and adapted by @BillBarry on the Stack Exchange Code Review website.
     // The original code can be found at
     // http://codereview.stackexchange.com/q/13338
     // and was designed to be used with the Sizzle selector engine.
-
+    if (!el) {
+      return false;
+    }
     var overflowX = el.style.overflowX;
     var overflowY = el.style.overflowY;
 

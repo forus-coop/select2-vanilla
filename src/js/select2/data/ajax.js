@@ -1,9 +1,6 @@
-define([
-  './array',
-  '../utils'
-], function (ArrayAdapter, Utils) {
-  function AjaxAdapter ($element, options) {
-    this.ajaxOptions = this._applyDefaults(options.get('ajax'));
+define(["./array", "../utils"], function (ArrayAdapter, Utils) {
+  function AjaxAdapter($element, options) {
+    this.ajaxOptions = this._applyDefaults(options.get("ajax"));
 
     if (this.ajaxOptions.processResults != null) {
       this.processResults = this.ajaxOptions.processResults;
@@ -18,7 +15,7 @@ define([
     var defaults = {
       data: function (params) {
         return Object.assign({}, params, {
-          q: params.term
+          q: params.term,
         });
       },
       transport: function (params, success, failure) {
@@ -40,7 +37,7 @@ define([
         request.send(params.data);
 
         return request;
-      }
+      },
     };
 
     return Object.assign({}, defaults, options, true);
@@ -56,56 +53,66 @@ define([
 
     if (this._request != null) {
       // JSONP requests cannot always be aborted
-      if (typeof this._request.abort === 'function') {
+      if (typeof this._request.abort === "function") {
         this._request.abort();
       }
 
       this._request = null;
     }
 
-    var options = Object.assign({
-      type: 'GET'
-    }, this.ajaxOptions);
+    var options = Object.assign(
+      {
+        type: "GET",
+      },
+      this.ajaxOptions
+    );
 
-    if (typeof options.url === 'function') {
-      options.url = options.url.call(this.$element, params);
+    if (typeof options.url === "function") {
+      options.url = options.url.call(this.element, params);
     }
 
-    if (typeof options.data === 'function') {
-      options.data = options.data.call(this.$element, params);
+    if (typeof options.data === "function") {
+      options.data = options.data.call(this.element, params);
     }
 
-    function request () {
-      var request = options.transport(options, function (data) {
-        var results = self.processResults(data, params);
+    function request() {
+      var request = options.transport(
+        options,
+        function (data) {
+          var results = self.processResults(data, params);
 
-        if (results && results.results && Array.isArray(results.results)) {
-          results.results = results.results.map(
-            AjaxAdapter.prototype._normalizeItem
-          );
-        } else {
-          if (self.options.get('debug') && window.console && console.error) {
-            // Check to make sure that the response included a `results` key.
-            console.error(
-              'Select2: The AJAX results did not return an array in the ' +
-              '`results` key of the response.'
+          if (results && results.results && Array.isArray(results.results)) {
+            results.results = results.results.map(
+              AjaxAdapter.prototype._normalizeItem
             );
+          } else {
+            if (self.options.get("debug") && window.console && console.error) {
+              // Check to make sure that the response included a `results` key.
+              console.error(
+                "Select2: The AJAX results did not return an array in the " +
+                  "`results` key of the response."
+              );
+            }
           }
-        }
 
-        callback(results);
-      }, function () {
-        // Attempt to detect if a request was aborted
-        // Only works if the transport exposes a status property
-        if (request && 'status' in request &&
-            (request.status === 0 || request.status === '0')) {
-          return;
-        }
+          callback(results);
+        },
+        function () {
+          // Attempt to detect if a request was aborted
+          // Only works if the transport exposes a status property
+          if (
+            request &&
+            "status" in request &&
+            (request.status === 0 || request.status === "0")
+          ) {
+            return;
+          }
 
-        self.trigger('results:message', {
-          message: 'errorLoading'
-        });
-      });
+          self.trigger("results:message", {
+            message: "errorLoading",
+          });
+        }
+      );
 
       self._request = request;
     }

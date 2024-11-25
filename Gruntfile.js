@@ -3,7 +3,7 @@ const sass = require('sass');
 module.exports = function (grunt) {
   // Full list of files that must be included by RequireJS
   includes = [
-    'jquery.select2',
+    'select2',
     'almond'
   ];
 

@@ -1,9 +1,6 @@
-define([
-  './select',
-  '../utils'
-], function (SelectAdapter, Utils) {
-  function ArrayAdapter ($element, options) {
-    this._dataToConvert = options.get('data') || [];
+define(["./select", "../utils"], function (SelectAdapter, Utils) {
+  function ArrayAdapter($element, options) {
+    this._dataToConvert = options.get("data") || [];
 
     ArrayAdapter.__super__.constructor.call(this, $element, options);
   }
@@ -17,9 +14,11 @@ define([
   };
 
   ArrayAdapter.prototype.select = function (data) {
-    var $option = this.$element.querySelectorAll('option').filter(function (i, elm) {
-      return elm.value == data.id.toString();
-    });
+    var $option = this.element
+      .querySelectorAll("option")
+      .filter(function (i, elm) {
+        return elm.value == data.id.toString();
+      });
 
     if ($option.length === 0) {
       $option = this.option(data);
@@ -33,7 +32,7 @@ define([
   ArrayAdapter.prototype.convertToOptions = function (data) {
     var self = this;
 
-    var $existing = this.$element.querySelectorAll('option');
+    var $existing = this.element.querySelectorAll("option");
     var existingIds = Array.from($existing).map(function (option) {
       return self.item(option).id;
     });
@@ -41,7 +40,7 @@ define([
     var $options = [];
 
     // Filter out all items except for the one passed in the argument
-    function onlyItem (item) {
+    function onlyItem(item) {
       return function (option) {
         return option.value == item.id;
       };
