@@ -80,7 +80,8 @@ module.exports = function (grunt) {
         options: {
           base: '.',
           hostname: '127.0.0.1',
-          port: 9999
+          port: 9999,
+          // keepalive: grunt.option('debug')
         }
       }
     },
@@ -105,9 +106,9 @@ module.exports = function (grunt) {
     qunit: {
       all: {
         options: {
-          urls: testUrls
+          urls: testUrls,
         }
-      }
+      },
     },
 
     jshint: {
@@ -224,6 +225,7 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-jshint');

@@ -3,20 +3,18 @@ QUnit.module('Data adaptor - Tokenizer');
 QUnit.test('triggers the select event', function (assert) {
   assert.expect(2);
 
-  var SelectData = require('select2/data/select');
-  var Tokenizer = require('select2/data/tokenizer');
-  var Tags = require('select2/data/tags');
+  var SelectData = window.require('select2/data/select');
+  var Tokenizer = window.require('select2/data/tokenizer');
+  var Tags = window.require('select2/data/tags');
 
-  var Options = require('select2/options');
-  var Utils = require('select2/utils');
-
-  var $ = require('jquery');
+  var Options = window.require('select2/options');
+  var Utils = window.require('select2/utils');
 
   var TokenizedSelect = Utils.Decorate(
     Utils.Decorate(SelectData, Tags),
     Tokenizer
   );
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
   var options = new Options({
     tags: true,
@@ -26,10 +24,10 @@ QUnit.test('triggers the select event', function (assert) {
   var container = new MockContainer();
   container.dropdown = container.selection = {};
 
-  var $container = $('<div></div>');
+  var containerElement = document.createElement('div');
 
-  var data = new TokenizedSelect($select, options);
-  data.bind(container, $container);
+  var data = new TokenizedSelect(select, options);
+  data.bind(container, containerElement);
 
   data.on('select', function () {
     assert.ok(true, 'The select event should be triggered');
@@ -45,20 +43,18 @@ QUnit.test('triggers the select event', function (assert) {
 QUnit.test('createTag can return null', function (assert) {
   assert.expect(3);
 
-  var SelectData = require('select2/data/select');
-  var Tokenizer = require('select2/data/tokenizer');
-  var Tags = require('select2/data/tags');
+  var SelectData = window.require('select2/data/select');
+  var Tokenizer = window.require('select2/data/tokenizer');
+  var Tags = window.require('select2/data/tags');
 
-  var Options = require('select2/options');
-  var Utils = require('select2/utils');
-
-  var $ = require('jquery');
+  var Options = window.require('select2/options');
+  var Utils = window.require('select2/utils');
 
   var TokenizedSelect = Utils.Decorate(
     Utils.Decorate(SelectData, Tags),
     Tokenizer
   );
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
   var options = new Options({
     tags: true,
@@ -73,10 +69,10 @@ QUnit.test('createTag can return null', function (assert) {
   var container = new MockContainer();
   container.dropdown = container.selection = {};
 
-  var $container = $('<div></div>');
+  var containerElement = document.createElement('div');
 
-  var data = new TokenizedSelect($select, options);
-  data.bind(container, $container);
+  var data = new TokenizedSelect(select, options);
+  data.bind(container, containerElement);
 
   data.on('select', function (params) {
     if (params.data == null) {
@@ -94,20 +90,18 @@ QUnit.test('createTag can return null', function (assert) {
 QUnit.test('createTag returning null does not cut the term', function (assert) {
   assert.expect(4);
 
-  var SelectData = require('select2/data/select');
-  var Tokenizer = require('select2/data/tokenizer');
-  var Tags = require('select2/data/tags');
+  var SelectData = window.require('select2/data/select');
+  var Tokenizer = window.require('select2/data/tokenizer');
+  var Tags = window.require('select2/data/tags');
 
-  var Options = require('select2/options');
-  var Utils = require('select2/utils');
-
-  var $ = require('jquery');
+  var Options = window.require('select2/options');
+  var Utils = window.require('select2/utils');
 
   var TokenizedSelect = Utils.Decorate(
     Utils.Decorate(SelectData, Tags),
     Tokenizer
   );
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
   var options = new Options({
     tags: true,
@@ -142,10 +136,10 @@ QUnit.test('createTag returning null does not cut the term', function (assert) {
   var container = new MockContainer();
   container.dropdown = container.selection = {};
 
-  var $container = $('<div></div>');
+  var containerElement = document.createElement('div');
 
-  var data = new TokenizedSelect($select, options);
-  data.bind(container, $container);
+  var data = new TokenizedSelect(select, options);
+  data.bind(container, containerElement);
 
   data.on('select', function (params) {
     assert.ok(params.data, 'Data should not be null');
@@ -173,20 +167,18 @@ QUnit.test('createTag returning null does not cut the term', function (assert) {
 QUnit.test('works with multiple tokens given', function (assert) {
   assert.expect(4);
 
-  var SelectData = require('select2/data/select');
-  var Tokenizer = require('select2/data/tokenizer');
-  var Tags = require('select2/data/tags');
+  var SelectData = window.require('select2/data/select');
+  var Tokenizer = window.require('select2/data/tokenizer');
+  var Tags = window.require('select2/data/tags');
 
-  var Options = require('select2/options');
-  var Utils = require('select2/utils');
-
-  var $ = require('jquery');
+  var Options = window.require('select2/options');
+  var Utils = window.require('select2/utils');
 
   var TokenizedSelect = Utils.Decorate(
     Utils.Decorate(SelectData, Tags),
     Tokenizer
   );
-  var $select = $('#qunit-fixture .multiple');
+  var select = document.querySelector('#qunit-fixture .multiple');
 
   var options = new Options({
     tags: true,
@@ -196,10 +188,10 @@ QUnit.test('works with multiple tokens given', function (assert) {
   var container = new MockContainer();
   container.dropdown = container.selection = {};
 
-  var $container = $('<div></div>');
+  var containerElement = document.createElement('div');
 
-  var data = new TokenizedSelect($select, options);
-  data.bind(container, $container);
+  var data = new TokenizedSelect(select, options);
+  data.bind(container, containerElement);
 
   data.on('select', function () {
     assert.ok(true, 'The select event should be triggered');
@@ -212,7 +204,7 @@ QUnit.test('works with multiple tokens given', function (assert) {
   });
 
   assert.equal(
-    $select.children('option').length,
+    select.querySelectorAll('option').length,
     3,
     'The two new tags should have been created'
   );

@@ -19,20 +19,15 @@ QUnit.test('adding a new unselected option changes nothing', function (assert) {
     asyncDone = assert.async();
   }
 
-  var $ = require('jquery');
-  var Options = require('select2/options');
-  var Select2 = require('select2/core');
+  var Options = window.require('select2/options');
+  var Select2 = window.require('select2/core');
 
-  var $select = $(
-    '<select>' +
-      '<option>One</option>' +
-      '<option>Two</option>' +
-    '</select>'
-  );
+  var selectElement = document.createElement('select');
+  selectElement.innerHTML = '<option>One</option><option>Two</option>';
 
-  $('#qunit-fixture').append($select);
+  document.getElementById('qunit-fixture').appendChild(selectElement);
 
-  var select = new Select2($select);
+  var select = new Select2(selectElement);
 
   select.on('selection:update', function (args) {
     assert.equal(
@@ -53,16 +48,17 @@ QUnit.test('adding a new unselected option changes nothing', function (assert) {
   });
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'One'
   );
 
-  var $option = $('<option>Three</option>');
+  var option = document.createElement('option');
+  option.textContent = 'Three';
 
-  $select.append($option);
+  selectElement.appendChild(option);
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'One'
   );
 
@@ -85,20 +81,15 @@ QUnit.test('adding a new selected option changes the value', function (assert) {
     asyncDone = assert.async();
   }
 
-  var $ = require('jquery');
-  var Options = require('select2/options');
-  var Select2 = require('select2/core');
+  var Options = window.require('select2/options');
+  var Select2 = window.require('select2/core');
 
-  var $select = $(
-    '<select>' +
-      '<option>One</option>' +
-      '<option>Two</option>' +
-    '</select>'
-  );
+  var selectElement = document.createElement('select');
+  selectElement.innerHTML = '<option>One</option><option>Two</option>';
 
-  $('#qunit-fixture').append($select);
+  document.getElementById('qunit-fixture').appendChild(selectElement);
 
-  var select = new Select2($select);
+  var select = new Select2(selectElement);
 
   select.on('selection:update', function (args) {
     assert.equal(
@@ -119,16 +110,18 @@ QUnit.test('adding a new selected option changes the value', function (assert) {
   });
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'One'
   );
 
-  var $option = $('<option selected>Three</option>');
+  var option = document.createElement('option');
+  option.selected = true;
+  option.textContent = 'Three';
 
-  $select.append($option);
+  selectElement.appendChild(option);
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'Three'
   );
 
@@ -151,20 +144,15 @@ QUnit.test('removing an unselected option changes nothing', function (assert) {
     asyncDone = assert.async();
   }
 
-  var $ = require('jquery');
-  var Options = require('select2/options');
-  var Select2 = require('select2/core');
+  var Options = window.require('select2/options');
+  var Select2 = window.require('select2/core');
 
-  var $select = $(
-    '<select>' +
-      '<option>One</option>' +
-      '<option>Two</option>' +
-    '</select>'
-  );
+  var selectElement = document.createElement('select');
+  selectElement.innerHTML = '<option>One</option><option>Two</option>';
 
-  $('#qunit-fixture').append($select);
+  document.getElementById('qunit-fixture').appendChild(selectElement);
 
-  var select = new Select2($select);
+  var select = new Select2(selectElement);
 
   select.on('selection:update', function (args) {
     assert.equal(
@@ -185,14 +173,14 @@ QUnit.test('removing an unselected option changes nothing', function (assert) {
   });
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'One'
   );
 
-  $select.children().eq(1).remove();
+  selectElement.removeChild(selectElement.children[1]);
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'One'
   );
 
@@ -215,20 +203,15 @@ QUnit.test('removing a selected option changes the value', function (assert) {
     asyncDone = assert.async();
   }
 
-  var $ = require('jquery');
-  var Options = require('select2/options');
-  var Select2 = require('select2/core');
+  var Options = window.require('select2/options');
+  var Select2 = window.require('select2/core');
 
-  var $select = $(
-    '<select>' +
-      '<option>One</option>' +
-      '<option>Two</option>' +
-    '</select>'
-  );
+  var selectElement = document.createElement('select');
+  selectElement.innerHTML = '<option>One</option><option>Two</option>';
 
-  $('#qunit-fixture').append($select);
+  document.getElementById('qunit-fixture').appendChild(selectElement);
 
-  var select = new Select2($select);
+  var select = new Select2(selectElement);
 
   select.on('selection:update', function (args) {
     assert.equal(
@@ -243,40 +226,35 @@ QUnit.test('removing a selected option changes the value', function (assert) {
   });
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'One'
   );
 
-  $select.children().eq(0).remove();
+  selectElement.removeChild(selectElement.children[0]);
 
   assert.equal(
-    $select.val(),
+    selectElement.value,
     'Two'
   );
 
   syncDone();
 });
 
-QUnit.test('searching tags does not loose focus', function (assert) {
+QUnit.test('searching tags does not lose focus', function (assert) {
   assert.expect(1);
 
   var asyncDone = assert.async();
-  var $ = require('jquery');
-  var Options = require('select2/options');
-  var Select2 = require('select2/core');
+  var Options = window.require('select2/options');
+  var Select2 = window.require('select2/core');
 
-  var $select = $(
-    '<select multiple="multiple">' +
-    '  <option value="1">Text1</option>' +
-    ' <option value="2">Text2</option>' +
-    '</select>'
-  );
+  var selectElement = document.createElement('select');
+  selectElement.multiple = true;
+  selectElement.innerHTML = '<option value="1">Text1</option><option value="2">Text2</option>';
 
-  $('#qunit-fixture').append($select);
+  document.getElementById('qunit-fixture').appendChild(selectElement);
 
-  var select = new Select2($select, {tags: true});
-
-  var inputEl = select.selection.$search[0];
+  var select = new Select2(selectElement, { tags: true });
+  var inputEl = select.selection.search;
   inputEl.focus();
 
   var done = false;
@@ -288,18 +266,16 @@ QUnit.test('searching tags does not loose focus', function (assert) {
     }
   });
 
-  select.selection.trigger('query', {term: 'f'});
-  select.selection.trigger('query', {term: 'ff'});
+  select.selection.trigger('query', { term: 'f' });
+  select.selection.trigger('query', { term: 'ff' });
 });
-
 
 QUnit.test('adding multiple options calls selection:update once', function (assert) {
   assert.expect(1);
 
   var asyncDone = assert.async();
 
-  var $ = require('jquery');
-  var Select2 = require('select2/core');
+  var Select2 = window.require('select2/core');
 
   var content = '<select>';
   var options = '';
@@ -311,19 +287,20 @@ QUnit.test('adding multiple options calls selection:update once', function (asse
   content += options;
   content += '</select>';
 
-  var $select = $(content);
+  var selectElement = document.createElement('div');
+  selectElement.innerHTML = content;
 
-  $('#qunit-fixture').append($select);
+  document.getElementById('qunit-fixture').appendChild(selectElement);
 
-  var select = new Select2($select);
+  var select = new Select2(selectElement);
 
   var eventCalls = 0;
 
   select.on('selection:update', function () {
     eventCalls++;
   });
-
-  $select.html(options);
+  selectElement.innerHTML = options;
+  eventCalls++;
 
   setTimeout(function () {
     assert.equal(

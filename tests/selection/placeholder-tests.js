@@ -1,11 +1,9 @@
 QUnit.module('Selection containers - Placeholders');
 
-var Placeholder = require('select2/selection/placeholder');
-var SingleSelection = require('select2/selection/single');
-
-var $ = require('jquery');
-var Options = require('select2/options');
-var Utils = require('select2/utils');
+var Placeholder = window.require('select2/selection/placeholder');
+var SingleSelection = window.require('select2/selection/single');
+var Options = window.require('select2/options');
+var Utils = window.require('select2/utils');
 
 var SinglePlaceholder = Utils.Decorate(SingleSelection, Placeholder);
 
@@ -18,7 +16,7 @@ var placeholderOptions = new Options({
 
 QUnit.test('normalizing placeholder ignores objects', function (assert) {
   var selection = new SinglePlaceholder(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     placeholderOptions
   );
 
@@ -34,7 +32,7 @@ QUnit.test('normalizing placeholder ignores objects', function (assert) {
 
 QUnit.test('normalizing placeholder gives object for string', function (assert) {
   var selection = new SinglePlaceholder(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     placeholderOptions
   );
 
@@ -46,33 +44,33 @@ QUnit.test('normalizing placeholder gives object for string', function (assert) 
 
 QUnit.test('text is shown for placeholder option on single', function (assert) {
   var selection = new SinglePlaceholder(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     placeholderOptions
   );
 
-  var $selection = selection.render();
+  var selectionElement = selection.render();
 
   selection.update([{
     id: 'placeholder'
   }]);
 
-  assert.equal($selection.text(), 'This is the placeholder');
+  assert.equal(selectionElement.textContent, 'This is the placeholder');
 });
 
 QUnit.test('title is set for placeholder option on single', function (assert) {
   var selection = new SinglePlaceholder(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     placeholderOptions
   );
 
-  var $selection = selection.render();
+  var selectionElement = selection.render();
 
   selection.update([{
     id: 'placeholder'
   }]);
 
   assert.equal(
-    $selection.find('.select2-selection__rendered').attr('title'),
+    selectionElement.querySelector('.select2-selection__rendered').getAttribute('title'),
     'This is the placeholder'
   );
 });
@@ -87,31 +85,31 @@ QUnit.test('title is used for placeholder option on single', function (assert) {
   });
 
   var selection = new SinglePlaceholder(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     placeholderTitleOptions
   );
 
-  var $selection = selection.render();
+  var selectionElement = selection.render();
 
   selection.update([{
     id: 'placeholder'
   }]);
 
   assert.equal(
-    $selection.find('.select2-selection__rendered').attr('title'),
+    selectionElement.querySelector('.select2-selection__rendered').getAttribute('title'),
     'This is the placeholder title'
   );
 });
 
 QUnit.test('placeholder is shown when no options are selected', function (assert) {
   var selection = new SinglePlaceholder(
-    $('#qunit-fixture .multiple'),
+    document.querySelector('#qunit-fixture .multiple'),
     placeholderOptions
   );
 
-  var $selection = selection.render();
+  var selectionElement = selection.render();
 
   selection.update([]);
 
-  assert.equal($selection.text(), 'This is the placeholder');
+  assert.equal(selectionElement.textContent, 'This is the placeholder');
 });

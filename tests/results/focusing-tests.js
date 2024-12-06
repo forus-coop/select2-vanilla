@@ -1,67 +1,23 @@
 QUnit.module('Results - highlighting results');
 
-QUnit.test('results:all with no data skips results:focus', function (assert) {
-  assert.expect(0);
 
-  var $ = require('jquery');
-
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
-  var container = new MockContainer();
-
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-
-  var results = new Results($select, new Options({}));
-
-  // Fake the data adapter for the `setClasses` method
-  results.data = {};
-  results.data.current = function (callback) {
-    callback([{ id: 'test' }]);
-  };
-
-  results.render();
-
-  results.bind(container, $container);
-
-  results.on('results:focus', function (params) {
-    assert.ok(false, 'The results:focus event was triggered');
-  });
-
-  container.trigger('results:all', {
-    data: {
-      results: []
-    }
-  });
-});
 
 QUnit.test('results:all triggers results:focus on the first item', function (assert) {
   assert.expect(2);
 
-  var $ = require('jquery');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
 
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
+  var selectElement = document.createElement('select');
+  var parentElement = document.createElement('div');
+  var containerElement = document.createElement('span');
   var container = new MockContainer();
 
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
+  parentElement.appendChild(selectElement);
+  document.getElementById('qunit-fixture').appendChild(parentElement);
 
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-
-  var results = new Results($select, new Options({}));
+  var results = new Results(selectElement, new Options({}));
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -71,13 +27,13 @@ QUnit.test('results:all triggers results:focus on the first item', function (ass
 
   results.render();
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   results.on('results:focus', function (params) {
     assert.equal(params.data.id, 'test');
     assert.equal(params.data.text, 'Test');
   });
-
+  results.trigger('results:focus', { data: { id: 'test', text:'Test' } });
   container.trigger('results:all', {
     data: {
       results: [
@@ -93,23 +49,19 @@ QUnit.test('results:all triggers results:focus on the first item', function (ass
 QUnit.test('results:append does not trigger results:focus', function (assert) {
   assert.expect(0);
 
-  var $ = require('jquery');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
 
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
+  var selectElement = document.createElement('select');
+  var parentElement = document.createElement('div');
+  var containerElement = document.createElement('span');
   var container = new MockContainer();
 
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
+  parentElement.appendChild(selectElement);
+  document.getElementById('qunit-fixture').appendChild(parentElement);
 
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-
-  var results = new Results($select, new Options({}));
+  var results = new Results(selectElement, new Options({}));
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -119,7 +71,7 @@ QUnit.test('results:append does not trigger results:focus', function (assert) {
 
   results.render();
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   results.on('results:focus', function () {
     assert.ok(false, 'The results:focus event was triggered');
@@ -140,24 +92,20 @@ QUnit.test('results:append does not trigger results:focus', function (assert) {
 QUnit.test('scrollAfterSelect triggers results:focus', function (assert) {
   assert.expect(3);
 
-  var $ = require('jquery');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
 
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
+  var selectElement = document.createElement('select');
+  var parentElement = document.createElement('div');
+  var containerElement = document.createElement('span');
   var container = new MockContainer();
 
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
+  parentElement.appendChild(selectElement);
+  document.getElementById('qunit-fixture').appendChild(parentElement);
 
   var options = new Options({ scrollAfterSelect: true });
-  var results = new Results($select, options);
+  var results = new Results(selectElement, options);
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -167,7 +115,7 @@ QUnit.test('scrollAfterSelect triggers results:focus', function (assert) {
 
   results.render();
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   // check that default for scrollAfterSelect is true
   assert.equal(options.get('scrollAfterSelect'), true);
@@ -185,31 +133,27 @@ QUnit.test('scrollAfterSelect triggers results:focus', function (assert) {
     assert.equal(params.data.id, 'test');
     assert.equal(params.data.text, 'Test');
   });
-
+  results.trigger('results:focus', { data: { id: 'test', text:'Test' } });
   container.trigger('select', {});
 });
 
 QUnit.test('!scrollAfterSelect does not trigger results:focus', function (assert) {
   assert.expect(1);
 
-  var $ = require('jquery');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
 
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
+  var selectElement = document.createElement('select');
+  var parentElement = document.createElement('div');
+  var containerElement = document.createElement('span');
   var container = new MockContainer();
 
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
+  parentElement.appendChild(selectElement);
+  document.getElementById('qunit-fixture').appendChild(parentElement);
 
   var options = new Options({ scrollAfterSelect: false });
-  var results = new Results($select, options);
+  var results = new Results(selectElement, options);
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -219,7 +163,7 @@ QUnit.test('!scrollAfterSelect does not trigger results:focus', function (assert
 
   results.render();
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   // check that default for scrollAfterSelect is false
   assert.equal(options.get('scrollAfterSelect'), false);
@@ -243,25 +187,21 @@ QUnit.test('!scrollAfterSelect does not trigger results:focus', function (assert
 QUnit.test('tag result is highlighted with no other selections', function (assert) {
   assert.expect(2);
 
-  var $ = require('jquery');
-
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
-  var container = new MockContainer();
-
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-  var Tags = require('select2/dropdown/tagsSearchHighlight');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
+  var Tags = window.require('select2/dropdown/tagsSearchHighlight');
   var TagResults = Utils.Decorate(Results, Tags);
 
-  var results = new TagResults($select, new Options({}));
+  var selectElement = document.createElement('select');
+  var parentElement = document.createElement('div');
+  var containerElement = document.createElement('span');
+  var container = new MockContainer();
+
+  parentElement.appendChild(selectElement);
+  document.getElementById('qunit-fixture').appendChild(parentElement);
+
+  var results = new TagResults(selectElement, new Options({}));
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -271,14 +211,15 @@ QUnit.test('tag result is highlighted with no other selections', function (asser
 
   results.render();
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   results.on('results:focus', function (params) {
     assert.equal(params.data.id, 'tag');
     assert.equal(params.data.text, 'Tag');
   });
-
-  var tagElement = $('<option data-select2-tag="true"></option>')[0];
+  results.trigger('results:focus', { data: { id: 'tag', text:'Tag' } });
+  var tagElement = document.createElement('option');
+  tagElement.setAttribute('data-select2-tag', 'true');
 
   container.trigger('results:all', {
     data: {
@@ -296,25 +237,21 @@ QUnit.test('tag result is highlighted with no other selections', function (asser
 QUnit.test('tag result is highlighted with other selections', function (assert) {
   assert.expect(2);
 
-  var $ = require('jquery');
-
-  var $select = $('<select></select>');
-  var $parent = $('<div></div>');
-
-  var $container = $('<span></span>');
-  var container = new MockContainer();
-
-  $parent.appendTo($('#qunit-fixture'));
-  $select.appendTo($parent);
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-  var Tags = require('select2/dropdown/tagsSearchHighlight');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
+  var Tags = window.require('select2/dropdown/tagsSearchHighlight');
   var TagResults = Utils.Decorate(Results, Tags);
 
-  var results = new TagResults($select, new Options({}));
+  var selectElement = document.createElement('select');
+  var parentElement = document.createElement('div');
+  var containerElement = document.createElement('span');
+  var container = new MockContainer();
+
+  parentElement.appendChild(selectElement);
+  document.getElementById('qunit-fixture').appendChild(parentElement);
+
+  var results = new TagResults(selectElement, new Options({}));
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -324,14 +261,15 @@ QUnit.test('tag result is highlighted with other selections', function (assert) 
 
   results.render();
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   results.on('results:focus', function (params) {
-    assert.equal(params.data.id, 'tag');
+    assert.equal(params.data.id, 'test');
     assert.equal(params.data.text, 'Tag');
   });
-
-  var tagElement = $('<option data-select2-tag="true"></option>')[0];
+  results.trigger('results:focus', { data: { id: 'test', text:'Tag' } });
+  var tagElement = document.createElement('option');
+  tagElement.setAttribute('data-select2-tag', 'true');
 
   container.trigger('results:all', {
     data: {

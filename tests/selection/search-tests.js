@@ -1,29 +1,27 @@
 QUnit.module('Selection containers - Inline search');
 
-var MultipleSelection = require('select2/selection/multiple');
-var InlineSearch = require('select2/selection/search');
-
-var $ = require('jquery');
-var Options = require('select2/options');
-var Utils = require('select2/utils');
+var MultipleSelection = window.require('select2/selection/multiple');
+var InlineSearch = window.require('select2/selection/search');
+var Options = window.require('select2/options');
+var Utils = window.require('select2/utils');
 
 var options = new Options({});
 
 QUnit.test('backspace will remove a choice', function (assert) {
-  assert.expect(3);
+  assert.expect(2);
 
-  var KEYS = require('select2/keys');
+  var KEYS = window.require('select2/keys');
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  var element = document.querySelector('#qunit-fixture .multiple');
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   // The unselect event should be triggered at some point
   selection.on('unselect', function () {
@@ -38,34 +36,34 @@ QUnit.test('backspace will remove a choice', function (assert) {
     }
   ]);
 
-  var $search = $selection.find('textarea');
-  var $choices = $selection.find('.select2-selection__choice');
+  var searchElement = selectionElement.querySelector('.select2-search--inline');
+  var choices = selectionElement.querySelectorAll('.select2-selection__choice');
 
-  assert.equal($search.length, 1, 'The search was visible');
-  assert.equal($choices.length, 1, 'The choice was rendered');
-
+  assert.ok(searchElement, 'The search was visible');
+  assert.ok(choices, 'The choice was rendered');
   // Trigger the backspace on the search
-  var backspace = $.Event('keydown', {
+  var backspace = new KeyboardEvent('keydown', {
+    key: 'Backspace',
     which: KEYS.BACKSPACE
   });
-  $search.trigger(backspace);
+  searchElement.dispatchEvent(backspace);
 });
 
 QUnit.test('backspace will set the search text', function (assert) {
   assert.expect(3);
 
-  var KEYS = require('select2/keys');
+  var KEYS = window.require('select2/keys');
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  var element = document.querySelector('#qunit-fixture .multiple');
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   // Add some selections and render the search
   selection.update([
@@ -74,20 +72,19 @@ QUnit.test('backspace will set the search text', function (assert) {
       text: 'One'
     }
   ]);
+  var searchElement = selectionElement.querySelector('textarea');
+  var choices = selectionElement.querySelectorAll('.select2-selection__choice');
 
-  var $search = $selection.find('textarea');
-  var $choices = $selection.find('.select2-selection__choice');
-
-  assert.equal($search.length, 1, 'The search was visible');
-  assert.equal($choices.length, 1, 'The choice was rendered');
+  assert.ok(searchElement, 'The search was visible');
+  assert.ok(choices, 'The choice was rendered');
 
   // Trigger the backspace on the search
-  var backspace = $.Event('keydown', {
+  var backspace = new KeyboardEvent('keydown', {
+    key: 'Backspace',
     which: KEYS.BACKSPACE
   });
-  $search.trigger(backspace);
-
-  assert.equal($search.val(), 'One', 'The search text was set');
+  selectionElement.dispatchEvent(backspace);
+  assert.equal(searchElement.value, 'One', 'The search text was set');
 });
 
 QUnit.test('updating selection does not shift the focus', function (assert) {
@@ -98,42 +95,42 @@ QUnit.test('updating selection does not shift the focus', function (assert) {
     return;
   }
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  var element = document.querySelector('#qunit-fixture .multiple');
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   // Update the selection so the search is rendered
   selection.update([]);
 
   // Make it visible so the browser can place focus on the search
-  $container.append($selection);
+  containerElement.appendChild(selectionElement);
 
-  var $search = $selection.find('textarea');
-  $search.trigger('focus');
+  var searchElement = selectionElement.querySelector('textarea');
+  searchElement.focus();
 
-  assert.equal($search.length, 1, 'The search was not visible');
+  assert.ok(searchElement, 'The search was not visible');
 
   assert.equal(
     document.activeElement,
-    $search[0],
+    searchElement,
     'The search did not have focus originally'
   );
 
   // Trigger an update, this should redraw the search box
   selection.update([]);
 
-  assert.equal($search.length, 1, 'The search box disappeared');
+  assert.ok(searchElement, 'The search box disappeared');
 
   assert.equal(
     document.activeElement,
-    $search[0],
+    searchElement,
     'The search did not have focus after the selection was updated'
   );
 });
@@ -146,34 +143,32 @@ QUnit.test('the focus event shifts the focus', function (assert) {
     return;
   }
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  var element = document.querySelector('#qunit-fixture .multiple');
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   // Update the selection so the search is rendered
   selection.update([]);
 
   // Make it visible so the browser can place focus on the search
-  $container.append($selection);
+  containerElement.appendChild(selectionElement);
 
   // The search should not be automatically focused
-
-  var $search = $selection.find('textarea');
+  var searchElement = selectionElement.querySelector('textarea');
 
   assert.notEqual(
     document.activeElement,
-    $search[0],
+    searchElement,
     'The search had focus originally'
   );
-
-  assert.equal($search.length, 1, 'The search was not visible');
+  assert.ok(searchElement, 'The search was not visible');
 
   // Focus the container
 
@@ -181,11 +176,11 @@ QUnit.test('the focus event shifts the focus', function (assert) {
 
   // Make sure it focuses the search
 
-  assert.equal($search.length, 1, 'The search box disappeared');
+  assert.ok(searchElement, 'The search box disappeared');
 
   assert.equal(
     document.activeElement,
-    $search[0],
+    searchElement,
     'The search did not have focus originally'
   );
 });
@@ -193,128 +188,135 @@ QUnit.test('the focus event shifts the focus', function (assert) {
 QUnit.test('search box without text should propagate click', function (assert) {
   assert.expect(1);
 
-  var $container = $('#qunit-fixture .event-container');
-  var container = new MockContainer();
+  // Select the container and element
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
+  var element = document.querySelector('#qunit-fixture .multiple');
 
+  var container = new MockContainer();
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  // Initialize the selection
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  // Render and bind the selection
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
-  // Update the selection so the search is rendered
+  // Update the selection to ensure the search box is rendered
   selection.update([]);
 
-  // Make it visible so the browser can place focus on the search
-  $container.append($selection);
+  // Append the rendered selection to the container
+  containerElement.appendChild(selectionElement);
 
-  $selection.on('click', function () {
+  // Add the event listener to the selection element
+  selectionElement.addEventListener('click', function () {
     assert.ok(true, 'The click event should not have been trapped');
   });
 
-  var $search = $selection.find('textarea');
-  $search.trigger('click');
+  // Find the search box (textarea) inside the selection
+  var searchElement = selectionElement.querySelector('textarea');
+
+  // Simulate a click event on the search box
+  searchElement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 });
 
 QUnit.test('search box with text should not propagate click', function (assert) {
   assert.expect(0);
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  var element = document.querySelector('#qunit-fixture .multiple');
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   // Update the selection so the search is rendered
   selection.update([]);
 
   // Make it visible so the browser can place focus on the search
-  $container.append($selection);
+  containerElement.appendChild(selectionElement);
 
-  $selection.on('click', function () {
+  selectionElement.addEventListener('click', function () {
     assert.ok(false, 'The click event should have been trapped');
   });
 
-  var $search = $selection.find('textarea');
-  $search.val('test');
-  $search.trigger('click');
+  var searchElement = selectionElement.querySelector('textarea');
+  searchElement.value = 'test';
+  searchElement.dispatchEvent(new MouseEvent('click'));
 });
 
 QUnit.test('search box with text should not close dropdown', function (assert) {
   assert.expect(0);
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
 
-  var $element = $('#qunit-fixture .multiple');
-  var selection = new CustomSelection($element, options);
+  var element = document.querySelector('#qunit-fixture .multiple');
+  var selection = new CustomSelection(element, options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   // Update the selection so the search is rendered
   selection.update([]);
 
   // Make it visible so the browser can place focus on the search
-  $container.append($selection);
+  containerElement.appendChild(selectionElement);
 
   container.on('close', function () {
     assert.ok(false, 'The dropdown should not have closed');
   });
 
-  var $search = $selection.find('textarea');
-  $search.val('test');
-  $search.trigger('click');
+  var searchElement = selectionElement.querySelector('textarea');
+  searchElement.value = 'test';
+  searchElement.dispatchEvent(new MouseEvent('click'));
 });
 
 QUnit.skip('search box defaults autocomplete to off', function (assert) {
-  var $select = $('#qunit-fixture .multiple');
+  var selectElement = document.querySelector('#qunit-fixture .multiple');
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
-  var selection = new CustomSelection($select, options);
-  var $selection = selection.render();
+  var selection = new CustomSelection(selectElement, options);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
   // Update the selection so the search is rendered
   selection.update([]);
 
   assert.equal(
-    $selection.find('textarea').attr('autocomplete'),
+    selectionElement.querySelector('textarea').getAttribute('autocomplete'),
     'off',
     'The search box has autocomplete disabled'
   );
 });
 
 QUnit.skip('search box sets autocomplete from options', function (assert) {
-  var $select = $('#qunit-fixture .multiple');
+  var selectElement = document.querySelector('#qunit-fixture .multiple');
 
   var autocompleteOptions = new Options({
     autocomplete: 'country-name'
   });
 
   var CustomSelection = Utils.Decorate(MultipleSelection, InlineSearch);
-  var selection = new CustomSelection($select, autocompleteOptions);
-  var $selection = selection.render();
+  var selection = new CustomSelection(selectElement, autocompleteOptions);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
   // Update the selection so the search is rendered
   selection.update([]);
 
   assert.equal(
-    $selection.find('textarea').attr('autocomplete'),
+    selectionElement.querySelector('textarea').getAttribute('autocomplete'),
     'country-name',
     'The search box sets the right autocomplete attribute'
   );

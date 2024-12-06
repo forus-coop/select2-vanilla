@@ -3,7 +3,6 @@ define(["../utils"], function (Utils) {
 
   SelectionCSS.prototype.render = function (decorated) {
     var $selection = decorated.call(this);
-
     var selectionCssClass = this.options.get("selectionCssClass") || "";
 
     if (selectionCssClass.indexOf(":all:") !== -1) {

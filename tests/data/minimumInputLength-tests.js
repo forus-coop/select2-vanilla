@@ -1,11 +1,10 @@
 QUnit.module('Data adapters - Minimum input length');
 
-var MinimumInputLength = require('select2/data/minimumInputLength');
-var $ = require('jquery');
-var Options = require('select2/options');
-var Utils = require('select2/utils');
+var MinimumInputLength = window.require('select2/data/minimumInputLength');
+var Options = window.require('select2/options');
+var Utils = window.require('select2/utils');
 
-function StubData () {
+function StubData() {
   this.called = false;
 }
 

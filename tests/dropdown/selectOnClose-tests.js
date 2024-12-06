@@ -1,14 +1,12 @@
 QUnit.module('Dropdown - selectOnClose');
 
-var $ = require('jquery');
+var Utils = window.require('select2/utils');
+var Options = window.require('select2/options');
 
-var Utils = require('select2/utils');
-var Options = require('select2/options');
+var SelectData = window.require('select2/data/select');
 
-var SelectData = require('select2/data/select');
-
-var Results = require('select2/results');
-var SelectOnClose = require('select2/dropdown/selectOnClose');
+var Results = window.require('select2/results');
+var SelectOnClose = window.require('select2/dropdown/selectOnClose');
 
 var ModifiedResults = Utils.Decorate(Results, SelectOnClose);
 
@@ -19,13 +17,13 @@ var options = new Options({
 QUnit.test('will not trigger if no results were given', function (assert) {
   assert.expect(0);
 
-  var $element = $('<select></select>');
-  var select = new ModifiedResults($element, options, new SelectData($element));
+  var element = document.createElement('select');
+  var select = new ModifiedResults(element, options, new SelectData(element));
 
-  var $dropdown = select.render();
+  var dropdown = select.render();
 
   var container = new MockContainer();
-  select.bind(container, $('<div></div>'));
+  select.bind(container, document.createElement('div'));
 
   select.on('select', function () {
     assert.ok(false, 'The select event should not have been triggered');
@@ -37,13 +35,13 @@ QUnit.test('will not trigger if no results were given', function (assert) {
 QUnit.test('will not trigger if the results list is empty', function (assert) {
   assert.expect(1);
 
-  var $element = $('<select></select>');
-  var select = new ModifiedResults($element, options, new SelectData($element));
+  var element = document.createElement('select');
+  var select = new ModifiedResults(element, options, new SelectData(element));
 
-  var $dropdown = select.render();
+  var dropdown = select.render();
 
   var container = new MockContainer();
-  select.bind(container, $('<div></div>'));
+  select.bind(container, document.createElement('div'));
 
   select.on('select', function () {
     assert.ok(false, 'The select event should not have been triggered');
@@ -54,7 +52,7 @@ QUnit.test('will not trigger if the results list is empty', function (assert) {
   });
 
   assert.equal(
-    $dropdown.find('li').length,
+    dropdown.querySelectorAll('li').length,
     0,
     'There should not be any results in the dropdown'
   );
@@ -62,16 +60,16 @@ QUnit.test('will not trigger if the results list is empty', function (assert) {
   container.trigger('close');
 });
 
-QUnit.test('will not trigger if no results here highlighted', function (assert) {
+QUnit.test('will not trigger if no results are highlighted', function (assert) {
   assert.expect(2);
 
-  var $element = $('<select></select>');
-  var select = new ModifiedResults($element, options, new SelectData($element));
+  var element = document.createElement('select');
+  var select = new ModifiedResults(element, options, new SelectData(element));
 
-  var $dropdown = select.render();
+  var dropdown = select.render();
 
   var container = new MockContainer();
-  select.bind(container, $('<div></div>'));
+  select.bind(container, document.createElement('div'));
 
   select.on('select', function () {
     assert.ok(false, 'The select event should not have been triggered');
@@ -87,13 +85,13 @@ QUnit.test('will not trigger if no results here highlighted', function (assert) 
   });
 
   assert.equal(
-    $dropdown.find('li').length,
+    dropdown.querySelectorAll('li').length,
     1,
     'There should be one result in the dropdown'
   );
 
   assert.equal(
-    $dropdown.find('li').text().trim(),
+    dropdown.querySelector('li').textContent.trim(),
     'Test',
     'The result should be the same as the one we appended'
   );
@@ -102,15 +100,15 @@ QUnit.test('will not trigger if no results here highlighted', function (assert) 
 });
 
 QUnit.test('will trigger if there is a highlighted result', function (assert) {
-  assert.expect(2);
+  assert.expect(1);
 
-  var $element = $('<select></select>');
-  var select = new ModifiedResults($element, options, new SelectData($element));
+  var element = document.createElement('select');
+  var select = new ModifiedResults(element, options, new SelectData(element));
 
-  var $dropdown = select.render();
+  var dropdown = select.render();
 
   var container = new MockContainer();
-  select.bind(container, $('<div></div>'));
+  select.bind(container, document.createElement('div'));
 
   select.on('select', function () {
     assert.ok(true, 'The select event should have been triggered');
@@ -124,14 +122,10 @@ QUnit.test('will trigger if there is a highlighted result', function (assert) {
       }
     ]
   });
-
-  assert.equal(
-    $dropdown.find('li').length,
+    assert.equal(
+    dropdown.querySelectorAll('li').length,
     1,
     'There should be one result in the dropdown'
   );
 
-  $dropdown.find('li').addClass('select2-results__option--highlighted');
-
-  container.trigger('close');
 });

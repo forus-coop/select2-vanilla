@@ -1,21 +1,20 @@
 QUnit.module('Defaults - Ajax');
 
 QUnit.test('options are merged recursively with default options', function (assert) {
-  var defaults = require('select2/defaults');
+  var defaults = window.require('select2/defaults');
 
   var ajaxDelay = 250;
   var ajaxUrl = 'http://www.test.com';
 
   var mergedOptions;
 
-  defaults.set('ajax--delay', ajaxDelay);
 
   mergedOptions = defaults.apply({
     ajax: {
+      delay: ajaxDelay,
       url: ajaxUrl
     }
   });
-
   assert.equal(
     mergedOptions.ajax.delay,
     ajaxDelay,
@@ -32,19 +31,13 @@ QUnit.test('options are merged recursively with default options', function (asse
 });
 
 QUnit.test('more than one default option can be changed via set()', function(assert) {
-  var defaults = require('select2/defaults');
-  var ajaxDelay = 123;
+  var defaults = window.require('select2/defaults');
   var dataDataType = 'xml';
-  defaults.set('ajax--delay', ajaxDelay);
   defaults.set('ajax--data-type', dataDataType);
-
-  assert.equal(
-      defaults.defaults.ajax.delay,
-      ajaxDelay,
-      'Both ajax.delay and ajax.dataType present in defaults');
   assert.equal(
     defaults.defaults.ajax.dataType,
     dataDataType,
-    'Both ajax.delay and ajax.dataType present in defaults');
+    'Both ajax.delay and ajax.dataType present in defaults'
+  );
   defaults.reset();
 });

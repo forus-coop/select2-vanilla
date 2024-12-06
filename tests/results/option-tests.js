@@ -1,102 +1,103 @@
 QUnit.module('Results - option');
 
-var $ = require('jquery');
-
-var Options = require('select2/options');
-
-var Results = require('select2/results');
+var Options = window.require('select2/options');
+var Results = window.require('select2/results');
 
 QUnit.test('disabled property on option is respected - enabled', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<option></option>');
+  var optionElement = document.createElement('option');
   var option = results.option({
-    element: $option[0]
+    element: optionElement
   });
 
   assert.notEqual(option.getAttribute('aria-disabled'), 'true');
 });
 
 QUnit.test('disabled property on option is respected - disabled', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<option disabled></option>');
+  var optionElement = document.createElement('option');
+  optionElement.disabled = true;
   var option = results.option({
-    element: $option[0]
+    element: optionElement
   });
 
   assert.equal(option.getAttribute('aria-disabled'), 'true');
 });
 
 QUnit.test('disabled property on enabled optgroup is respected', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<optgroup></optgroup>');
+  var optgroupElement = document.createElement('optgroup');
   var option = results.option({
-    element: $option[0]
+    element: optgroupElement
   });
 
   assert.notEqual(option.getAttribute('aria-disabled'), 'true');
 });
 
 QUnit.test('disabled property on disabled optgroup is respected', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<optgroup disabled></optgroup>');
+  var optgroupElement = document.createElement('optgroup');
+  optgroupElement.disabled = true;
   var option = results.option({
-    element: $option[0]
+    element: optgroupElement
   });
 
   assert.equal(option.getAttribute('aria-disabled'), 'true');
 });
 
 QUnit.test('option in disabled optgroup is disabled', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<optgroup disabled><option></option></optgroup>')
-    .find('option');
+  var optgroupElement = document.createElement('optgroup');
+  optgroupElement.disabled = true;
+  var optionElement = document.createElement('option');
+  optgroupElement.appendChild(optionElement);
   var option = results.option({
-    element: $option[0]
+    element: optionElement
   });
 
   assert.equal(option.getAttribute('aria-disabled'), 'true');
 });
 
 QUnit.test('options are not selected by default', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<option></option>');
+  var optionElement = document.createElement('option');
   var option = results.option({
     id: 'test',
-    element: $option[0]
+    element: optionElement
   });
 
   assert.notOk(option.classList.contains('select2-results__option--selected'));
 });
 
 QUnit.test('options with children are given the group role', function(assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<optgroup></optgroup>');
+  var optgroupElement = document.createElement('optgroup');
   var option = results.option({
     children: [{
       id: 'test'
     }],
-    element: $option[0]
+    element: optgroupElement
   });
 
   assert.equal(option.getAttribute('role'), 'group');
 });
 
 QUnit.test('options with children have the aria-label set', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<optgroup></optgroup>');
+  var optgroupElement = document.createElement('optgroup');
   var option = results.option({
     children: [{
       id: 'test'
     }],
-    element: $option[0],
+    element: optgroupElement,
     text: 'test'
   });
 
@@ -104,12 +105,12 @@ QUnit.test('options with children have the aria-label set', function (assert) {
 });
 
 QUnit.test('non-group options are given the option role', function (assert) {
-  var results = new Results($('<select></select>'), new Options({}));
+  var results = new Results(document.createElement('select'), new Options({}));
 
-  var $option = $('<option></option>');
+  var optionElement = document.createElement('option');
   var option = results.option({
     id: 'test',
-    element: $option[0]
+    element: optionElement
   });
 
   assert.equal(option.getAttribute('role'), 'option');

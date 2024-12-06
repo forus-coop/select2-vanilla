@@ -1,7 +1,7 @@
 QUnit.module('Selection containers - Open On Key Down');
 
-var KEYS = require('select2/keys');
-var $ = require('jquery');
+var KEYS = window.require('select2/keys');
+var Options = window.require('select2/options');
 
 /**
  * Build a keydown event with the given key code and extra options.
@@ -10,10 +10,12 @@ var $ = require('jquery');
  *                              attribute of the keydown event.
  * @param  {Object} eventProps  extra properties to build the keydown event.
  *
- * @return {jQuery.Event} a 'keydown' type event.
+ * @return {Event} a 'keydown' type event.
  */
 function buildKeyDownEvent (keyCode, eventProps) {
-  return $.Event('keydown', $.extend({}, { which: keyCode }, eventProps));
+  var event = new Event('keydown', { bubbles: true, cancelable: true });
+  Object.assign(event, { which: keyCode }, eventProps);
+  return event;
 }
 
 /**
@@ -36,17 +38,11 @@ function buildKeyDownEvent (keyCode, eventProps) {
  */
 function testAbled(isEnabled, testName, keyCode, eventProps, fn) {
   QUnit.test(testName, function (assert) {
-    var $element = $(
-      '<select>' +
-        '<option>one</option>' +
-        '<option>two</option>' +
-      '</select>'
-    );
-    $('#qunit-fixture').append($element);
-    $element.select2({ disabled: !isEnabled });
-
-    var select2 = $element.data('select2');
-    var $selection = select2.$selection;
+    var selectElement = document.createElement('select');
+    selectElement.innerHTML = '<option>one</option><option>two</option>';
+    document.getElementById('qunit-fixture').appendChild(selectElement);
+    var select2 = new window.Select2(selectElement, { disabled: !isEnabled });
+    var selectionElement = select2.selection.selection;
 
     assert.notOk(select2.isOpen(), 'The instance should not be open');
     assert.equal(select2.isEnabled(), isEnabled);
@@ -54,7 +50,7 @@ function testAbled(isEnabled, testName, keyCode, eventProps, fn) {
     var event = buildKeyDownEvent(keyCode, eventProps);
     assert.ok(event.which, 'The event\'s key code (.which) should be set');
 
-    $selection.trigger(event);
+    selectionElement.dispatchEvent(event);
 
     fn(assert, select2);
   });
@@ -129,17 +125,17 @@ testEnabled(
 );
 testEnabled(
   'enabled element will not open on DOWN',
-  KEYS.UP, {},
+  KEYS.DOWN, {},
   assertNotOpened
 );
 testEnabled(
   'enabled element will not open on LEFT',
-  KEYS.UP, {},
+  KEYS.LEFT, {},
   assertNotOpened
 );
 testEnabled(
   'enabled element will not open on RIGHT',
-  KEYS.UP, {},
+  KEYS.RIGHT, {},
   assertNotOpened
 );
 
@@ -173,16 +169,16 @@ testDisabled(
 );
 testDisabled(
   'disabled element will not open on DOWN',
-  KEYS.UP, {},
+  KEYS.DOWN, {},
   assertNotOpened
 );
 testDisabled(
   'disabled element will not open on LEFT',
-  KEYS.UP, {},
+  KEYS.LEFT, {},
   assertNotOpened
 );
 testDisabled(
   'disabled element will not open on RIGHT',
-  KEYS.UP, {},
+  KEYS.RIGHT, {},
   assertNotOpened
 );

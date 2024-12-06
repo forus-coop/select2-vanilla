@@ -1,33 +1,31 @@
 QUnit.module('Selection containers - Managing focus');
 
-var SingleSelection = require('select2/selection/single');
-
-var $ = require('jquery');
-var Options = require('select2/options');
+var SingleSelection = window.require('select2/selection/single');
+var Options = window.require('select2/options');
 
 var options = new Options({});
 
 QUnit.test('close sets the focus to the selection', function (assert) {
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
   selection.update([{
     id: 'test',
     text: 'test'
   }]);
 
-  $container.append($selection);
+  containerElement.appendChild(selectionElement);
 
   assert.notEqual(
     document.activeElement,
-    $selection[0],
+    selectionElement,
     'The selection had focus originally'
   );
 
@@ -35,7 +33,7 @@ QUnit.test('close sets the focus to the selection', function (assert) {
 
   assert.equal(
     document.activeElement,
-    $selection[0],
+    selectionElement,
     'After close, focus must be set to selection'
   );
 });

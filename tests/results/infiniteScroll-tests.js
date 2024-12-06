@@ -3,22 +3,18 @@ QUnit.module('Results - Infinite scrolling');
 QUnit.test('loadingMore is triggered even without a scrollbar', function (assert) {
   assert.expect(1);
 
-  var $ = require('jquery');
-
-  var $select = $('<select></select>');
-
-  var $container = $('<span></span>');
-  var container = new MockContainer();
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-  var InfiniteScroll = require('select2/dropdown/infiniteScroll');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
+  var InfiniteScroll = window.require('select2/dropdown/infiniteScroll');
 
   var InfiniteScrollResults = Utils.Decorate(Results, InfiniteScroll);
 
-  var results = new InfiniteScrollResults($select, new Options({}));
+  var selectElement = document.createElement('select');
+  var containerElement = document.createElement('span');
+  var container = new MockContainer();
+
+  var results = new InfiniteScrollResults(selectElement, new Options({}));
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -26,9 +22,9 @@ QUnit.test('loadingMore is triggered even without a scrollbar', function (assert
     callback([{ id: 'test' }]);
   };
 
-  $('#qunit-fixture').append(results.render());
+  document.getElementById('qunit-fixture').appendChild(results.render());
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   results.on('query:append', function () {
     assert.ok(true, 'It tried to load more immediately');
@@ -52,22 +48,18 @@ QUnit.test('loadingMore is triggered even without a scrollbar', function (assert
 QUnit.test('loadingMore is not triggered without scrolling', function (assert) {
   assert.expect(0);
 
-  var $ = require('jquery');
-
-  var $select = $('<select></select>');
-
-  var $container = $('<span></span>');
-  var container = new MockContainer();
-
-  var Utils = require('select2/utils');
-  var Options = require('select2/options');
-
-  var Results = require('select2/results');
-  var InfiniteScroll = require('select2/dropdown/infiniteScroll');
+  var Utils = window.require('select2/utils');
+  var Options = window.require('select2/options');
+  var Results = window.require('select2/results');
+  var InfiniteScroll = window.require('select2/dropdown/infiniteScroll');
 
   var InfiniteScrollResults = Utils.Decorate(Results, InfiniteScroll);
 
-  var results = new InfiniteScrollResults($select, new Options({}));
+  var selectElement = document.createElement('select');
+  var containerElement = document.createElement('span');
+  var container = new MockContainer();
+
+  var results = new InfiniteScrollResults(selectElement, new Options({}));
 
   // Fake the data adapter for the `setClasses` method
   results.data = {};
@@ -75,12 +67,12 @@ QUnit.test('loadingMore is not triggered without scrolling', function (assert) {
     callback([{ id: 'test' }]);
   };
 
-  var $results = results.render();
+  var resultsElement = results.render();
 
-  $('#qunit-fixture').append($results);
-  $results.css('max-height', '100px');
+  document.getElementById('qunit-fixture').appendChild(resultsElement);
+  resultsElement.style.maxHeight = '100px';
 
-  results.bind(container, $container);
+  results.bind(container, containerElement);
 
   results.on('query:append', function () {
     assert.ok(false, 'It tried to load more immediately');

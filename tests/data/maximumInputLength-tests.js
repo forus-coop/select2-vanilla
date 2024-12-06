@@ -1,11 +1,10 @@
 QUnit.module('Data adapters - Maximum input length');
 
-var MaximumInputLength = require('select2/data/maximumInputLength');
-var $ = require('jquery');
-var Options = require('select2/options');
-var Utils = require('select2/utils');
+var MaximumInputLength = window.require('select2/data/maximumInputLength');
+var Options = window.require('select2/options');
+var Utils = window.require('select2/utils');
 
-function MaximumInputStub () {
+function MaximumInputStub() {
   this.called = false;
 }
 
