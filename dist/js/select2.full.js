@@ -487,6 +487,7 @@
           requirejs._defined = defined;
 
           define = function (name, deps, callback) {
+            // console.log("define called", typeof name);
             if (typeof name !== "string") {
               throw new Error(
                 "See almond README: incorrect module build, no module name"
@@ -506,12 +507,12 @@
               waiting[name] = [name, deps, callback];
             }
           };
-
           define.amd = {
             jQuery: true,
           };
         })();
 
+        window.define = define;
         S2.requirejs = requirejs;
         S2.require = require;
         S2.define = define;
