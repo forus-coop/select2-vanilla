@@ -790,13 +790,11 @@
         // creates a new unique number, stores it in the id
         // attribute and returns the new id with a prefix.
         // If an id already exists, it simply returns it with a prefix.
-        if (!(element instanceof Element)) {
+        if (!(element instanceof Element || element[0] instanceof HTMLElement)) {
           console.error("Utils.GetUniqueElementId: element is not a DOM element", element);
           return null;
         }
-
-        var select2Id = element.getAttribute("data-select2-id");
-
+        var select2Id = element[0] ? element[0].getAttribute("data-select2-id"): element.getAttribute("data-select2-id"); ;
         if (select2Id != null) {
           return select2Id;
         }
@@ -844,6 +842,7 @@
           .replace(/--/g, '-') // Replace double dashes with single dashes
           .replace(/-(\w)/g, (_, letter) => `-${letter.toUpperCase()}`); // Capitalize letters after a single dash
           // Attempt to fetch from the dataset using both the original and normalized names
+          console.log(element.dataset)
           return element.dataset[name] || element.dataset[normalizedName]; // Fallbac
         } else {
           return Utils.__cache[id];
@@ -1224,8 +1223,6 @@
 
         container.on("results:select", function () {
           var $highlighted = self.getHighlightedResults();
-
-          console.debug("results:select", $highlighted);
           if ($highlighted.length === 0) {
             return;
           }
@@ -1233,7 +1230,7 @@
           var data = Utils.GetData($highlighted, "data");
 
           if (
-            $highlighted.classList.contains("select2-results__option--selected")
+            $highlighted?.classList?.contains("select2-results__option--selected") || $highlighted[0]?.classList?.contains("select2-results__option--selected")
           ) {
             self.trigger("close", {});
           } else {
@@ -1245,16 +1242,16 @@
 
         container.on("results:previous", function () {
           var $highlighted = self.getHighlightedResults();
-
+          var element = $highlighted[0] ? $highlighted[0]: $highlighted;
           var $options = self.results.querySelectorAll(
             ".select2-results__option--selectable"
           );
-
+          console.log($options);
           var currentIndex = Array.prototype.indexOf.call(
             $options,
-            $highlighted
+            element
           );
-
+          console.log('current index:', currentIndex);
           if (currentIndex <= 0) {
             return;
           }
@@ -1282,14 +1279,14 @@
 
         container.on("results:next", function () {
           var $highlighted = self.getHighlightedResults();
-
+          var element = $highlighted[0] ? $highlighted[0]: $highlighted;
           var $options = self.results.querySelectorAll(
             ".select2-results__option--selectable"
           );
 
           var currentIndex = Array.prototype.indexOf.call(
             $options,
-            $highlighted
+            element
           );
 
           var nextIndex = currentIndex + 1;
