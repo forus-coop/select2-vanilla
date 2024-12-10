@@ -487,7 +487,6 @@
           requirejs._defined = defined;
 
           define = function (name, deps, callback) {
-            // console.log("define called", typeof name);
             if (typeof name !== "string") {
               throw new Error(
                 "See almond README: incorrect module build, no module name"
@@ -842,7 +841,6 @@
           .replace(/--/g, '-') // Replace double dashes with single dashes
           .replace(/-(\w)/g, (_, letter) => `-${letter.toUpperCase()}`); // Capitalize letters after a single dash
           // Attempt to fetch from the dataset using both the original and normalized names
-          console.log(element.dataset)
           return element.dataset[name] || element.dataset[normalizedName]; // Fallbac
         } else {
           return Utils.__cache[id];
@@ -1246,12 +1244,10 @@
           var $options = self.results.querySelectorAll(
             ".select2-results__option--selectable"
           );
-          console.log($options);
           var currentIndex = Array.prototype.indexOf.call(
             $options,
             element
           );
-          console.log('current index:', currentIndex);
           if (currentIndex <= 0) {
             return;
           }
