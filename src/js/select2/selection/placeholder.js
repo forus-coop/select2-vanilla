@@ -29,7 +29,7 @@ define([], function () {
     $placeholder.classList.remove("select2-selection__choice");
 
     var placeholderTitle =
-      placeholder.title || placeholder.text || $placeholder.text();
+      placeholder.title || placeholder // || $placeholder.text();
 
     this.selection
       .querySelector(".select2-selection__rendered")
