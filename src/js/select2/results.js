@@ -48,7 +48,9 @@ define(["./utils"], function (Utils) {
   };
 
   Results.prototype.hideMessages = function () {
-    var messages = this.results.querySelectorAll(".select2-results__message");
+    var messages = this.results.querySelectorAll(
+      ".select2-results__message"
+    );
     messages.forEach(function (message) {
       message.remove();
     });
@@ -99,11 +101,14 @@ define(["./utils"], function (Utils) {
     var $options = this.results.querySelectorAll(
       ".select2-results__option--selectable"
     );
-
-    var $selected = Array.prototype.filter.call($options, function (option) {
-      return option.classList.contains("select2-results__option--selected");
-    });
-
+    var $selected = Array.prototype.filter.call(
+      $options,
+      function (option) {
+        return option.classList.contains(
+          "select2-results__option--selected"
+        );
+      }
+    );
     if ($selected.length > 0) {
       $selected[0].dispatchEvent(new Event("mouseenter"));
     } else {
@@ -333,7 +338,6 @@ define(["./utils"], function (Utils) {
 
     container.on("results:select", function () {
       var $highlighted = self.getHighlightedResults();
-
       if ($highlighted.length === 0) {
         return;
       }
@@ -341,7 +345,8 @@ define(["./utils"], function (Utils) {
       var data = Utils.GetData($highlighted, "data");
 
       if (
-        $highlighted.classList.contains("select2-results__option--selected")
+        ($highlighted && $highlighted.classList && $highlighted.classList.contains("select2-results__option--selected")) ||
+        ($highlighted[0] && $highlighted[0].classList && $highlighted[0].classList.contains("select2-results__option--selected"))
       ) {
         self.trigger("close", {});
       } else {
@@ -353,13 +358,14 @@ define(["./utils"], function (Utils) {
 
     container.on("results:previous", function () {
       var $highlighted = self.getHighlightedResults();
-
+      var element = $highlighted[0] ? $highlighted[0]: $highlighted;
       var $options = self.results.querySelectorAll(
         ".select2-results__option--selectable"
       );
-
-      var currentIndex = Array.prototype.indexOf.call($options, $highlighted);
-
+      var currentIndex = Array.prototype.indexOf.call(
+        $options,
+        element
+      );
       if (currentIndex <= 0) {
         return;
       }
@@ -387,14 +393,14 @@ define(["./utils"], function (Utils) {
 
     container.on("results:next", function () {
       var $highlighted = self.getHighlightedResults();
-
+      var element = $highlighted[0] ? $highlighted[0]: $highlighted;
       var $options = self.results.querySelectorAll(
         ".select2-results__option--selectable"
       );
 
       var currentIndex = Array.prototype.indexOf.call(
         $options,
-        $highlighted
+        element
       );
 
       var nextIndex = currentIndex + 1;
@@ -408,8 +414,10 @@ define(["./utils"], function (Utils) {
       $next.dispatchEvent(new Event("mouseenter"));
 
       var currentOffset =
-        self.results.getBoundingClientRect().top + self.results.offsetHeight;
-      var nextBottom = $next.getBoundingClientRect().top + $next.offsetHeight;
+        self.results.getBoundingClientRect().top +
+        self.results.offsetHeight;
+      var nextBottom =
+        $next.getBoundingClientRect().top + $next.offsetHeight;
       var nextOffset = self.results.scrollTop + nextBottom - currentOffset;
 
       if (nextIndex === 0) {
@@ -429,33 +437,12 @@ define(["./utils"], function (Utils) {
     });
 
     this.results.addEventListener("mouseup", function (evt) {
-      // var $target = evt.target.closest(".select2-results__option--selectable");
-      // if (!$target) {
-      //   return;
-      // }
-      // var data = Utils.GetData($target, "data");
-      // if ($target.classList.contains("select2-results__option--selected")) {
-      //   if (self.options.get("multiple")) {
-      //     self.trigger("unselect", {
-      //       originalEvent: evt,
-      //       data: data,
-      //     });
-      //   } else {
-      //     self.trigger("close", {
-      //       originalEvent: evt,
-      //       data: data,
-      //     });
-      //   }
-      //   return;
-      // }
-      // self.trigger("select", {
-      //   originalEvent: evt,
-      //   data: data,
-      // });
+        var options = self.results.querySelectorAll(
+          ".select2-results__option--selectable"
+        );
     });
 
     this.results.addEventListener("mouseenter", function (evt) {
-      // TODO: jQuery would listen to all events on the results_option
       var options = self.results.querySelectorAll(
         ".select2-results__option--selectable"
       );
@@ -478,26 +465,27 @@ define(["./utils"], function (Utils) {
         option.addEventListener("mousedown", function (evt) {
           var data = Utils.GetData(option, "data");
 
-          if (self.options.get("multiple")) {
-            self.trigger("unselect", {
-              originalEvent: evt,
-              data: data,
-            });
-          } else {
-            self.trigger("close", {
-              originalEvent: evt,
-              data: data,
-            });
-          }
+            if (self.options.get("multiple")) {
+              self.trigger("unselect", {
+                originalEvent: evt,
+                data: data,
+              });
+            } else {
+              self.trigger("close", {
+                originalEvent: evt,
+                data: data,
+              });
+            }
 
-          // return;
+            // return;
 
           self.trigger("select", {
             originalEvent: evt,
             data: data,
           });
-        });
+        })
       });
+
     });
   };
 

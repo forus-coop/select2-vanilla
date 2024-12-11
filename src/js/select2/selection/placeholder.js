@@ -1,6 +1,8 @@
 define([], function () {
   function Placeholder(decorated, $element, options) {
-    this.placeholder = this.normalizePlaceholder(options.get("placeholder"));
+    this.placeholder = this.normalizePlaceholder(
+      options.get("placeholder")
+    );
 
     decorated.call(this, $element, options);
   }
@@ -16,10 +18,13 @@ define([], function () {
     return placeholder;
   };
 
-  Placeholder.prototype.createPlaceholder = function (decorated, placeholder) {
+  Placeholder.prototype.createPlaceholder = function (
+    decorated,
+    placeholder
+  ) {
     var $placeholder = this.selectionContainer();
 
-    $placeholder.html(this.display(placeholder));
+    $placeholder.innerHTML = this.display(placeholder);
     $placeholder.classList.add("select2-selection__placeholder");
     $placeholder.classList.remove("select2-selection__choice");
 
@@ -46,7 +51,11 @@ define([], function () {
 
     var $placeholder = this.createPlaceholder(this.placeholder);
 
-    this.selection.find(".select2-selection__rendered").append($placeholder);
+    // Use querySelector to find the `.select2-selection__rendered` element
+    var renderedElement = this.selection.querySelector(".select2-selection__rendered");
+    if (renderedElement) {
+      renderedElement.appendChild($placeholder);
+    }
   };
 
   return Placeholder;

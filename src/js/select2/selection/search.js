@@ -2,23 +2,27 @@ define([
   '../utils',
   '../keys'
 ], function (Utils, KEYS) {
-  function Search (decorated, element, options) {
+  function Search(decorated, element, options) {
     decorated.call(this, element, options);
   }
 
   Search.prototype.render = function (decorated) {
-    var searchLabel = this.options.get('translations').get('search');
-    var search = document.createElement('span');
-    search.className = 'select2-search select2-search--inline';
-    search.innerHTML = '<textarea class="select2-search__field" type="search" tabindex="-1"' +
+    var searchLabel = this.options.get("translations").get("search");
+    var search = document.createElement("span");
+    search.className = "select2-search select2-search--inline";
+    search.innerHTML =
+      '<textarea class="select2-search__field" type="search" tabindex="-1"' +
       ' autocorrect="off" autocapitalize="none"' +
       ' spellcheck="false" role="searchbox" aria-autocomplete="list"></textarea>';
 
     this.searchContainer = search;
-    this.search = search.querySelector('textarea');
+    this.search = search.querySelector("textarea");
 
-    this.search.setAttribute('autocomplete', this.options.get('autocomplete'));
-    this.search.setAttribute('aria-label', searchLabel());
+    this.search.setAttribute(
+      "autocomplete",
+      this.options.get("autocomplete")
+    );
+    this.search.setAttribute("aria-label", searchLabel());
 
     var rendered = decorated.call(this);
 
@@ -28,76 +32,85 @@ define([
     return rendered;
   };
 
-  Search.prototype.bind = function (decorated, container, containerElement) {
+  Search.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     var self = this;
-
-    var resultsId = container.id + '-results';
-    var selectionId = container.id + '-container';
+    var resultsId = container.id + "-results";
+    var selectionId = container.id + "-container";
 
     decorated.call(this, container, containerElement);
 
-    self.search.setAttribute('aria-describedby', selectionId);
+    self.search.setAttribute("aria-describedby", selectionId);
 
-    container.on('open', function () {
-      self.search.setAttribute('aria-controls', resultsId);
+    container.on("open", function () {
+      self.search.setAttribute("aria-controls", resultsId);
       self.search.focus();
     });
 
-    container.on('close', function () {
-      self.search.value = '';
+    container.on("close", function () {
+      self.search.value = "";
       self.resizeSearch();
-      self.search.removeAttribute('aria-controls');
-      self.search.removeAttribute('aria-activedescendant');
+      self.search.removeAttribute("aria-controls");
+      self.search.removeAttribute("aria-activedescendant");
       self.search.blur();
     });
 
-    container.on('enable', function () {
+    container.on("enable", function () {
       self.search.disabled = false;
 
       self._transferTabIndex();
     });
 
-    container.on('disable', function () {
+    container.on("disable", function () {
       self.search.disabled = true;
     });
 
-    container.on('focus', function (evt) {
+    container.on("focus", function (evt) {
       self.search.focus();
     });
 
-    container.on('results:focus', function (params) {
+    container.on("results:focus", function (params) {
       if (params.data._resultId) {
-        self.search.setAttribute('aria-activedescendant', params.data._resultId);
+        self.search.setAttribute(
+          "aria-activedescendant",
+          params.data._resultId
+        );
       } else {
-        self.search.removeAttribute('aria-activedescendant');
+        self.search.removeAttribute("aria-activedescendant");
       }
     });
 
-    this.selection.addEventListener('focusin', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
-        self.trigger('focus', evt);
+    this.selection.addEventListener("focusin", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
+        self.trigger("focus", evt);
       }
     });
 
-    this.selection.addEventListener('focusout', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+    this.selection.addEventListener("focusout", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
         self._handleBlur(evt);
       }
     });
 
     this.selection.addEventListener('keydown', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+      // Check if the event target or one of its ancestors has the desired class
+      var searchElement = evt.target.querySelector('textarea');
+      if (searchElement) {
         evt.stopPropagation();
 
         self.trigger('keypress', evt);
 
         self._keyUpPrevented = evt.defaultPrevented;
 
-        var key = evt.which;
-
-        if (key === KEYS.BACKSPACE && self.search.value === '') {
-          var previousChoice = self.selection.querySelectorAll('.select2-selection__choice');
-          previousChoice = previousChoice[previousChoice.length - 1];
+        var key = evt.key.toUpperCase();
+        if (KEYS[key] === KEYS.BACKSPACE && searchElement.value === '') {
+          var previousChoices = self.selection.querySelectorAll(
+            '.select2-selection__choice'
+          );
+          var previousChoice = previousChoices[previousChoices.length - 1];
 
           if (previousChoice) {
             var item = Utils.GetData(previousChoice, 'data');
@@ -110,8 +123,11 @@ define([
       }
     });
 
-    this.selection.addEventListener('click', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline') && self.search.value) {
+    this.selection.addEventListener("click", function (evt) {
+      if (
+        evt.target.classList.contains("select2-search--inline") &&
+        self.search.value
+      ) {
         evt.stopPropagation();
       }
     });
@@ -127,30 +143,30 @@ define([
     // Workaround for browsers which do not support the `input` event
     // This will prevent double-triggering of events for browsers which support
     // both the `keyup` and `input` events.
-    this.selection.addEventListener('input', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+    this.selection.addEventListener("input", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
         // IE will trigger the `input` event when a placeholder is used on a
         // search box. To get around this issue, we are forced to ignore all
         // `input` events in IE and keep using `keyup`.
         if (disableInputEvents) {
-          self.selection.removeEventListener('input', arguments.callee);
-          self.selection.removeEventListener('input', arguments.callee);
+          self.selection.removeEventListener("input", arguments.callee);
+          self.selection.removeEventListener("input", arguments.callee);
           return;
         }
 
         // Unbind the duplicated `keyup` event
-        self.selection.removeEventListener('keyup', arguments.callee);
+        self.selection.removeEventListener("keyup", arguments.callee);
       }
     });
 
-    this.selection.addEventListener('keyup', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+    this.selection.addEventListener("keyup", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
         // IE will trigger the `input` event when a placeholder is used on a
         // search box. To get around this issue, we are forced to ignore all
         // `input` events in IE and keep using `keyup`.
-        if (disableInputEvents && evt.type === 'input') {
-          self.selection.removeEventListener('input', arguments.callee);
-          self.selection.removeEventListener('input', arguments.callee);
+        if (disableInputEvents && evt.type === "input") {
+          self.selection.removeEventListener("input", arguments.callee);
+          self.selection.removeEventListener("input", arguments.callee);
           return;
         }
 
@@ -179,18 +195,21 @@ define([
    * @private
    */
   Search.prototype._transferTabIndex = function (decorated) {
-    this.search.setAttribute('tabindex', this.selection.getAttribute('tabindex'));
-    this.selection.setAttribute('tabindex', '-1');
+    this.search.setAttribute(
+      "tabindex",
+      this.selection.getAttribute("tabindex")
+    );
+    this.selection.setAttribute("tabindex", "-1");
   };
 
   Search.prototype.createPlaceholder = function (decorated, placeholder) {
-    this.search.setAttribute('placeholder', placeholder.text);
+    this.search.setAttribute("placeholder", placeholder.text);
   };
 
   Search.prototype.update = function (decorated, data) {
     var searchHadFocus = this.search == document.activeElement;
 
-    this.search.setAttribute('placeholder', '');
+    this.search.setAttribute("placeholder", "");
 
     decorated.call(this, data);
 
@@ -206,8 +225,8 @@ define([
     if (!this._keyUpPrevented) {
       var input = this.search.value;
 
-      this.trigger('query', {
-        term: input
+      this.trigger("query", {
+        term: input,
       });
     }
 
@@ -215,8 +234,8 @@ define([
   };
 
   Search.prototype.searchRemoveChoice = function (decorated, item) {
-    this.trigger('unselect', {
-      data: item
+    this.trigger("unselect", {
+      data: item,
     });
 
     this.search.value = item.text;
@@ -224,14 +243,14 @@ define([
   };
 
   Search.prototype.resizeSearch = function () {
-    this.search.style.width = '25px';
+    this.search.style.width = "25px";
 
-    var width = '100%';
+    var width = "100%";
 
-    if (this.search.getAttribute('placeholder') === '') {
+    if (this.search.getAttribute("placeholder") === "") {
       var minimumWidth = this.search.value.length + 1;
 
-      width = (minimumWidth * 0.75) + 'em';
+      width = minimumWidth * 0.75 + "em";
     }
 
     this.search.style.width = width;

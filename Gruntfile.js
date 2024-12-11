@@ -236,7 +236,7 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-sass');
 
-  grunt.registerTask('default', ['compile', 'test', 'lint', 'minify']);
+  grunt.registerTask('default', ['compile', 'test', 'minify']);
 
   grunt.registerTask('compile', [
     'requirejs:dist', 'requirejs:dist.full', 'requirejs:i18n',

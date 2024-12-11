@@ -3,27 +3,27 @@ define([
   './select2/defaults',
   './select2/utils'
 ], function (Select2, Defaults, Utils) {
-  if (typeof window.Select2 === 'undefined') {
+  if (typeof window.Select2 === "undefined") {
     window.Select2 = Select2;
   }
 
-  if (typeof window.Select2.defaults === 'undefined') {
+  if (typeof window.Select2.defaults === "undefined") {
     window.Select2.defaults = Defaults;
   }
 
-  if (typeof window.Select2.Utils === 'undefined') {
+  if (typeof window.Select2.Utils === "undefined") {
     window.Select2.Utils = Utils;
   }
 
-  if (typeof window.Select2.fn === 'undefined') {
+  if (typeof window.Select2.fn === "undefined") {
     window.Select2.fn = {};
   }
 
-  if (typeof window.Select2.fn.select2 === 'undefined') {
+  if (typeof window.Select2.fn.select2 === "undefined") {
     window.Select2.fn.select2 = function (options) {
       options = options || {};
 
-      if (typeof options === 'object') {
+      if (typeof options === "object") {
         this.each(function () {
           var instanceOptions = Object.assign({}, options);
 
@@ -31,17 +31,19 @@ define([
         });
 
         return this;
-      } else if (typeof options === 'string') {
+      } else if (typeof options === "string") {
         var ret;
         var args = Array.prototype.slice.call(arguments, 1);
 
         this.each(function () {
-          var instance = Utils.GetData(this, 'select2');
+          var instance = Utils.GetData(this, "select2");
 
           if (instance == null && window.console && console.error) {
             console.error(
-              'The select2(\'' + options + '\') method was called on an ' +
-              'element that is not using Select2.'
+              "The select2('" +
+                options +
+                "') method was called on an " +
+                "element that is not using Select2."
             );
           }
 
@@ -49,13 +51,13 @@ define([
         });
 
         // Check if we should be returning `this`
-        if (['open', 'close', 'destroy'].indexOf(options) > -1) {
+        if (["open", "close", "destroy"].indexOf(options) > -1) {
           return this;
         }
 
         return ret;
       } else {
-        throw new Error('Invalid arguments for Select2: ' + options);
+        throw new Error("Invalid arguments for Select2: " + options);
       }
     };
   }

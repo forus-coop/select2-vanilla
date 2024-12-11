@@ -478,7 +478,7 @@ S2.define('select2/utils',[], function () {
   Utils.Extend = function (ChildClass, SuperClass) {
     var __hasProp = {}.hasOwnProperty;
 
-    function BaseConstructor () {
+    function BaseConstructor() {
       this.constructor = ChildClass;
     }
 
@@ -495,7 +495,7 @@ S2.define('select2/utils',[], function () {
     return ChildClass;
   };
 
-  function getMethods (theClass) {
+  function getMethods(theClass) {
     var proto = theClass.prototype;
 
     var methods = [];
@@ -503,11 +503,11 @@ S2.define('select2/utils',[], function () {
     for (var methodName in proto) {
       var m = proto[methodName];
 
-      if (typeof m !== 'function') {
+      if (typeof m !== "function") {
         continue;
       }
 
-      if (methodName === 'constructor') {
+      if (methodName === "constructor") {
         continue;
       }
 
@@ -521,7 +521,7 @@ S2.define('select2/utils',[], function () {
     var decoratedMethods = getMethods(DecoratorClass);
     var superMethods = getMethods(SuperClass);
 
-    function DecoratedClass () {
+    function DecoratedClass() {
       var unshift = Array.prototype.unshift;
 
       var argCount = DecoratorClass.prototype.constructor.length;
@@ -539,7 +539,7 @@ S2.define('select2/utils',[], function () {
 
     DecoratorClass.displayName = SuperClass.displayName;
 
-    function ctr () {
+    function ctr() {
       this.constructor = DecoratedClass;
     }
 
@@ -574,7 +574,8 @@ S2.define('select2/utils',[], function () {
     for (var d = 0; d < decoratedMethods.length; d++) {
       var decoratedMethod = decoratedMethods[d];
 
-      DecoratedClass.prototype[decoratedMethod] = calledMethod(decoratedMethod);
+      DecoratedClass.prototype[decoratedMethod] =
+        calledMethod(decoratedMethod);
     }
 
     return DecoratedClass;
@@ -617,8 +618,8 @@ S2.define('select2/utils',[], function () {
       this.invoke(this.listeners[event], slice.call(arguments, 1));
     }
 
-    if ('*' in this.listeners) {
-      this.invoke(this.listeners['*'], arguments);
+    if ("*" in this.listeners) {
+      this.invoke(this.listeners["*"], arguments);
     }
   };
 
@@ -631,7 +632,7 @@ S2.define('select2/utils',[], function () {
   Utils.Observable = Observable;
 
   Utils.generateChars = function (length) {
-    var chars = '';
+    var chars = "";
 
     for (var i = 0; i < length; i++) {
       var randomChar = Math.floor(Math.random() * 36);
@@ -649,7 +650,7 @@ S2.define('select2/utils',[], function () {
 
   Utils._convertData = function (data) {
     for (var originalKey in data) {
-      var keys = originalKey.split('-');
+      var keys = originalKey.split("-");
 
       var dataLevel = data;
 
@@ -677,7 +678,6 @@ S2.define('select2/utils',[], function () {
 
       delete data[originalKey];
     }
-
     return data;
   };
 
@@ -687,6 +687,7 @@ S2.define('select2/utils',[], function () {
     // The original code can be found at
     // http://codereview.stackexchange.com/q/13338
     // and was designed to be used with the Sizzle selector engine.
+
     if (!el) {
       return false;
     }
@@ -694,32 +695,35 @@ S2.define('select2/utils',[], function () {
     var overflowY = el.style.overflowY;
 
     //Check both x and y declarations
-    if (overflowX === overflowY &&
-        (overflowY === 'hidden' || overflowY === 'visible')) {
+    if (
+      overflowX === overflowY &&
+      (overflowY === "hidden" || overflowY === "visible")
+    ) {
       return false;
     }
 
-    if (overflowX === 'scroll' || overflowY === 'scroll') {
+    if (overflowX === "scroll" || overflowY === "scroll") {
       return true;
     }
 
-    return (el.clientHeight < el.scrollHeight ||
-      el.clientWidth < el.scrollWidth);
+    return (
+      el.clientHeight < el.scrollHeight || el.clientWidth < el.scrollWidth
+    );
   };
 
   Utils.escapeMarkup = function (markup) {
     var replaceMap = {
-      '\\': '&#92;',
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      '\'': '&#39;',
-      '/': '&#47;'
+      "\\": "&#92;",
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+      "/": "&#47;",
     };
 
     // Do not try to escape the markup if it's not a string
-    if (typeof markup !== 'string') {
+    if (typeof markup !== "string") {
       return markup;
     }
 
@@ -737,22 +741,24 @@ S2.define('select2/utils',[], function () {
     // creates a new unique number, stores it in the id
     // attribute and returns the new id with a prefix.
     // If an id already exists, it simply returns it with a prefix.
-
-    var select2Id = element.getAttribute('data-select2-id');
-
+    if (!(element instanceof Element || element[0] instanceof HTMLElement)) {
+      console.error("Utils.GetUniqueElementId: element is not a DOM element", element);
+      return null;
+    }
+    var select2Id = element[0] ? element[0].getAttribute("data-select2-id"): element.getAttribute("data-select2-id"); ;
     if (select2Id != null) {
       return select2Id;
     }
 
     // If element has id, use it.
     if (element.id) {
-      select2Id = 'select2-data-' + element.id;
+      select2Id = "select2-data-" + element.id;
     } else {
-      select2Id = 'select2-data-' + (++id).toString() +
-        '-' + Utils.generateChars(4);
+      select2Id =
+        "select2-data-" + (++id).toString() + "-" + Utils.generateChars(4);
     }
 
-    element.setAttribute('data-select2-id', select2Id);
+    element.setAttribute("data-select2-id", select2Id);
 
     return select2Id;
   };
@@ -774,6 +780,7 @@ S2.define('select2/utils',[], function () {
     // all cache items for the specified element.
     // and for a specified element.
     var id = Utils.GetUniqueElementId(element);
+
     if (name) {
       if (Utils.__cache[id]) {
         if (Utils.__cache[id][name] != null) {
@@ -781,7 +788,12 @@ S2.define('select2/utils',[], function () {
         }
         return element.dataset[name]; // Fallback to HTML5 data attribs.
       }
-      return element.dataset[name]; // Fallback to HTML5 data attribs.
+      // Normalize double dashes to a single dash
+      var normalizedName = name
+      .replace(/--/g, '-') // Replace double dashes with single dashes
+      .replace(/-(\w)/g, (_, letter) => `-${letter.toUpperCase()}`); // Capitalize letters after a single dash
+      // Attempt to fetch from the dataset using both the original and normalized names
+      return element.dataset[name] || element.dataset[normalizedName]; // Fallbac
     } else {
       return Utils.__cache[id];
     }
@@ -794,29 +806,28 @@ S2.define('select2/utils',[], function () {
       delete Utils.__cache[id];
     }
 
-    element.removeAttribute('data-select2-id');
+    element.removeAttribute("data-select2-id");
   };
 
   Utils.copyNonInternalCssClasses = function (dest, src) {
     var classes;
-
-    var destinationClasses = dest.getAttribute('class').trim().split(/\s+/);
+    var destinationClasses = dest.getAttribute("class").trim().split(/\s+/);
 
     destinationClasses = destinationClasses.filter(function (clazz) {
       // Save all Select2 classes
-      return clazz.indexOf('select2-') === 0;
+      return clazz.indexOf("select2-") === 0;
     });
 
-    var sourceClasses = src.getAttribute('class').trim().split(/\s+/);
+    var sourceClasses = src.getAttribute("class").trim().split(/\s+/);
 
     sourceClasses = sourceClasses.filter(function (clazz) {
       // Only copy non-Select2 classes
-      return clazz.indexOf('select2-') !== 0;
+      return clazz.indexOf("select2-") !== 0;
     });
 
     var replacements = destinationClasses.concat(sourceClasses);
 
-    dest.setAttribute('class', replacements.join(' '));
+    dest.setAttribute("class", replacements.join(" "));
   };
 
   return Utils;
@@ -872,7 +883,9 @@ S2.define('select2/results',["./utils"], function (Utils) {
   };
 
   Results.prototype.hideMessages = function () {
-    var messages = this.results.querySelectorAll(".select2-results__message");
+    var messages = this.results.querySelectorAll(
+      ".select2-results__message"
+    );
     messages.forEach(function (message) {
       message.remove();
     });
@@ -923,11 +936,14 @@ S2.define('select2/results',["./utils"], function (Utils) {
     var $options = this.results.querySelectorAll(
       ".select2-results__option--selectable"
     );
-
-    var $selected = Array.prototype.filter.call($options, function (option) {
-      return option.classList.contains("select2-results__option--selected");
-    });
-
+    var $selected = Array.prototype.filter.call(
+      $options,
+      function (option) {
+        return option.classList.contains(
+          "select2-results__option--selected"
+        );
+      }
+    );
     if ($selected.length > 0) {
       $selected[0].dispatchEvent(new Event("mouseenter"));
     } else {
@@ -1157,7 +1173,6 @@ S2.define('select2/results',["./utils"], function (Utils) {
 
     container.on("results:select", function () {
       var $highlighted = self.getHighlightedResults();
-
       if ($highlighted.length === 0) {
         return;
       }
@@ -1165,7 +1180,8 @@ S2.define('select2/results',["./utils"], function (Utils) {
       var data = Utils.GetData($highlighted, "data");
 
       if (
-        $highlighted.classList.contains("select2-results__option--selected")
+        ($highlighted && $highlighted.classList && $highlighted.classList.contains("select2-results__option--selected")) ||
+        ($highlighted[0] && $highlighted[0].classList && $highlighted[0].classList.contains("select2-results__option--selected"))
       ) {
         self.trigger("close", {});
       } else {
@@ -1177,13 +1193,14 @@ S2.define('select2/results',["./utils"], function (Utils) {
 
     container.on("results:previous", function () {
       var $highlighted = self.getHighlightedResults();
-
+      var element = $highlighted[0] ? $highlighted[0]: $highlighted;
       var $options = self.results.querySelectorAll(
         ".select2-results__option--selectable"
       );
-
-      var currentIndex = Array.prototype.indexOf.call($options, $highlighted);
-
+      var currentIndex = Array.prototype.indexOf.call(
+        $options,
+        element
+      );
       if (currentIndex <= 0) {
         return;
       }
@@ -1211,14 +1228,14 @@ S2.define('select2/results',["./utils"], function (Utils) {
 
     container.on("results:next", function () {
       var $highlighted = self.getHighlightedResults();
-
+      var element = $highlighted[0] ? $highlighted[0]: $highlighted;
       var $options = self.results.querySelectorAll(
         ".select2-results__option--selectable"
       );
 
       var currentIndex = Array.prototype.indexOf.call(
         $options,
-        $highlighted
+        element
       );
 
       var nextIndex = currentIndex + 1;
@@ -1232,8 +1249,10 @@ S2.define('select2/results',["./utils"], function (Utils) {
       $next.dispatchEvent(new Event("mouseenter"));
 
       var currentOffset =
-        self.results.getBoundingClientRect().top + self.results.offsetHeight;
-      var nextBottom = $next.getBoundingClientRect().top + $next.offsetHeight;
+        self.results.getBoundingClientRect().top +
+        self.results.offsetHeight;
+      var nextBottom =
+        $next.getBoundingClientRect().top + $next.offsetHeight;
       var nextOffset = self.results.scrollTop + nextBottom - currentOffset;
 
       if (nextIndex === 0) {
@@ -1253,33 +1272,12 @@ S2.define('select2/results',["./utils"], function (Utils) {
     });
 
     this.results.addEventListener("mouseup", function (evt) {
-      // var $target = evt.target.closest(".select2-results__option--selectable");
-      // if (!$target) {
-      //   return;
-      // }
-      // var data = Utils.GetData($target, "data");
-      // if ($target.classList.contains("select2-results__option--selected")) {
-      //   if (self.options.get("multiple")) {
-      //     self.trigger("unselect", {
-      //       originalEvent: evt,
-      //       data: data,
-      //     });
-      //   } else {
-      //     self.trigger("close", {
-      //       originalEvent: evt,
-      //       data: data,
-      //     });
-      //   }
-      //   return;
-      // }
-      // self.trigger("select", {
-      //   originalEvent: evt,
-      //   data: data,
-      // });
+        var options = self.results.querySelectorAll(
+          ".select2-results__option--selectable"
+        );
     });
 
     this.results.addEventListener("mouseenter", function (evt) {
-      // TODO: jQuery would listen to all events on the results_option
       var options = self.results.querySelectorAll(
         ".select2-results__option--selectable"
       );
@@ -1302,26 +1300,27 @@ S2.define('select2/results',["./utils"], function (Utils) {
         option.addEventListener("mousedown", function (evt) {
           var data = Utils.GetData(option, "data");
 
-          if (self.options.get("multiple")) {
-            self.trigger("unselect", {
-              originalEvent: evt,
-              data: data,
-            });
-          } else {
-            self.trigger("close", {
-              originalEvent: evt,
-              data: data,
-            });
-          }
+            if (self.options.get("multiple")) {
+              self.trigger("unselect", {
+                originalEvent: evt,
+                data: data,
+              });
+            } else {
+              self.trigger("close", {
+                originalEvent: evt,
+                data: data,
+              });
+            }
 
-          // return;
+            // return;
 
           self.trigger("select", {
             originalEvent: evt,
             data: data,
           });
-        });
+        })
       });
+
     });
   };
 
@@ -1416,7 +1415,7 @@ S2.define('select2/selection/base',[
   '../utils',
   '../keys'
 ], function (Utils, KEYS) {
-  function BaseSelection (element, options) {
+  function BaseSelection(element, options) {
     this.element = element;
     this.options = options;
 
@@ -1426,23 +1425,23 @@ S2.define('select2/selection/base',[
   Utils.Extend(BaseSelection, Utils.Observable);
 
   BaseSelection.prototype.render = function () {
-    var selection = document.createElement('span');
-    selection.className = 'select2-selection';
-    selection.setAttribute('role', 'combobox');
-    selection.setAttribute('aria-haspopup', 'true');
-    selection.setAttribute('aria-expanded', 'false');
+    var selection = document.createElement("span");
+    selection.className = "select2-selection";
+    selection.setAttribute("role", "combobox");
+    selection.setAttribute("aria-haspopup", "true");
+    selection.setAttribute("aria-expanded", "false");
 
     this._tabindex = 0;
 
-    if (Utils.GetData(this.element, 'old-tabindex') != null) {
-      this._tabindex = Utils.GetData(this.element, 'old-tabindex');
-    } else if (this.element.getAttribute('tabindex') != null) {
-      this._tabindex = this.element.getAttribute('tabindex');
+    if (Utils.GetData(this.element, "old-tabindex") != null) {
+      this._tabindex = Utils.GetData(this.element, "old-tabindex");
+    } else if (this.element.getAttribute("tabindex") != null) {
+      this._tabindex = this.element.getAttribute("tabindex");
     }
 
-    selection.setAttribute('title', this.element.getAttribute('title'));
-    selection.setAttribute('tabindex', this._tabindex);
-    selection.setAttribute('aria-disabled', 'false');
+    selection.setAttribute("title", this.element.getAttribute("title"));
+    selection.setAttribute("tabindex", this._tabindex);
+    selection.setAttribute("aria-disabled", "false");
 
     this.selection = selection;
 
@@ -1452,61 +1451,64 @@ S2.define('select2/selection/base',[
   BaseSelection.prototype.bind = function (container, containerElement) {
     var self = this;
 
-    var resultsId = container.id + '-results';
+    var resultsId = container.id + "-results";
 
     this.container = container;
 
-    this.selection.addEventListener('focus', function (evt) {
-      self.trigger('focus', evt);
+    this.selection.addEventListener("focus", function (evt) {
+      self.trigger("focus", evt);
     });
 
-    this.selection.addEventListener('blur', function (evt) {
+    this.selection.addEventListener("blur", function (evt) {
       self._handleBlur(evt);
     });
 
-    this.selection.addEventListener('keydown', function (evt) {
-      self.trigger('keypress', evt);
+    this.selection.addEventListener("keydown", function (evt) {
+      self.trigger("keypress", evt);
 
       if (evt.which === KEYS.SPACE) {
         evt.preventDefault();
       }
     });
 
-    container.on('results:focus', function (params) {
-      self.selection.setAttribute('aria-activedescendant', params.data._resultId);
+    container.on("results:focus", function (params) {
+      self.selection.setAttribute(
+        "aria-activedescendant",
+        params.data._resultId
+      );
     });
 
-    container.on('selection:update', function (params) {
+    container.on("selection:update", function (params) {
       self.update(params.data);
     });
 
-    container.on('open', function () {
+    container.on("open", function () {
       // When the dropdown is open, aria-expanded="true"
-      self.selection.setAttribute('aria-expanded', 'true');
-      self.selection.setAttribute('aria-owns', resultsId);
+      self.selection.setAttribute("aria-expanded", "true");
+      self.selection.setAttribute("aria-owns", resultsId);
 
       self._attachCloseHandler(container);
     });
 
-    container.on('close', function () {
+    container.on("close", function () {
       // When the dropdown is closed, aria-expanded="false"
-      self.selection.setAttribute('aria-expanded', 'false');
-      self.selection.removeAttribute('aria-activedescendant');
-      self.selection.removeAttribute('aria-owns');
+      self.selection.setAttribute("aria-expanded", "false");
+      self.selection.removeAttribute("aria-activedescendant");
+      self.selection.removeAttribute("aria-owns");
 
       self.selection.focus();
 
       self._detachCloseHandler(container);
     });
 
-    container.on('enable', function () {
-      self.selection.setAttribute('tabindex', self._tabindex);
-      self.selection.setAttribute('aria-disabled', 'false');
+    container.on("enable", function () {
+      self.selection.setAttribute("tabindex", self._tabindex);
+      self.selection.setAttribute("aria-disabled", "false");
     });
 
-    container.on('disable', function () {
-      self.selection.setAttribute('tabindex', '-1');
-      self.selection.setAttribute('aria-disabled', 'true');
+    container.on("disable", function () {
+      self.selection.setAttribute("tabindex", "-1");
+      self.selection.setAttribute("aria-disabled", "true");
     });
   };
 
@@ -1518,44 +1520,49 @@ S2.define('select2/selection/base',[
     window.setTimeout(function () {
       // Don't trigger `blur` if the focus is still in the selection
       if (
-        (document.activeElement == self.selection) ||
-        (self.selection.contains(document.activeElement))
+        document.activeElement == self.selection ||
+        self.selection.contains(document.activeElement)
       ) {
         return;
       }
 
-      self.trigger('blur', evt);
+      self.trigger("blur", evt);
     }, 1);
   };
 
   BaseSelection.prototype._attachCloseHandler = function (container) {
-    document.body.addEventListener('mousedown', function (e) {
+    document.body.addEventListener("mousedown", function (e) {
       var target = e.target;
 
-      var select = target.closest('.select2');
+      var select = target.closest(".select2");
 
-      var all = document.querySelectorAll('.select2.select2-container--open');
+      var all = document.querySelectorAll(
+        ".select2.select2-container--open"
+      );
 
       all.forEach(function (element) {
         if (element == select) {
           return;
         }
 
-        var elementData = Utils.GetData(element, 'element');
+        var elementData = Utils.GetData(element, "element");
 
-        elementData.select2('close');
+        elementData.select2.close();
       });
     });
   };
 
   BaseSelection.prototype._detachCloseHandler = function (container) {
-    document.body.removeEventListener('mousedown', function (e) {
+    document.body.removeEventListener("mousedown", function (e) {
       // No-op function to match the signature of addEventListener
     });
   };
 
-  BaseSelection.prototype.position = function (selection, containerElement) {
-    var selectionContainer = containerElement.querySelector('.selection');
+  BaseSelection.prototype.position = function (
+    selection,
+    containerElement
+  ) {
+    var selectionContainer = containerElement.querySelector(".selection");
     selectionContainer.appendChild(selection);
   };
 
@@ -1564,7 +1571,9 @@ S2.define('select2/selection/base',[
   };
 
   BaseSelection.prototype.update = function (data) {
-    throw new Error('The `update` method must be defined in child classes.');
+    throw new Error(
+      "The `update` method must be defined in child classes."
+    );
   };
 
   /**
@@ -1585,7 +1594,7 @@ S2.define('select2/selection/base',[
    * @return {false} if the disabled option is false.
    */
   BaseSelection.prototype.isDisabled = function () {
-    return this.options.get('disabled');
+    return this.options.get("disabled");
   };
 
   return BaseSelection;
@@ -1607,7 +1616,7 @@ S2.define('select2/selection/single',[
 
     selection.classList.add('select2-selection--single');
 
-    selection.innerHTML = 
+    selection.innerHTML =
       '<span class="select2-selection__rendered"></span>' +
       '<span class="select2-selection__arrow" role="presentation">' +
         '<b role="presentation"></b>' +
@@ -1711,7 +1720,8 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
 
     $selection.classList.add("select2-selection--multiple");
 
-    $selection.innerHTML = '<ul class="select2-selection__rendered"></ul>';
+    $selection.innerHTML =
+      '<ul class="select2-selection__rendered"></ul>';
 
     return $selection;
   };
@@ -1733,7 +1743,9 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
     });
 
     this.selection.addEventListener("click", function (evt) {
-      if (evt.target.classList.contains("select2-selection__choice__remove")) {
+      if (
+        evt.target.classList.contains("select2-selection__choice__remove")
+      ) {
         // Ignore the event if it is disabled
         if (self.isDisabled()) {
           return;
@@ -1752,7 +1764,9 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
     });
 
     this.selection.addEventListener("keydown", function (evt) {
-      if (evt.target.classList.contains("select2-selection__choice__remove")) {
+      if (
+        evt.target.classList.contains("select2-selection__choice__remove")
+      ) {
         // Ignore the event if it is disabled
         if (self.isDisabled()) {
           return;
@@ -1813,7 +1827,6 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
 
     for (var d = 0; d < data.length; d++) {
       var selection = data[d];
-
       var $selection = this.selectionContainer();
       var formatted = this.display(selection, $selection);
 
@@ -1825,10 +1838,10 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
         selectionId += Utils.generateChars(4);
       }
 
-      $selection
-        .querySelector(".select2-selection__choice__display")
-        .appendChild(document.createTextNode(formatted))
-        .setAttribute("id", selectionId);
+      var $choiceDisplay = $selection.querySelector(".select2-selection__choice__display");
+      var textNode = document.createTextNode(formatted);
+      $choiceDisplay.appendChild(textNode);
+      $choiceDisplay.setAttribute("id", selectionId);
 
       var title = selection.title || selection.text;
 
@@ -1838,9 +1851,7 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
 
       var removeItem = this.options.get("translations").get("removeItem");
 
-      var $remove = $selection.querySelector(
-        ".select2-selection__choice__remove"
-      );
+      var $remove = $selection.querySelector(".select2-selection__choice__remove");
 
       $remove.setAttribute("title", removeItem());
       $remove.setAttribute("aria-label", removeItem());
@@ -1851,9 +1862,7 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
       $selections.push($selection);
     }
 
-    var $rendered = this.selection.querySelector(
-      ".select2-selection__rendered"
-    );
+    var $rendered = this.selection.querySelector(".select2-selection__rendered");
 
     $rendered.append(...$selections);
   };
@@ -1863,7 +1872,9 @@ S2.define('select2/selection/multiple',["./base", "../utils"], function (BaseSel
 
 S2.define('select2/selection/placeholder',[], function () {
   function Placeholder(decorated, $element, options) {
-    this.placeholder = this.normalizePlaceholder(options.get("placeholder"));
+    this.placeholder = this.normalizePlaceholder(
+      options.get("placeholder")
+    );
 
     decorated.call(this, $element, options);
   }
@@ -1879,10 +1890,13 @@ S2.define('select2/selection/placeholder',[], function () {
     return placeholder;
   };
 
-  Placeholder.prototype.createPlaceholder = function (decorated, placeholder) {
+  Placeholder.prototype.createPlaceholder = function (
+    decorated,
+    placeholder
+  ) {
     var $placeholder = this.selectionContainer();
 
-    $placeholder.html(this.display(placeholder));
+    $placeholder.innerHTML = this.display(placeholder);
     $placeholder.classList.add("select2-selection__placeholder");
     $placeholder.classList.remove("select2-selection__choice");
 
@@ -1909,7 +1923,11 @@ S2.define('select2/selection/placeholder',[], function () {
 
     var $placeholder = this.createPlaceholder(this.placeholder);
 
-    this.selection.find(".select2-selection__rendered").append($placeholder);
+    // Use querySelector to find the `.select2-selection__rendered` element
+    var renderedElement = this.selection.querySelector(".select2-selection__rendered");
+    if (renderedElement) {
+      renderedElement.appendChild($placeholder);
+    }
   };
 
   return Placeholder;
@@ -1919,29 +1937,33 @@ S2.define('select2/selection/allowClear',[
   '../keys',
   '../utils'
 ], function (KEYS, Utils) {
-  function AllowClear () { }
+  function AllowClear() {}
 
-  AllowClear.prototype.bind = function (decorated, container, containerElement) {
+  AllowClear.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     var self = this;
 
     decorated.call(this, container, containerElement);
 
     if (this.placeholder == null) {
-      if (this.options.get('debug') && window.console && console.error) {
+      if (this.options.get("debug") && window.console && console.error) {
         console.error(
-          'Select2: The `allowClear` option should be used in combination ' +
-          'with the `placeholder` option.'
+          "Select2: The `allowClear` option should be used in combination " +
+            "with the `placeholder` option."
         );
       }
     }
 
-    this.selection.addEventListener('mousedown', function (evt) {
-      if (evt.target.classList.contains('select2-selection__clear')) {
+    this.selection.addEventListener("mousedown", function (evt) {
+      if (evt.target.classList.contains("select2-selection__clear")) {
         self._handleClear(evt);
       }
     });
 
-    container.on('keypress', function (evt) {
+    container.on("keypress", function (evt) {
       self._handleKeyboardClear(evt, container);
     });
   };
@@ -1952,7 +1974,7 @@ S2.define('select2/selection/allowClear',[
       return;
     }
 
-    var clear = this.selection.querySelector('.select2-selection__clear');
+    var clear = this.selection.querySelector(".select2-selection__clear");
 
     // Ignore the event if nothing has been selected
     if (!clear) {
@@ -1961,15 +1983,15 @@ S2.define('select2/selection/allowClear',[
 
     evt.stopPropagation();
 
-    var data = Utils.GetData(clear, 'data');
+    var data = Utils.GetData(clear, "data");
 
     var previousVal = this.element.value;
     this.element.value = this.placeholder.id;
 
     var unselectData = {
-      data: data
+      data: data,
     };
-    this.trigger('clear', unselectData);
+    this.trigger("clear", unselectData);
     if (unselectData.prevented) {
       this.element.value = previousVal;
       return;
@@ -1977,12 +1999,12 @@ S2.define('select2/selection/allowClear',[
 
     for (var d = 0; d < data.length; d++) {
       unselectData = {
-        data: data[d]
+        data: data[d],
       };
 
       // Trigger the `unselect` event, so people can prevent it from being
       // cleared.
-      this.trigger('unselect', unselectData);
+      this.trigger("unselect", unselectData);
 
       // If the event was prevented, don't clear it out.
       if (unselectData.prevented) {
@@ -1991,13 +2013,17 @@ S2.define('select2/selection/allowClear',[
       }
     }
 
-    this.element.dispatchEvent(new Event('input'));
-    this.element.dispatchEvent(new Event('change'));
+    this.element.dispatchEvent(new Event("input"));
+    this.element.dispatchEvent(new Event("change"));
 
-    this.trigger('toggle', {});
+    this.trigger("toggle", {});
   };
 
-  AllowClear.prototype._handleKeyboardClear = function (_, evt, container) {
+  AllowClear.prototype._handleKeyboardClear = function (
+    _,
+    evt,
+    container
+  ) {
     if (container.isOpen()) {
       return;
     }
@@ -2010,34 +2036,39 @@ S2.define('select2/selection/allowClear',[
   AllowClear.prototype.update = function (decorated, data) {
     decorated.call(this, data);
 
-    var clear = this.selection.querySelector('.select2-selection__clear');
+    var clear = this.selection.querySelector(".select2-selection__clear");
     if (clear) {
       clear.remove();
     }
-    this.selection.classList.remove('select2-selection--clearable');
+    this.selection.classList.remove("select2-selection--clearable");
 
-    if (this.selection.querySelector('.select2-selection__placeholder') ||
-        data.length === 0) {
+    if (
+      this.selection.querySelector(".select2-selection__placeholder") ||
+      data.length === 0
+    ) {
       return;
     }
 
-    var selectionId = this.selection.querySelector('.select2-selection__rendered')
-      .getAttribute('id');
+    var selectionId = this.selection
+      .querySelector(".select2-selection__rendered")
+      .getAttribute("id");
 
-    var removeAll = this.options.get('translations').get('removeAllItems');
+    var removeAll = this.options
+      .get("translations")
+      .get("removeAllItems");
 
-    var remove = document.createElement('button');
-    remove.type = 'button';
-    remove.className = 'select2-selection__clear';
+    var remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "select2-selection__clear";
     remove.tabIndex = -1;
     remove.innerHTML = '<span aria-hidden="true">&times;</span>';
     remove.title = removeAll();
-    remove.setAttribute('aria-label', removeAll());
-    remove.setAttribute('aria-describedby', selectionId);
-    Utils.StoreData(remove, 'data', data);
+    remove.setAttribute("aria-label", removeAll());
+    remove.setAttribute("aria-describedby", selectionId);
+    Utils.StoreData(remove, "data", data);
 
     this.selection.insertBefore(remove, this.selection.firstChild);
-    this.selection.classList.add('select2-selection--clearable');
+    this.selection.classList.add("select2-selection--clearable");
   };
 
   return AllowClear;
@@ -2047,23 +2078,27 @@ S2.define('select2/selection/search',[
   '../utils',
   '../keys'
 ], function (Utils, KEYS) {
-  function Search (decorated, element, options) {
+  function Search(decorated, element, options) {
     decorated.call(this, element, options);
   }
 
   Search.prototype.render = function (decorated) {
-    var searchLabel = this.options.get('translations').get('search');
-    var search = document.createElement('span');
-    search.className = 'select2-search select2-search--inline';
-    search.innerHTML = '<textarea class="select2-search__field" type="search" tabindex="-1"' +
+    var searchLabel = this.options.get("translations").get("search");
+    var search = document.createElement("span");
+    search.className = "select2-search select2-search--inline";
+    search.innerHTML =
+      '<textarea class="select2-search__field" type="search" tabindex="-1"' +
       ' autocorrect="off" autocapitalize="none"' +
       ' spellcheck="false" role="searchbox" aria-autocomplete="list"></textarea>';
 
     this.searchContainer = search;
-    this.search = search.querySelector('textarea');
+    this.search = search.querySelector("textarea");
 
-    this.search.setAttribute('autocomplete', this.options.get('autocomplete'));
-    this.search.setAttribute('aria-label', searchLabel());
+    this.search.setAttribute(
+      "autocomplete",
+      this.options.get("autocomplete")
+    );
+    this.search.setAttribute("aria-label", searchLabel());
 
     var rendered = decorated.call(this);
 
@@ -2073,76 +2108,85 @@ S2.define('select2/selection/search',[
     return rendered;
   };
 
-  Search.prototype.bind = function (decorated, container, containerElement) {
+  Search.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     var self = this;
-
-    var resultsId = container.id + '-results';
-    var selectionId = container.id + '-container';
+    var resultsId = container.id + "-results";
+    var selectionId = container.id + "-container";
 
     decorated.call(this, container, containerElement);
 
-    self.search.setAttribute('aria-describedby', selectionId);
+    self.search.setAttribute("aria-describedby", selectionId);
 
-    container.on('open', function () {
-      self.search.setAttribute('aria-controls', resultsId);
+    container.on("open", function () {
+      self.search.setAttribute("aria-controls", resultsId);
       self.search.focus();
     });
 
-    container.on('close', function () {
-      self.search.value = '';
+    container.on("close", function () {
+      self.search.value = "";
       self.resizeSearch();
-      self.search.removeAttribute('aria-controls');
-      self.search.removeAttribute('aria-activedescendant');
+      self.search.removeAttribute("aria-controls");
+      self.search.removeAttribute("aria-activedescendant");
       self.search.blur();
     });
 
-    container.on('enable', function () {
+    container.on("enable", function () {
       self.search.disabled = false;
 
       self._transferTabIndex();
     });
 
-    container.on('disable', function () {
+    container.on("disable", function () {
       self.search.disabled = true;
     });
 
-    container.on('focus', function (evt) {
+    container.on("focus", function (evt) {
       self.search.focus();
     });
 
-    container.on('results:focus', function (params) {
+    container.on("results:focus", function (params) {
       if (params.data._resultId) {
-        self.search.setAttribute('aria-activedescendant', params.data._resultId);
+        self.search.setAttribute(
+          "aria-activedescendant",
+          params.data._resultId
+        );
       } else {
-        self.search.removeAttribute('aria-activedescendant');
+        self.search.removeAttribute("aria-activedescendant");
       }
     });
 
-    this.selection.addEventListener('focusin', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
-        self.trigger('focus', evt);
+    this.selection.addEventListener("focusin", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
+        self.trigger("focus", evt);
       }
     });
 
-    this.selection.addEventListener('focusout', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+    this.selection.addEventListener("focusout", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
         self._handleBlur(evt);
       }
     });
 
     this.selection.addEventListener('keydown', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+      // Check if the event target or one of its ancestors has the desired class
+      var searchElement = evt.target.querySelector('textarea');
+      if (searchElement) {
         evt.stopPropagation();
 
         self.trigger('keypress', evt);
 
         self._keyUpPrevented = evt.defaultPrevented;
 
-        var key = evt.which;
-
-        if (key === KEYS.BACKSPACE && self.search.value === '') {
-          var previousChoice = self.selection.querySelectorAll('.select2-selection__choice');
-          previousChoice = previousChoice[previousChoice.length - 1];
+        var key = evt.key.toUpperCase();
+        if (KEYS[key] === KEYS.BACKSPACE && searchElement.value === '') {
+          var previousChoices = self.selection.querySelectorAll(
+            '.select2-selection__choice'
+          );
+          var previousChoice = previousChoices[previousChoices.length - 1];
 
           if (previousChoice) {
             var item = Utils.GetData(previousChoice, 'data');
@@ -2155,8 +2199,11 @@ S2.define('select2/selection/search',[
       }
     });
 
-    this.selection.addEventListener('click', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline') && self.search.value) {
+    this.selection.addEventListener("click", function (evt) {
+      if (
+        evt.target.classList.contains("select2-search--inline") &&
+        self.search.value
+      ) {
         evt.stopPropagation();
       }
     });
@@ -2172,30 +2219,30 @@ S2.define('select2/selection/search',[
     // Workaround for browsers which do not support the `input` event
     // This will prevent double-triggering of events for browsers which support
     // both the `keyup` and `input` events.
-    this.selection.addEventListener('input', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+    this.selection.addEventListener("input", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
         // IE will trigger the `input` event when a placeholder is used on a
         // search box. To get around this issue, we are forced to ignore all
         // `input` events in IE and keep using `keyup`.
         if (disableInputEvents) {
-          self.selection.removeEventListener('input', arguments.callee);
-          self.selection.removeEventListener('input', arguments.callee);
+          self.selection.removeEventListener("input", arguments.callee);
+          self.selection.removeEventListener("input", arguments.callee);
           return;
         }
 
         // Unbind the duplicated `keyup` event
-        self.selection.removeEventListener('keyup', arguments.callee);
+        self.selection.removeEventListener("keyup", arguments.callee);
       }
     });
 
-    this.selection.addEventListener('keyup', function (evt) {
-      if (evt.target.classList.contains('select2-search--inline')) {
+    this.selection.addEventListener("keyup", function (evt) {
+      if (evt.target.classList.contains("select2-search--inline")) {
         // IE will trigger the `input` event when a placeholder is used on a
         // search box. To get around this issue, we are forced to ignore all
         // `input` events in IE and keep using `keyup`.
-        if (disableInputEvents && evt.type === 'input') {
-          self.selection.removeEventListener('input', arguments.callee);
-          self.selection.removeEventListener('input', arguments.callee);
+        if (disableInputEvents && evt.type === "input") {
+          self.selection.removeEventListener("input", arguments.callee);
+          self.selection.removeEventListener("input", arguments.callee);
           return;
         }
 
@@ -2224,18 +2271,21 @@ S2.define('select2/selection/search',[
    * @private
    */
   Search.prototype._transferTabIndex = function (decorated) {
-    this.search.setAttribute('tabindex', this.selection.getAttribute('tabindex'));
-    this.selection.setAttribute('tabindex', '-1');
+    this.search.setAttribute(
+      "tabindex",
+      this.selection.getAttribute("tabindex")
+    );
+    this.selection.setAttribute("tabindex", "-1");
   };
 
   Search.prototype.createPlaceholder = function (decorated, placeholder) {
-    this.search.setAttribute('placeholder', placeholder.text);
+    this.search.setAttribute("placeholder", placeholder.text);
   };
 
   Search.prototype.update = function (decorated, data) {
     var searchHadFocus = this.search == document.activeElement;
 
-    this.search.setAttribute('placeholder', '');
+    this.search.setAttribute("placeholder", "");
 
     decorated.call(this, data);
 
@@ -2251,8 +2301,8 @@ S2.define('select2/selection/search',[
     if (!this._keyUpPrevented) {
       var input = this.search.value;
 
-      this.trigger('query', {
-        term: input
+      this.trigger("query", {
+        term: input,
       });
     }
 
@@ -2260,8 +2310,8 @@ S2.define('select2/selection/search',[
   };
 
   Search.prototype.searchRemoveChoice = function (decorated, item) {
-    this.trigger('unselect', {
-      data: item
+    this.trigger("unselect", {
+      data: item,
     });
 
     this.search.value = item.text;
@@ -2269,14 +2319,14 @@ S2.define('select2/selection/search',[
   };
 
   Search.prototype.resizeSearch = function () {
-    this.search.style.width = '25px';
+    this.search.style.width = "25px";
 
-    var width = '100%';
+    var width = "100%";
 
-    if (this.search.getAttribute('placeholder') === '') {
+    if (this.search.getAttribute("placeholder") === "") {
       var minimumWidth = this.search.value.length + 1;
 
-      width = (minimumWidth * 0.75) + 'em';
+      width = minimumWidth * 0.75 + "em";
     }
 
     this.search.style.width = width;
@@ -2290,12 +2340,9 @@ S2.define('select2/selection/selectionCss',["../utils"], function (Utils) {
 
   SelectionCSS.prototype.render = function (decorated) {
     var $selection = decorated.call(this);
-
     var selectionCssClass = this.options.get("selectionCssClass") || "";
-
     if (selectionCssClass.indexOf(":all:") !== -1) {
       selectionCssClass = selectionCssClass.replace(":all:", "");
-
       Utils.copyNonInternalCssClasses($selection, this.element);
     }
 
@@ -2315,25 +2362,38 @@ S2.define('select2/selection/selectionCss',["../utils"], function (Utils) {
 });
 
 S2.define('select2/selection/eventRelay',[],function () {
-  function EventRelay () { }
+  function EventRelay() {}
 
-  EventRelay.prototype.bind = function (decorated, container, containerElement) {
+  EventRelay.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     var self = this;
     var relayEvents = [
-      'open', 'opening',
-      'close', 'closing',
-      'select', 'selecting',
-      'unselect', 'unselecting',
-      'clear', 'clearing'
+      "open",
+      "opening",
+      "close",
+      "closing",
+      "select",
+      "selecting",
+      "unselect",
+      "unselecting",
+      "clear",
+      "clearing",
     ];
 
     var preventableEvents = [
-      'opening', 'closing', 'selecting', 'unselecting', 'clearing'
+      "opening",
+      "closing",
+      "selecting",
+      "unselecting",
+      "clearing",
     ];
 
     decorated.call(this, container, containerElement);
 
-    container.on('*', function (name, params) {
+    container.on("*", function (name, params) {
       // Ignore events that should not be relayed
       if (relayEvents.indexOf(name) === -1) {
         return;
@@ -2343,12 +2403,12 @@ S2.define('select2/selection/eventRelay',[],function () {
       params = params || {};
 
       // Generate the custom event for the Select2 event
-      var evt = new CustomEvent('select2:' + name, {
+      var evt = new CustomEvent("select2:" + name, {
         detail: {
-          params: params
+          params: params,
         },
         bubbles: true,
-        cancelable: true
+        cancelable: true,
       });
 
       self.element.dispatchEvent(evt);
@@ -2368,7 +2428,7 @@ S2.define('select2/selection/eventRelay',[],function () {
 S2.define('select2/translation',[
   'require'
 ], function (require) {
-  function Translation (dict) {
+  function Translation(dict) {
     this.dict = dict || {};
   }
 
@@ -2405,848 +2465,848 @@ S2.define('select2/diacritics',[
 
 ], function () {
   var diacritics = {
-    '\u24B6': 'A',
-    '\uFF21': 'A',
-    '\u00C0': 'A',
-    '\u00C1': 'A',
-    '\u00C2': 'A',
-    '\u1EA6': 'A',
-    '\u1EA4': 'A',
-    '\u1EAA': 'A',
-    '\u1EA8': 'A',
-    '\u00C3': 'A',
-    '\u0100': 'A',
-    '\u0102': 'A',
-    '\u1EB0': 'A',
-    '\u1EAE': 'A',
-    '\u1EB4': 'A',
-    '\u1EB2': 'A',
-    '\u0226': 'A',
-    '\u01E0': 'A',
-    '\u00C4': 'A',
-    '\u01DE': 'A',
-    '\u1EA2': 'A',
-    '\u00C5': 'A',
-    '\u01FA': 'A',
-    '\u01CD': 'A',
-    '\u0200': 'A',
-    '\u0202': 'A',
-    '\u1EA0': 'A',
-    '\u1EAC': 'A',
-    '\u1EB6': 'A',
-    '\u1E00': 'A',
-    '\u0104': 'A',
-    '\u023A': 'A',
-    '\u2C6F': 'A',
-    '\uA732': 'AA',
-    '\u00C6': 'AE',
-    '\u01FC': 'AE',
-    '\u01E2': 'AE',
-    '\uA734': 'AO',
-    '\uA736': 'AU',
-    '\uA738': 'AV',
-    '\uA73A': 'AV',
-    '\uA73C': 'AY',
-    '\u24B7': 'B',
-    '\uFF22': 'B',
-    '\u1E02': 'B',
-    '\u1E04': 'B',
-    '\u1E06': 'B',
-    '\u0243': 'B',
-    '\u0182': 'B',
-    '\u0181': 'B',
-    '\u24B8': 'C',
-    '\uFF23': 'C',
-    '\u0106': 'C',
-    '\u0108': 'C',
-    '\u010A': 'C',
-    '\u010C': 'C',
-    '\u00C7': 'C',
-    '\u1E08': 'C',
-    '\u0187': 'C',
-    '\u023B': 'C',
-    '\uA73E': 'C',
-    '\u24B9': 'D',
-    '\uFF24': 'D',
-    '\u1E0A': 'D',
-    '\u010E': 'D',
-    '\u1E0C': 'D',
-    '\u1E10': 'D',
-    '\u1E12': 'D',
-    '\u1E0E': 'D',
-    '\u0110': 'D',
-    '\u018B': 'D',
-    '\u018A': 'D',
-    '\u0189': 'D',
-    '\uA779': 'D',
-    '\u01F1': 'DZ',
-    '\u01C4': 'DZ',
-    '\u01F2': 'Dz',
-    '\u01C5': 'Dz',
-    '\u24BA': 'E',
-    '\uFF25': 'E',
-    '\u00C8': 'E',
-    '\u00C9': 'E',
-    '\u00CA': 'E',
-    '\u1EC0': 'E',
-    '\u1EBE': 'E',
-    '\u1EC4': 'E',
-    '\u1EC2': 'E',
-    '\u1EBC': 'E',
-    '\u0112': 'E',
-    '\u1E14': 'E',
-    '\u1E16': 'E',
-    '\u0114': 'E',
-    '\u0116': 'E',
-    '\u00CB': 'E',
-    '\u1EBA': 'E',
-    '\u011A': 'E',
-    '\u0204': 'E',
-    '\u0206': 'E',
-    '\u1EB8': 'E',
-    '\u1EC6': 'E',
-    '\u0228': 'E',
-    '\u1E1C': 'E',
-    '\u0118': 'E',
-    '\u1E18': 'E',
-    '\u1E1A': 'E',
-    '\u0190': 'E',
-    '\u018E': 'E',
-    '\u24BB': 'F',
-    '\uFF26': 'F',
-    '\u1E1E': 'F',
-    '\u0191': 'F',
-    '\uA77B': 'F',
-    '\u24BC': 'G',
-    '\uFF27': 'G',
-    '\u01F4': 'G',
-    '\u011C': 'G',
-    '\u1E20': 'G',
-    '\u011E': 'G',
-    '\u0120': 'G',
-    '\u01E6': 'G',
-    '\u0122': 'G',
-    '\u01E4': 'G',
-    '\u0193': 'G',
-    '\uA7A0': 'G',
-    '\uA77D': 'G',
-    '\uA77E': 'G',
-    '\u24BD': 'H',
-    '\uFF28': 'H',
-    '\u0124': 'H',
-    '\u1E22': 'H',
-    '\u1E26': 'H',
-    '\u021E': 'H',
-    '\u1E24': 'H',
-    '\u1E28': 'H',
-    '\u1E2A': 'H',
-    '\u0126': 'H',
-    '\u2C67': 'H',
-    '\u2C75': 'H',
-    '\uA78D': 'H',
-    '\u24BE': 'I',
-    '\uFF29': 'I',
-    '\u00CC': 'I',
-    '\u00CD': 'I',
-    '\u00CE': 'I',
-    '\u0128': 'I',
-    '\u012A': 'I',
-    '\u012C': 'I',
-    '\u0130': 'I',
-    '\u00CF': 'I',
-    '\u1E2E': 'I',
-    '\u1EC8': 'I',
-    '\u01CF': 'I',
-    '\u0208': 'I',
-    '\u020A': 'I',
-    '\u1ECA': 'I',
-    '\u012E': 'I',
-    '\u1E2C': 'I',
-    '\u0197': 'I',
-    '\u24BF': 'J',
-    '\uFF2A': 'J',
-    '\u0134': 'J',
-    '\u0248': 'J',
-    '\u24C0': 'K',
-    '\uFF2B': 'K',
-    '\u1E30': 'K',
-    '\u01E8': 'K',
-    '\u1E32': 'K',
-    '\u0136': 'K',
-    '\u1E34': 'K',
-    '\u0198': 'K',
-    '\u2C69': 'K',
-    '\uA740': 'K',
-    '\uA742': 'K',
-    '\uA744': 'K',
-    '\uA7A2': 'K',
-    '\u24C1': 'L',
-    '\uFF2C': 'L',
-    '\u013F': 'L',
-    '\u0139': 'L',
-    '\u013D': 'L',
-    '\u1E36': 'L',
-    '\u1E38': 'L',
-    '\u013B': 'L',
-    '\u1E3C': 'L',
-    '\u1E3A': 'L',
-    '\u0141': 'L',
-    '\u023D': 'L',
-    '\u2C62': 'L',
-    '\u2C60': 'L',
-    '\uA748': 'L',
-    '\uA746': 'L',
-    '\uA780': 'L',
-    '\u01C7': 'LJ',
-    '\u01C8': 'Lj',
-    '\u24C2': 'M',
-    '\uFF2D': 'M',
-    '\u1E3E': 'M',
-    '\u1E40': 'M',
-    '\u1E42': 'M',
-    '\u2C6E': 'M',
-    '\u019C': 'M',
-    '\u24C3': 'N',
-    '\uFF2E': 'N',
-    '\u01F8': 'N',
-    '\u0143': 'N',
-    '\u00D1': 'N',
-    '\u1E44': 'N',
-    '\u0147': 'N',
-    '\u1E46': 'N',
-    '\u0145': 'N',
-    '\u1E4A': 'N',
-    '\u1E48': 'N',
-    '\u0220': 'N',
-    '\u019D': 'N',
-    '\uA790': 'N',
-    '\uA7A4': 'N',
-    '\u01CA': 'NJ',
-    '\u01CB': 'Nj',
-    '\u24C4': 'O',
-    '\uFF2F': 'O',
-    '\u00D2': 'O',
-    '\u00D3': 'O',
-    '\u00D4': 'O',
-    '\u1ED2': 'O',
-    '\u1ED0': 'O',
-    '\u1ED6': 'O',
-    '\u1ED4': 'O',
-    '\u00D5': 'O',
-    '\u1E4C': 'O',
-    '\u022C': 'O',
-    '\u1E4E': 'O',
-    '\u014C': 'O',
-    '\u1E50': 'O',
-    '\u1E52': 'O',
-    '\u014E': 'O',
-    '\u022E': 'O',
-    '\u0230': 'O',
-    '\u00D6': 'O',
-    '\u022A': 'O',
-    '\u1ECE': 'O',
-    '\u0150': 'O',
-    '\u01D1': 'O',
-    '\u020C': 'O',
-    '\u020E': 'O',
-    '\u01A0': 'O',
-    '\u1EDC': 'O',
-    '\u1EDA': 'O',
-    '\u1EE0': 'O',
-    '\u1EDE': 'O',
-    '\u1EE2': 'O',
-    '\u1ECC': 'O',
-    '\u1ED8': 'O',
-    '\u01EA': 'O',
-    '\u01EC': 'O',
-    '\u00D8': 'O',
-    '\u01FE': 'O',
-    '\u0186': 'O',
-    '\u019F': 'O',
-    '\uA74A': 'O',
-    '\uA74C': 'O',
-    '\u0152': 'OE',
-    '\u01A2': 'OI',
-    '\uA74E': 'OO',
-    '\u0222': 'OU',
-    '\u24C5': 'P',
-    '\uFF30': 'P',
-    '\u1E54': 'P',
-    '\u1E56': 'P',
-    '\u01A4': 'P',
-    '\u2C63': 'P',
-    '\uA750': 'P',
-    '\uA752': 'P',
-    '\uA754': 'P',
-    '\u24C6': 'Q',
-    '\uFF31': 'Q',
-    '\uA756': 'Q',
-    '\uA758': 'Q',
-    '\u024A': 'Q',
-    '\u24C7': 'R',
-    '\uFF32': 'R',
-    '\u0154': 'R',
-    '\u1E58': 'R',
-    '\u0158': 'R',
-    '\u0210': 'R',
-    '\u0212': 'R',
-    '\u1E5A': 'R',
-    '\u1E5C': 'R',
-    '\u0156': 'R',
-    '\u1E5E': 'R',
-    '\u024C': 'R',
-    '\u2C64': 'R',
-    '\uA75A': 'R',
-    '\uA7A6': 'R',
-    '\uA782': 'R',
-    '\u24C8': 'S',
-    '\uFF33': 'S',
-    '\u1E9E': 'S',
-    '\u015A': 'S',
-    '\u1E64': 'S',
-    '\u015C': 'S',
-    '\u1E60': 'S',
-    '\u0160': 'S',
-    '\u1E66': 'S',
-    '\u1E62': 'S',
-    '\u1E68': 'S',
-    '\u0218': 'S',
-    '\u015E': 'S',
-    '\u2C7E': 'S',
-    '\uA7A8': 'S',
-    '\uA784': 'S',
-    '\u24C9': 'T',
-    '\uFF34': 'T',
-    '\u1E6A': 'T',
-    '\u0164': 'T',
-    '\u1E6C': 'T',
-    '\u021A': 'T',
-    '\u0162': 'T',
-    '\u1E70': 'T',
-    '\u1E6E': 'T',
-    '\u0166': 'T',
-    '\u01AC': 'T',
-    '\u01AE': 'T',
-    '\u023E': 'T',
-    '\uA786': 'T',
-    '\uA728': 'TZ',
-    '\u24CA': 'U',
-    '\uFF35': 'U',
-    '\u00D9': 'U',
-    '\u00DA': 'U',
-    '\u00DB': 'U',
-    '\u0168': 'U',
-    '\u1E78': 'U',
-    '\u016A': 'U',
-    '\u1E7A': 'U',
-    '\u016C': 'U',
-    '\u00DC': 'U',
-    '\u01DB': 'U',
-    '\u01D7': 'U',
-    '\u01D5': 'U',
-    '\u01D9': 'U',
-    '\u1EE6': 'U',
-    '\u016E': 'U',
-    '\u0170': 'U',
-    '\u01D3': 'U',
-    '\u0214': 'U',
-    '\u0216': 'U',
-    '\u01AF': 'U',
-    '\u1EEA': 'U',
-    '\u1EE8': 'U',
-    '\u1EEE': 'U',
-    '\u1EEC': 'U',
-    '\u1EF0': 'U',
-    '\u1EE4': 'U',
-    '\u1E72': 'U',
-    '\u0172': 'U',
-    '\u1E76': 'U',
-    '\u1E74': 'U',
-    '\u0244': 'U',
-    '\u24CB': 'V',
-    '\uFF36': 'V',
-    '\u1E7C': 'V',
-    '\u1E7E': 'V',
-    '\u01B2': 'V',
-    '\uA75E': 'V',
-    '\u0245': 'V',
-    '\uA760': 'VY',
-    '\u24CC': 'W',
-    '\uFF37': 'W',
-    '\u1E80': 'W',
-    '\u1E82': 'W',
-    '\u0174': 'W',
-    '\u1E86': 'W',
-    '\u1E84': 'W',
-    '\u1E88': 'W',
-    '\u2C72': 'W',
-    '\u24CD': 'X',
-    '\uFF38': 'X',
-    '\u1E8A': 'X',
-    '\u1E8C': 'X',
-    '\u24CE': 'Y',
-    '\uFF39': 'Y',
-    '\u1EF2': 'Y',
-    '\u00DD': 'Y',
-    '\u0176': 'Y',
-    '\u1EF8': 'Y',
-    '\u0232': 'Y',
-    '\u1E8E': 'Y',
-    '\u0178': 'Y',
-    '\u1EF6': 'Y',
-    '\u1EF4': 'Y',
-    '\u01B3': 'Y',
-    '\u024E': 'Y',
-    '\u1EFE': 'Y',
-    '\u24CF': 'Z',
-    '\uFF3A': 'Z',
-    '\u0179': 'Z',
-    '\u1E90': 'Z',
-    '\u017B': 'Z',
-    '\u017D': 'Z',
-    '\u1E92': 'Z',
-    '\u1E94': 'Z',
-    '\u01B5': 'Z',
-    '\u0224': 'Z',
-    '\u2C7F': 'Z',
-    '\u2C6B': 'Z',
-    '\uA762': 'Z',
-    '\u24D0': 'a',
-    '\uFF41': 'a',
-    '\u1E9A': 'a',
-    '\u00E0': 'a',
-    '\u00E1': 'a',
-    '\u00E2': 'a',
-    '\u1EA7': 'a',
-    '\u1EA5': 'a',
-    '\u1EAB': 'a',
-    '\u1EA9': 'a',
-    '\u00E3': 'a',
-    '\u0101': 'a',
-    '\u0103': 'a',
-    '\u1EB1': 'a',
-    '\u1EAF': 'a',
-    '\u1EB5': 'a',
-    '\u1EB3': 'a',
-    '\u0227': 'a',
-    '\u01E1': 'a',
-    '\u00E4': 'a',
-    '\u01DF': 'a',
-    '\u1EA3': 'a',
-    '\u00E5': 'a',
-    '\u01FB': 'a',
-    '\u01CE': 'a',
-    '\u0201': 'a',
-    '\u0203': 'a',
-    '\u1EA1': 'a',
-    '\u1EAD': 'a',
-    '\u1EB7': 'a',
-    '\u1E01': 'a',
-    '\u0105': 'a',
-    '\u2C65': 'a',
-    '\u0250': 'a',
-    '\uA733': 'aa',
-    '\u00E6': 'ae',
-    '\u01FD': 'ae',
-    '\u01E3': 'ae',
-    '\uA735': 'ao',
-    '\uA737': 'au',
-    '\uA739': 'av',
-    '\uA73B': 'av',
-    '\uA73D': 'ay',
-    '\u24D1': 'b',
-    '\uFF42': 'b',
-    '\u1E03': 'b',
-    '\u1E05': 'b',
-    '\u1E07': 'b',
-    '\u0180': 'b',
-    '\u0183': 'b',
-    '\u0253': 'b',
-    '\u24D2': 'c',
-    '\uFF43': 'c',
-    '\u0107': 'c',
-    '\u0109': 'c',
-    '\u010B': 'c',
-    '\u010D': 'c',
-    '\u00E7': 'c',
-    '\u1E09': 'c',
-    '\u0188': 'c',
-    '\u023C': 'c',
-    '\uA73F': 'c',
-    '\u2184': 'c',
-    '\u24D3': 'd',
-    '\uFF44': 'd',
-    '\u1E0B': 'd',
-    '\u010F': 'd',
-    '\u1E0D': 'd',
-    '\u1E11': 'd',
-    '\u1E13': 'd',
-    '\u1E0F': 'd',
-    '\u0111': 'd',
-    '\u018C': 'd',
-    '\u0256': 'd',
-    '\u0257': 'd',
-    '\uA77A': 'd',
-    '\u01F3': 'dz',
-    '\u01C6': 'dz',
-    '\u24D4': 'e',
-    '\uFF45': 'e',
-    '\u00E8': 'e',
-    '\u00E9': 'e',
-    '\u00EA': 'e',
-    '\u1EC1': 'e',
-    '\u1EBF': 'e',
-    '\u1EC5': 'e',
-    '\u1EC3': 'e',
-    '\u1EBD': 'e',
-    '\u0113': 'e',
-    '\u1E15': 'e',
-    '\u1E17': 'e',
-    '\u0115': 'e',
-    '\u0117': 'e',
-    '\u00EB': 'e',
-    '\u1EBB': 'e',
-    '\u011B': 'e',
-    '\u0205': 'e',
-    '\u0207': 'e',
-    '\u1EB9': 'e',
-    '\u1EC7': 'e',
-    '\u0229': 'e',
-    '\u1E1D': 'e',
-    '\u0119': 'e',
-    '\u1E19': 'e',
-    '\u1E1B': 'e',
-    '\u0247': 'e',
-    '\u025B': 'e',
-    '\u01DD': 'e',
-    '\u24D5': 'f',
-    '\uFF46': 'f',
-    '\u1E1F': 'f',
-    '\u0192': 'f',
-    '\uA77C': 'f',
-    '\u24D6': 'g',
-    '\uFF47': 'g',
-    '\u01F5': 'g',
-    '\u011D': 'g',
-    '\u1E21': 'g',
-    '\u011F': 'g',
-    '\u0121': 'g',
-    '\u01E7': 'g',
-    '\u0123': 'g',
-    '\u01E5': 'g',
-    '\u0260': 'g',
-    '\uA7A1': 'g',
-    '\u1D79': 'g',
-    '\uA77F': 'g',
-    '\u24D7': 'h',
-    '\uFF48': 'h',
-    '\u0125': 'h',
-    '\u1E23': 'h',
-    '\u1E27': 'h',
-    '\u021F': 'h',
-    '\u1E25': 'h',
-    '\u1E29': 'h',
-    '\u1E2B': 'h',
-    '\u1E96': 'h',
-    '\u0127': 'h',
-    '\u2C68': 'h',
-    '\u2C76': 'h',
-    '\u0265': 'h',
-    '\u0195': 'hv',
-    '\u24D8': 'i',
-    '\uFF49': 'i',
-    '\u00EC': 'i',
-    '\u00ED': 'i',
-    '\u00EE': 'i',
-    '\u0129': 'i',
-    '\u012B': 'i',
-    '\u012D': 'i',
-    '\u00EF': 'i',
-    '\u1E2F': 'i',
-    '\u1EC9': 'i',
-    '\u01D0': 'i',
-    '\u0209': 'i',
-    '\u020B': 'i',
-    '\u1ECB': 'i',
-    '\u012F': 'i',
-    '\u1E2D': 'i',
-    '\u0268': 'i',
-    '\u0131': 'i',
-    '\u24D9': 'j',
-    '\uFF4A': 'j',
-    '\u0135': 'j',
-    '\u01F0': 'j',
-    '\u0249': 'j',
-    '\u24DA': 'k',
-    '\uFF4B': 'k',
-    '\u1E31': 'k',
-    '\u01E9': 'k',
-    '\u1E33': 'k',
-    '\u0137': 'k',
-    '\u1E35': 'k',
-    '\u0199': 'k',
-    '\u2C6A': 'k',
-    '\uA741': 'k',
-    '\uA743': 'k',
-    '\uA745': 'k',
-    '\uA7A3': 'k',
-    '\u24DB': 'l',
-    '\uFF4C': 'l',
-    '\u0140': 'l',
-    '\u013A': 'l',
-    '\u013E': 'l',
-    '\u1E37': 'l',
-    '\u1E39': 'l',
-    '\u013C': 'l',
-    '\u1E3D': 'l',
-    '\u1E3B': 'l',
-    '\u017F': 'l',
-    '\u0142': 'l',
-    '\u019A': 'l',
-    '\u026B': 'l',
-    '\u2C61': 'l',
-    '\uA749': 'l',
-    '\uA781': 'l',
-    '\uA747': 'l',
-    '\u01C9': 'lj',
-    '\u24DC': 'm',
-    '\uFF4D': 'm',
-    '\u1E3F': 'm',
-    '\u1E41': 'm',
-    '\u1E43': 'm',
-    '\u0271': 'm',
-    '\u026F': 'm',
-    '\u24DD': 'n',
-    '\uFF4E': 'n',
-    '\u01F9': 'n',
-    '\u0144': 'n',
-    '\u00F1': 'n',
-    '\u1E45': 'n',
-    '\u0148': 'n',
-    '\u1E47': 'n',
-    '\u0146': 'n',
-    '\u1E4B': 'n',
-    '\u1E49': 'n',
-    '\u019E': 'n',
-    '\u0272': 'n',
-    '\u0149': 'n',
-    '\uA791': 'n',
-    '\uA7A5': 'n',
-    '\u01CC': 'nj',
-    '\u24DE': 'o',
-    '\uFF4F': 'o',
-    '\u00F2': 'o',
-    '\u00F3': 'o',
-    '\u00F4': 'o',
-    '\u1ED3': 'o',
-    '\u1ED1': 'o',
-    '\u1ED7': 'o',
-    '\u1ED5': 'o',
-    '\u00F5': 'o',
-    '\u1E4D': 'o',
-    '\u022D': 'o',
-    '\u1E4F': 'o',
-    '\u014D': 'o',
-    '\u1E51': 'o',
-    '\u1E53': 'o',
-    '\u014F': 'o',
-    '\u022F': 'o',
-    '\u0231': 'o',
-    '\u00F6': 'o',
-    '\u022B': 'o',
-    '\u1ECF': 'o',
-    '\u0151': 'o',
-    '\u01D2': 'o',
-    '\u020D': 'o',
-    '\u020F': 'o',
-    '\u01A1': 'o',
-    '\u1EDD': 'o',
-    '\u1EDB': 'o',
-    '\u1EE1': 'o',
-    '\u1EDF': 'o',
-    '\u1EE3': 'o',
-    '\u1ECD': 'o',
-    '\u1ED9': 'o',
-    '\u01EB': 'o',
-    '\u01ED': 'o',
-    '\u00F8': 'o',
-    '\u01FF': 'o',
-    '\u0254': 'o',
-    '\uA74B': 'o',
-    '\uA74D': 'o',
-    '\u0275': 'o',
-    '\u0153': 'oe',
-    '\u01A3': 'oi',
-    '\u0223': 'ou',
-    '\uA74F': 'oo',
-    '\u24DF': 'p',
-    '\uFF50': 'p',
-    '\u1E55': 'p',
-    '\u1E57': 'p',
-    '\u01A5': 'p',
-    '\u1D7D': 'p',
-    '\uA751': 'p',
-    '\uA753': 'p',
-    '\uA755': 'p',
-    '\u24E0': 'q',
-    '\uFF51': 'q',
-    '\u024B': 'q',
-    '\uA757': 'q',
-    '\uA759': 'q',
-    '\u24E1': 'r',
-    '\uFF52': 'r',
-    '\u0155': 'r',
-    '\u1E59': 'r',
-    '\u0159': 'r',
-    '\u0211': 'r',
-    '\u0213': 'r',
-    '\u1E5B': 'r',
-    '\u1E5D': 'r',
-    '\u0157': 'r',
-    '\u1E5F': 'r',
-    '\u024D': 'r',
-    '\u027D': 'r',
-    '\uA75B': 'r',
-    '\uA7A7': 'r',
-    '\uA783': 'r',
-    '\u24E2': 's',
-    '\uFF53': 's',
-    '\u00DF': 's',
-    '\u015B': 's',
-    '\u1E65': 's',
-    '\u015D': 's',
-    '\u1E61': 's',
-    '\u0161': 's',
-    '\u1E67': 's',
-    '\u1E63': 's',
-    '\u1E69': 's',
-    '\u0219': 's',
-    '\u015F': 's',
-    '\u023F': 's',
-    '\uA7A9': 's',
-    '\uA785': 's',
-    '\u1E9B': 's',
-    '\u24E3': 't',
-    '\uFF54': 't',
-    '\u1E6B': 't',
-    '\u1E97': 't',
-    '\u0165': 't',
-    '\u1E6D': 't',
-    '\u021B': 't',
-    '\u0163': 't',
-    '\u1E71': 't',
-    '\u1E6F': 't',
-    '\u0167': 't',
-    '\u01AD': 't',
-    '\u0288': 't',
-    '\u2C66': 't',
-    '\uA787': 't',
-    '\uA729': 'tz',
-    '\u24E4': 'u',
-    '\uFF55': 'u',
-    '\u00F9': 'u',
-    '\u00FA': 'u',
-    '\u00FB': 'u',
-    '\u0169': 'u',
-    '\u1E79': 'u',
-    '\u016B': 'u',
-    '\u1E7B': 'u',
-    '\u016D': 'u',
-    '\u00FC': 'u',
-    '\u01DC': 'u',
-    '\u01D8': 'u',
-    '\u01D6': 'u',
-    '\u01DA': 'u',
-    '\u1EE7': 'u',
-    '\u016F': 'u',
-    '\u0171': 'u',
-    '\u01D4': 'u',
-    '\u0215': 'u',
-    '\u0217': 'u',
-    '\u01B0': 'u',
-    '\u1EEB': 'u',
-    '\u1EE9': 'u',
-    '\u1EEF': 'u',
-    '\u1EED': 'u',
-    '\u1EF1': 'u',
-    '\u1EE5': 'u',
-    '\u1E73': 'u',
-    '\u0173': 'u',
-    '\u1E77': 'u',
-    '\u1E75': 'u',
-    '\u0289': 'u',
-    '\u24E5': 'v',
-    '\uFF56': 'v',
-    '\u1E7D': 'v',
-    '\u1E7F': 'v',
-    '\u028B': 'v',
-    '\uA75F': 'v',
-    '\u028C': 'v',
-    '\uA761': 'vy',
-    '\u24E6': 'w',
-    '\uFF57': 'w',
-    '\u1E81': 'w',
-    '\u1E83': 'w',
-    '\u0175': 'w',
-    '\u1E87': 'w',
-    '\u1E85': 'w',
-    '\u1E98': 'w',
-    '\u1E89': 'w',
-    '\u2C73': 'w',
-    '\u24E7': 'x',
-    '\uFF58': 'x',
-    '\u1E8B': 'x',
-    '\u1E8D': 'x',
-    '\u24E8': 'y',
-    '\uFF59': 'y',
-    '\u1EF3': 'y',
-    '\u00FD': 'y',
-    '\u0177': 'y',
-    '\u1EF9': 'y',
-    '\u0233': 'y',
-    '\u1E8F': 'y',
-    '\u00FF': 'y',
-    '\u1EF7': 'y',
-    '\u1E99': 'y',
-    '\u1EF5': 'y',
-    '\u01B4': 'y',
-    '\u024F': 'y',
-    '\u1EFF': 'y',
-    '\u24E9': 'z',
-    '\uFF5A': 'z',
-    '\u017A': 'z',
-    '\u1E91': 'z',
-    '\u017C': 'z',
-    '\u017E': 'z',
-    '\u1E93': 'z',
-    '\u1E95': 'z',
-    '\u01B6': 'z',
-    '\u0225': 'z',
-    '\u0240': 'z',
-    '\u2C6C': 'z',
-    '\uA763': 'z',
-    '\u0386': '\u0391',
-    '\u0388': '\u0395',
-    '\u0389': '\u0397',
-    '\u038A': '\u0399',
-    '\u03AA': '\u0399',
-    '\u038C': '\u039F',
-    '\u038E': '\u03A5',
-    '\u03AB': '\u03A5',
-    '\u038F': '\u03A9',
-    '\u03AC': '\u03B1',
-    '\u03AD': '\u03B5',
-    '\u03AE': '\u03B7',
-    '\u03AF': '\u03B9',
-    '\u03CA': '\u03B9',
-    '\u0390': '\u03B9',
-    '\u03CC': '\u03BF',
-    '\u03CD': '\u03C5',
-    '\u03CB': '\u03C5',
-    '\u03B0': '\u03C5',
-    '\u03CE': '\u03C9',
-    '\u03C2': '\u03C3',
-    '\u2019': '\''
+    "\u24B6": "A",
+    "\uFF21": "A",
+    "\u00C0": "A",
+    "\u00C1": "A",
+    "\u00C2": "A",
+    "\u1EA6": "A",
+    "\u1EA4": "A",
+    "\u1EAA": "A",
+    "\u1EA8": "A",
+    "\u00C3": "A",
+    "\u0100": "A",
+    "\u0102": "A",
+    "\u1EB0": "A",
+    "\u1EAE": "A",
+    "\u1EB4": "A",
+    "\u1EB2": "A",
+    "\u0226": "A",
+    "\u01E0": "A",
+    "\u00C4": "A",
+    "\u01DE": "A",
+    "\u1EA2": "A",
+    "\u00C5": "A",
+    "\u01FA": "A",
+    "\u01CD": "A",
+    "\u0200": "A",
+    "\u0202": "A",
+    "\u1EA0": "A",
+    "\u1EAC": "A",
+    "\u1EB6": "A",
+    "\u1E00": "A",
+    "\u0104": "A",
+    "\u023A": "A",
+    "\u2C6F": "A",
+    "\uA732": "AA",
+    "\u00C6": "AE",
+    "\u01FC": "AE",
+    "\u01E2": "AE",
+    "\uA734": "AO",
+    "\uA736": "AU",
+    "\uA738": "AV",
+    "\uA73A": "AV",
+    "\uA73C": "AY",
+    "\u24B7": "B",
+    "\uFF22": "B",
+    "\u1E02": "B",
+    "\u1E04": "B",
+    "\u1E06": "B",
+    "\u0243": "B",
+    "\u0182": "B",
+    "\u0181": "B",
+    "\u24B8": "C",
+    "\uFF23": "C",
+    "\u0106": "C",
+    "\u0108": "C",
+    "\u010A": "C",
+    "\u010C": "C",
+    "\u00C7": "C",
+    "\u1E08": "C",
+    "\u0187": "C",
+    "\u023B": "C",
+    "\uA73E": "C",
+    "\u24B9": "D",
+    "\uFF24": "D",
+    "\u1E0A": "D",
+    "\u010E": "D",
+    "\u1E0C": "D",
+    "\u1E10": "D",
+    "\u1E12": "D",
+    "\u1E0E": "D",
+    "\u0110": "D",
+    "\u018B": "D",
+    "\u018A": "D",
+    "\u0189": "D",
+    "\uA779": "D",
+    "\u01F1": "DZ",
+    "\u01C4": "DZ",
+    "\u01F2": "Dz",
+    "\u01C5": "Dz",
+    "\u24BA": "E",
+    "\uFF25": "E",
+    "\u00C8": "E",
+    "\u00C9": "E",
+    "\u00CA": "E",
+    "\u1EC0": "E",
+    "\u1EBE": "E",
+    "\u1EC4": "E",
+    "\u1EC2": "E",
+    "\u1EBC": "E",
+    "\u0112": "E",
+    "\u1E14": "E",
+    "\u1E16": "E",
+    "\u0114": "E",
+    "\u0116": "E",
+    "\u00CB": "E",
+    "\u1EBA": "E",
+    "\u011A": "E",
+    "\u0204": "E",
+    "\u0206": "E",
+    "\u1EB8": "E",
+    "\u1EC6": "E",
+    "\u0228": "E",
+    "\u1E1C": "E",
+    "\u0118": "E",
+    "\u1E18": "E",
+    "\u1E1A": "E",
+    "\u0190": "E",
+    "\u018E": "E",
+    "\u24BB": "F",
+    "\uFF26": "F",
+    "\u1E1E": "F",
+    "\u0191": "F",
+    "\uA77B": "F",
+    "\u24BC": "G",
+    "\uFF27": "G",
+    "\u01F4": "G",
+    "\u011C": "G",
+    "\u1E20": "G",
+    "\u011E": "G",
+    "\u0120": "G",
+    "\u01E6": "G",
+    "\u0122": "G",
+    "\u01E4": "G",
+    "\u0193": "G",
+    "\uA7A0": "G",
+    "\uA77D": "G",
+    "\uA77E": "G",
+    "\u24BD": "H",
+    "\uFF28": "H",
+    "\u0124": "H",
+    "\u1E22": "H",
+    "\u1E26": "H",
+    "\u021E": "H",
+    "\u1E24": "H",
+    "\u1E28": "H",
+    "\u1E2A": "H",
+    "\u0126": "H",
+    "\u2C67": "H",
+    "\u2C75": "H",
+    "\uA78D": "H",
+    "\u24BE": "I",
+    "\uFF29": "I",
+    "\u00CC": "I",
+    "\u00CD": "I",
+    "\u00CE": "I",
+    "\u0128": "I",
+    "\u012A": "I",
+    "\u012C": "I",
+    "\u0130": "I",
+    "\u00CF": "I",
+    "\u1E2E": "I",
+    "\u1EC8": "I",
+    "\u01CF": "I",
+    "\u0208": "I",
+    "\u020A": "I",
+    "\u1ECA": "I",
+    "\u012E": "I",
+    "\u1E2C": "I",
+    "\u0197": "I",
+    "\u24BF": "J",
+    "\uFF2A": "J",
+    "\u0134": "J",
+    "\u0248": "J",
+    "\u24C0": "K",
+    "\uFF2B": "K",
+    "\u1E30": "K",
+    "\u01E8": "K",
+    "\u1E32": "K",
+    "\u0136": "K",
+    "\u1E34": "K",
+    "\u0198": "K",
+    "\u2C69": "K",
+    "\uA740": "K",
+    "\uA742": "K",
+    "\uA744": "K",
+    "\uA7A2": "K",
+    "\u24C1": "L",
+    "\uFF2C": "L",
+    "\u013F": "L",
+    "\u0139": "L",
+    "\u013D": "L",
+    "\u1E36": "L",
+    "\u1E38": "L",
+    "\u013B": "L",
+    "\u1E3C": "L",
+    "\u1E3A": "L",
+    "\u0141": "L",
+    "\u023D": "L",
+    "\u2C62": "L",
+    "\u2C60": "L",
+    "\uA748": "L",
+    "\uA746": "L",
+    "\uA780": "L",
+    "\u01C7": "LJ",
+    "\u01C8": "Lj",
+    "\u24C2": "M",
+    "\uFF2D": "M",
+    "\u1E3E": "M",
+    "\u1E40": "M",
+    "\u1E42": "M",
+    "\u2C6E": "M",
+    "\u019C": "M",
+    "\u24C3": "N",
+    "\uFF2E": "N",
+    "\u01F8": "N",
+    "\u0143": "N",
+    "\u00D1": "N",
+    "\u1E44": "N",
+    "\u0147": "N",
+    "\u1E46": "N",
+    "\u0145": "N",
+    "\u1E4A": "N",
+    "\u1E48": "N",
+    "\u0220": "N",
+    "\u019D": "N",
+    "\uA790": "N",
+    "\uA7A4": "N",
+    "\u01CA": "NJ",
+    "\u01CB": "Nj",
+    "\u24C4": "O",
+    "\uFF2F": "O",
+    "\u00D2": "O",
+    "\u00D3": "O",
+    "\u00D4": "O",
+    "\u1ED2": "O",
+    "\u1ED0": "O",
+    "\u1ED6": "O",
+    "\u1ED4": "O",
+    "\u00D5": "O",
+    "\u1E4C": "O",
+    "\u022C": "O",
+    "\u1E4E": "O",
+    "\u014C": "O",
+    "\u1E50": "O",
+    "\u1E52": "O",
+    "\u014E": "O",
+    "\u022E": "O",
+    "\u0230": "O",
+    "\u00D6": "O",
+    "\u022A": "O",
+    "\u1ECE": "O",
+    "\u0150": "O",
+    "\u01D1": "O",
+    "\u020C": "O",
+    "\u020E": "O",
+    "\u01A0": "O",
+    "\u1EDC": "O",
+    "\u1EDA": "O",
+    "\u1EE0": "O",
+    "\u1EDE": "O",
+    "\u1EE2": "O",
+    "\u1ECC": "O",
+    "\u1ED8": "O",
+    "\u01EA": "O",
+    "\u01EC": "O",
+    "\u00D8": "O",
+    "\u01FE": "O",
+    "\u0186": "O",
+    "\u019F": "O",
+    "\uA74A": "O",
+    "\uA74C": "O",
+    "\u0152": "OE",
+    "\u01A2": "OI",
+    "\uA74E": "OO",
+    "\u0222": "OU",
+    "\u24C5": "P",
+    "\uFF30": "P",
+    "\u1E54": "P",
+    "\u1E56": "P",
+    "\u01A4": "P",
+    "\u2C63": "P",
+    "\uA750": "P",
+    "\uA752": "P",
+    "\uA754": "P",
+    "\u24C6": "Q",
+    "\uFF31": "Q",
+    "\uA756": "Q",
+    "\uA758": "Q",
+    "\u024A": "Q",
+    "\u24C7": "R",
+    "\uFF32": "R",
+    "\u0154": "R",
+    "\u1E58": "R",
+    "\u0158": "R",
+    "\u0210": "R",
+    "\u0212": "R",
+    "\u1E5A": "R",
+    "\u1E5C": "R",
+    "\u0156": "R",
+    "\u1E5E": "R",
+    "\u024C": "R",
+    "\u2C64": "R",
+    "\uA75A": "R",
+    "\uA7A6": "R",
+    "\uA782": "R",
+    "\u24C8": "S",
+    "\uFF33": "S",
+    "\u1E9E": "S",
+    "\u015A": "S",
+    "\u1E64": "S",
+    "\u015C": "S",
+    "\u1E60": "S",
+    "\u0160": "S",
+    "\u1E66": "S",
+    "\u1E62": "S",
+    "\u1E68": "S",
+    "\u0218": "S",
+    "\u015E": "S",
+    "\u2C7E": "S",
+    "\uA7A8": "S",
+    "\uA784": "S",
+    "\u24C9": "T",
+    "\uFF34": "T",
+    "\u1E6A": "T",
+    "\u0164": "T",
+    "\u1E6C": "T",
+    "\u021A": "T",
+    "\u0162": "T",
+    "\u1E70": "T",
+    "\u1E6E": "T",
+    "\u0166": "T",
+    "\u01AC": "T",
+    "\u01AE": "T",
+    "\u023E": "T",
+    "\uA786": "T",
+    "\uA728": "TZ",
+    "\u24CA": "U",
+    "\uFF35": "U",
+    "\u00D9": "U",
+    "\u00DA": "U",
+    "\u00DB": "U",
+    "\u0168": "U",
+    "\u1E78": "U",
+    "\u016A": "U",
+    "\u1E7A": "U",
+    "\u016C": "U",
+    "\u00DC": "U",
+    "\u01DB": "U",
+    "\u01D7": "U",
+    "\u01D5": "U",
+    "\u01D9": "U",
+    "\u1EE6": "U",
+    "\u016E": "U",
+    "\u0170": "U",
+    "\u01D3": "U",
+    "\u0214": "U",
+    "\u0216": "U",
+    "\u01AF": "U",
+    "\u1EEA": "U",
+    "\u1EE8": "U",
+    "\u1EEE": "U",
+    "\u1EEC": "U",
+    "\u1EF0": "U",
+    "\u1EE4": "U",
+    "\u1E72": "U",
+    "\u0172": "U",
+    "\u1E76": "U",
+    "\u1E74": "U",
+    "\u0244": "U",
+    "\u24CB": "V",
+    "\uFF36": "V",
+    "\u1E7C": "V",
+    "\u1E7E": "V",
+    "\u01B2": "V",
+    "\uA75E": "V",
+    "\u0245": "V",
+    "\uA760": "VY",
+    "\u24CC": "W",
+    "\uFF37": "W",
+    "\u1E80": "W",
+    "\u1E82": "W",
+    "\u0174": "W",
+    "\u1E86": "W",
+    "\u1E84": "W",
+    "\u1E88": "W",
+    "\u2C72": "W",
+    "\u24CD": "X",
+    "\uFF38": "X",
+    "\u1E8A": "X",
+    "\u1E8C": "X",
+    "\u24CE": "Y",
+    "\uFF39": "Y",
+    "\u1EF2": "Y",
+    "\u00DD": "Y",
+    "\u0176": "Y",
+    "\u1EF8": "Y",
+    "\u0232": "Y",
+    "\u1E8E": "Y",
+    "\u0178": "Y",
+    "\u1EF6": "Y",
+    "\u1EF4": "Y",
+    "\u01B3": "Y",
+    "\u024E": "Y",
+    "\u1EFE": "Y",
+    "\u24CF": "Z",
+    "\uFF3A": "Z",
+    "\u0179": "Z",
+    "\u1E90": "Z",
+    "\u017B": "Z",
+    "\u017D": "Z",
+    "\u1E92": "Z",
+    "\u1E94": "Z",
+    "\u01B5": "Z",
+    "\u0224": "Z",
+    "\u2C7F": "Z",
+    "\u2C6B": "Z",
+    "\uA762": "Z",
+    "\u24D0": "a",
+    "\uFF41": "a",
+    "\u1E9A": "a",
+    "\u00E0": "a",
+    "\u00E1": "a",
+    "\u00E2": "a",
+    "\u1EA7": "a",
+    "\u1EA5": "a",
+    "\u1EAB": "a",
+    "\u1EA9": "a",
+    "\u00E3": "a",
+    "\u0101": "a",
+    "\u0103": "a",
+    "\u1EB1": "a",
+    "\u1EAF": "a",
+    "\u1EB5": "a",
+    "\u1EB3": "a",
+    "\u0227": "a",
+    "\u01E1": "a",
+    "\u00E4": "a",
+    "\u01DF": "a",
+    "\u1EA3": "a",
+    "\u00E5": "a",
+    "\u01FB": "a",
+    "\u01CE": "a",
+    "\u0201": "a",
+    "\u0203": "a",
+    "\u1EA1": "a",
+    "\u1EAD": "a",
+    "\u1EB7": "a",
+    "\u1E01": "a",
+    "\u0105": "a",
+    "\u2C65": "a",
+    "\u0250": "a",
+    "\uA733": "aa",
+    "\u00E6": "ae",
+    "\u01FD": "ae",
+    "\u01E3": "ae",
+    "\uA735": "ao",
+    "\uA737": "au",
+    "\uA739": "av",
+    "\uA73B": "av",
+    "\uA73D": "ay",
+    "\u24D1": "b",
+    "\uFF42": "b",
+    "\u1E03": "b",
+    "\u1E05": "b",
+    "\u1E07": "b",
+    "\u0180": "b",
+    "\u0183": "b",
+    "\u0253": "b",
+    "\u24D2": "c",
+    "\uFF43": "c",
+    "\u0107": "c",
+    "\u0109": "c",
+    "\u010B": "c",
+    "\u010D": "c",
+    "\u00E7": "c",
+    "\u1E09": "c",
+    "\u0188": "c",
+    "\u023C": "c",
+    "\uA73F": "c",
+    "\u2184": "c",
+    "\u24D3": "d",
+    "\uFF44": "d",
+    "\u1E0B": "d",
+    "\u010F": "d",
+    "\u1E0D": "d",
+    "\u1E11": "d",
+    "\u1E13": "d",
+    "\u1E0F": "d",
+    "\u0111": "d",
+    "\u018C": "d",
+    "\u0256": "d",
+    "\u0257": "d",
+    "\uA77A": "d",
+    "\u01F3": "dz",
+    "\u01C6": "dz",
+    "\u24D4": "e",
+    "\uFF45": "e",
+    "\u00E8": "e",
+    "\u00E9": "e",
+    "\u00EA": "e",
+    "\u1EC1": "e",
+    "\u1EBF": "e",
+    "\u1EC5": "e",
+    "\u1EC3": "e",
+    "\u1EBD": "e",
+    "\u0113": "e",
+    "\u1E15": "e",
+    "\u1E17": "e",
+    "\u0115": "e",
+    "\u0117": "e",
+    "\u00EB": "e",
+    "\u1EBB": "e",
+    "\u011B": "e",
+    "\u0205": "e",
+    "\u0207": "e",
+    "\u1EB9": "e",
+    "\u1EC7": "e",
+    "\u0229": "e",
+    "\u1E1D": "e",
+    "\u0119": "e",
+    "\u1E19": "e",
+    "\u1E1B": "e",
+    "\u0247": "e",
+    "\u025B": "e",
+    "\u01DD": "e",
+    "\u24D5": "f",
+    "\uFF46": "f",
+    "\u1E1F": "f",
+    "\u0192": "f",
+    "\uA77C": "f",
+    "\u24D6": "g",
+    "\uFF47": "g",
+    "\u01F5": "g",
+    "\u011D": "g",
+    "\u1E21": "g",
+    "\u011F": "g",
+    "\u0121": "g",
+    "\u01E7": "g",
+    "\u0123": "g",
+    "\u01E5": "g",
+    "\u0260": "g",
+    "\uA7A1": "g",
+    "\u1D79": "g",
+    "\uA77F": "g",
+    "\u24D7": "h",
+    "\uFF48": "h",
+    "\u0125": "h",
+    "\u1E23": "h",
+    "\u1E27": "h",
+    "\u021F": "h",
+    "\u1E25": "h",
+    "\u1E29": "h",
+    "\u1E2B": "h",
+    "\u1E96": "h",
+    "\u0127": "h",
+    "\u2C68": "h",
+    "\u2C76": "h",
+    "\u0265": "h",
+    "\u0195": "hv",
+    "\u24D8": "i",
+    "\uFF49": "i",
+    "\u00EC": "i",
+    "\u00ED": "i",
+    "\u00EE": "i",
+    "\u0129": "i",
+    "\u012B": "i",
+    "\u012D": "i",
+    "\u00EF": "i",
+    "\u1E2F": "i",
+    "\u1EC9": "i",
+    "\u01D0": "i",
+    "\u0209": "i",
+    "\u020B": "i",
+    "\u1ECB": "i",
+    "\u012F": "i",
+    "\u1E2D": "i",
+    "\u0268": "i",
+    "\u0131": "i",
+    "\u24D9": "j",
+    "\uFF4A": "j",
+    "\u0135": "j",
+    "\u01F0": "j",
+    "\u0249": "j",
+    "\u24DA": "k",
+    "\uFF4B": "k",
+    "\u1E31": "k",
+    "\u01E9": "k",
+    "\u1E33": "k",
+    "\u0137": "k",
+    "\u1E35": "k",
+    "\u0199": "k",
+    "\u2C6A": "k",
+    "\uA741": "k",
+    "\uA743": "k",
+    "\uA745": "k",
+    "\uA7A3": "k",
+    "\u24DB": "l",
+    "\uFF4C": "l",
+    "\u0140": "l",
+    "\u013A": "l",
+    "\u013E": "l",
+    "\u1E37": "l",
+    "\u1E39": "l",
+    "\u013C": "l",
+    "\u1E3D": "l",
+    "\u1E3B": "l",
+    "\u017F": "l",
+    "\u0142": "l",
+    "\u019A": "l",
+    "\u026B": "l",
+    "\u2C61": "l",
+    "\uA749": "l",
+    "\uA781": "l",
+    "\uA747": "l",
+    "\u01C9": "lj",
+    "\u24DC": "m",
+    "\uFF4D": "m",
+    "\u1E3F": "m",
+    "\u1E41": "m",
+    "\u1E43": "m",
+    "\u0271": "m",
+    "\u026F": "m",
+    "\u24DD": "n",
+    "\uFF4E": "n",
+    "\u01F9": "n",
+    "\u0144": "n",
+    "\u00F1": "n",
+    "\u1E45": "n",
+    "\u0148": "n",
+    "\u1E47": "n",
+    "\u0146": "n",
+    "\u1E4B": "n",
+    "\u1E49": "n",
+    "\u019E": "n",
+    "\u0272": "n",
+    "\u0149": "n",
+    "\uA791": "n",
+    "\uA7A5": "n",
+    "\u01CC": "nj",
+    "\u24DE": "o",
+    "\uFF4F": "o",
+    "\u00F2": "o",
+    "\u00F3": "o",
+    "\u00F4": "o",
+    "\u1ED3": "o",
+    "\u1ED1": "o",
+    "\u1ED7": "o",
+    "\u1ED5": "o",
+    "\u00F5": "o",
+    "\u1E4D": "o",
+    "\u022D": "o",
+    "\u1E4F": "o",
+    "\u014D": "o",
+    "\u1E51": "o",
+    "\u1E53": "o",
+    "\u014F": "o",
+    "\u022F": "o",
+    "\u0231": "o",
+    "\u00F6": "o",
+    "\u022B": "o",
+    "\u1ECF": "o",
+    "\u0151": "o",
+    "\u01D2": "o",
+    "\u020D": "o",
+    "\u020F": "o",
+    "\u01A1": "o",
+    "\u1EDD": "o",
+    "\u1EDB": "o",
+    "\u1EE1": "o",
+    "\u1EDF": "o",
+    "\u1EE3": "o",
+    "\u1ECD": "o",
+    "\u1ED9": "o",
+    "\u01EB": "o",
+    "\u01ED": "o",
+    "\u00F8": "o",
+    "\u01FF": "o",
+    "\u0254": "o",
+    "\uA74B": "o",
+    "\uA74D": "o",
+    "\u0275": "o",
+    "\u0153": "oe",
+    "\u01A3": "oi",
+    "\u0223": "ou",
+    "\uA74F": "oo",
+    "\u24DF": "p",
+    "\uFF50": "p",
+    "\u1E55": "p",
+    "\u1E57": "p",
+    "\u01A5": "p",
+    "\u1D7D": "p",
+    "\uA751": "p",
+    "\uA753": "p",
+    "\uA755": "p",
+    "\u24E0": "q",
+    "\uFF51": "q",
+    "\u024B": "q",
+    "\uA757": "q",
+    "\uA759": "q",
+    "\u24E1": "r",
+    "\uFF52": "r",
+    "\u0155": "r",
+    "\u1E59": "r",
+    "\u0159": "r",
+    "\u0211": "r",
+    "\u0213": "r",
+    "\u1E5B": "r",
+    "\u1E5D": "r",
+    "\u0157": "r",
+    "\u1E5F": "r",
+    "\u024D": "r",
+    "\u027D": "r",
+    "\uA75B": "r",
+    "\uA7A7": "r",
+    "\uA783": "r",
+    "\u24E2": "s",
+    "\uFF53": "s",
+    "\u00DF": "s",
+    "\u015B": "s",
+    "\u1E65": "s",
+    "\u015D": "s",
+    "\u1E61": "s",
+    "\u0161": "s",
+    "\u1E67": "s",
+    "\u1E63": "s",
+    "\u1E69": "s",
+    "\u0219": "s",
+    "\u015F": "s",
+    "\u023F": "s",
+    "\uA7A9": "s",
+    "\uA785": "s",
+    "\u1E9B": "s",
+    "\u24E3": "t",
+    "\uFF54": "t",
+    "\u1E6B": "t",
+    "\u1E97": "t",
+    "\u0165": "t",
+    "\u1E6D": "t",
+    "\u021B": "t",
+    "\u0163": "t",
+    "\u1E71": "t",
+    "\u1E6F": "t",
+    "\u0167": "t",
+    "\u01AD": "t",
+    "\u0288": "t",
+    "\u2C66": "t",
+    "\uA787": "t",
+    "\uA729": "tz",
+    "\u24E4": "u",
+    "\uFF55": "u",
+    "\u00F9": "u",
+    "\u00FA": "u",
+    "\u00FB": "u",
+    "\u0169": "u",
+    "\u1E79": "u",
+    "\u016B": "u",
+    "\u1E7B": "u",
+    "\u016D": "u",
+    "\u00FC": "u",
+    "\u01DC": "u",
+    "\u01D8": "u",
+    "\u01D6": "u",
+    "\u01DA": "u",
+    "\u1EE7": "u",
+    "\u016F": "u",
+    "\u0171": "u",
+    "\u01D4": "u",
+    "\u0215": "u",
+    "\u0217": "u",
+    "\u01B0": "u",
+    "\u1EEB": "u",
+    "\u1EE9": "u",
+    "\u1EEF": "u",
+    "\u1EED": "u",
+    "\u1EF1": "u",
+    "\u1EE5": "u",
+    "\u1E73": "u",
+    "\u0173": "u",
+    "\u1E77": "u",
+    "\u1E75": "u",
+    "\u0289": "u",
+    "\u24E5": "v",
+    "\uFF56": "v",
+    "\u1E7D": "v",
+    "\u1E7F": "v",
+    "\u028B": "v",
+    "\uA75F": "v",
+    "\u028C": "v",
+    "\uA761": "vy",
+    "\u24E6": "w",
+    "\uFF57": "w",
+    "\u1E81": "w",
+    "\u1E83": "w",
+    "\u0175": "w",
+    "\u1E87": "w",
+    "\u1E85": "w",
+    "\u1E98": "w",
+    "\u1E89": "w",
+    "\u2C73": "w",
+    "\u24E7": "x",
+    "\uFF58": "x",
+    "\u1E8B": "x",
+    "\u1E8D": "x",
+    "\u24E8": "y",
+    "\uFF59": "y",
+    "\u1EF3": "y",
+    "\u00FD": "y",
+    "\u0177": "y",
+    "\u1EF9": "y",
+    "\u0233": "y",
+    "\u1E8F": "y",
+    "\u00FF": "y",
+    "\u1EF7": "y",
+    "\u1E99": "y",
+    "\u1EF5": "y",
+    "\u01B4": "y",
+    "\u024F": "y",
+    "\u1EFF": "y",
+    "\u24E9": "z",
+    "\uFF5A": "z",
+    "\u017A": "z",
+    "\u1E91": "z",
+    "\u017C": "z",
+    "\u017E": "z",
+    "\u1E93": "z",
+    "\u1E95": "z",
+    "\u01B6": "z",
+    "\u0225": "z",
+    "\u0240": "z",
+    "\u2C6C": "z",
+    "\uA763": "z",
+    "\u0386": "\u0391",
+    "\u0388": "\u0395",
+    "\u0389": "\u0397",
+    "\u038A": "\u0399",
+    "\u03AA": "\u0399",
+    "\u038C": "\u039F",
+    "\u038E": "\u03A5",
+    "\u03AB": "\u03A5",
+    "\u038F": "\u03A9",
+    "\u03AC": "\u03B1",
+    "\u03AD": "\u03B5",
+    "\u03AE": "\u03B7",
+    "\u03AF": "\u03B9",
+    "\u03CA": "\u03B9",
+    "\u0390": "\u03B9",
+    "\u03CC": "\u03BF",
+    "\u03CD": "\u03C5",
+    "\u03CB": "\u03C5",
+    "\u03B0": "\u03C5",
+    "\u03CE": "\u03C9",
+    "\u03C2": "\u03C3",
+    "\u2019": "'",
   };
 
   return diacritics;
@@ -3255,18 +3315,20 @@ S2.define('select2/diacritics',[
 S2.define('select2/data/base',[
   '../utils'
 ], function (Utils) {
-  function BaseAdapter ($element, options) {
+  function BaseAdapter($element, options) {
     BaseAdapter.__super__.constructor.call(this);
   }
 
   Utils.Extend(BaseAdapter, Utils.Observable);
 
   BaseAdapter.prototype.current = function (callback) {
-    throw new Error('The `current` method must be defined in child classes.');
+    throw new Error(
+      "The `current` method must be defined in child classes."
+    );
   };
 
   BaseAdapter.prototype.query = function (params, callback) {
-    throw new Error('The `query` method must be defined in child classes.');
+    throw new Error("The `query` method must be defined in child classes.");
   };
 
   BaseAdapter.prototype.bind = function (container, $container) {
@@ -3278,14 +3340,14 @@ S2.define('select2/data/base',[
   };
 
   BaseAdapter.prototype.generateResultId = function (container, data) {
-    var id = container.id + '-result-';
+    var id = container.id + "-result-";
 
     id += Utils.generateChars(4);
 
     if (data.id != null) {
-      id += '-' + data.id.toString();
+      id += "-" + data.id.toString();
     } else {
-      id += '-' + Utils.generateChars(4);
+      id += "-" + Utils.generateChars(4);
     }
     return id;
   };
@@ -3297,7 +3359,7 @@ S2.define('select2/data/select',[
   './base',
   '../utils'
 ], function (BaseAdapter, Utils) {
-  function SelectAdapter (element, options) {
+  function SelectAdapter(element, options) {
     this.element = element;
     this.options = options;
 
@@ -3310,7 +3372,7 @@ S2.define('select2/data/select',[
     var self = this;
 
     var data = Array.prototype.map.call(
-      this.element.querySelectorAll(':checked'),
+      this.element.querySelectorAll(":checked"),
       function (selectedElement) {
         return self.item(selectedElement);
       }
@@ -3326,12 +3388,13 @@ S2.define('select2/data/select',[
 
     // If data.element is a DOM node, use it instead
     if (
-      data.element != null && data.element.tagName.toLowerCase() === 'option'
+      data.element != null &&
+      data.element.tagName.toLowerCase() === "option"
     ) {
       data.element.selected = true;
 
-      this.element.dispatchEvent(new Event('input'));
-      this.element.dispatchEvent(new Event('change'));
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
 
       return;
     }
@@ -3349,18 +3412,29 @@ S2.define('select2/data/select',[
           if (val.indexOf(id) === -1) {
             val.push(id);
           }
+
+          // Find the corresponding <option> element and mark it as selected
+          var option = Array.from(self.element.options).find(option => option.value === id);
+          if (option) {
+            option.selected = true;
+          }
         }
 
-        self.element.value = val;
-        self.element.dispatchEvent(new Event('input'));
-        self.element.dispatchEvent(new Event('change'));
+        // Dispatch events to notify the change
+        self.element.dispatchEvent(new Event("input"));
+        self.element.dispatchEvent(new Event("change"));
       });
     } else {
       var val = data.id;
 
-      this.element.value = val;
-      this.element.dispatchEvent(new Event('input'));
-      this.element.dispatchEvent(new Event('change'));
+      // Find the corresponding <option> element and mark it as selected
+      var option = Array.from(this.element.options).find(option => option.value === val);
+      if (option) {
+        option.selected = true;
+      }
+
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
     }
   };
 
@@ -3375,12 +3449,12 @@ S2.define('select2/data/select',[
 
     if (
       data.element != null &&
-      data.element.tagName.toLowerCase() === 'option'
+      data.element.tagName.toLowerCase() === "option"
     ) {
       data.element.selected = false;
 
-      this.element.dispatchEvent(new Event('input'));
-      this.element.dispatchEvent(new Event('change'));
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
 
       return;
     }
@@ -3398,8 +3472,8 @@ S2.define('select2/data/select',[
 
       self.element.value = val;
 
-      self.element.dispatchEvent(new Event('input'));
-      self.element.dispatchEvent(new Event('change'));
+      self.element.dispatchEvent(new Event("input"));
+      self.element.dispatchEvent(new Event("change"));
     });
   };
 
@@ -3408,18 +3482,18 @@ S2.define('select2/data/select',[
 
     this.container = container;
 
-    container.on('select', function (params) {
+    container.on("select", function (params) {
       self.select(params.data);
     });
 
-    container.on('unselect', function (params) {
+    container.on("unselect", function (params) {
       self.unselect(params.data);
     });
   };
 
   SelectAdapter.prototype.destroy = function () {
     // Remove anything added to child elements
-    var elements = this.element.querySelectorAll('*');
+    var elements = this.element.querySelectorAll("*");
     elements.forEach(function (el) {
       // Remove any custom data set by Select2
       Utils.RemoveData(el);
@@ -3434,8 +3508,8 @@ S2.define('select2/data/select',[
 
     Array.prototype.forEach.call(options, function (option) {
       if (
-        option.tagName.toLowerCase() !== 'option' &&
-        option.tagName.toLowerCase() !== 'optgroup'
+        option.tagName.toLowerCase() !== "option" &&
+        option.tagName.toLowerCase() !== "optgroup"
       ) {
         return;
       }
@@ -3450,7 +3524,7 @@ S2.define('select2/data/select',[
     });
 
     callback({
-      results: data
+      results: data,
     });
   };
 
@@ -3465,10 +3539,10 @@ S2.define('select2/data/select',[
     var option;
 
     if (data.children) {
-      option = document.createElement('optgroup');
+      option = document.createElement("optgroup");
       option.label = data.text;
     } else {
-      option = document.createElement('option');
+      option = document.createElement("option");
 
       if (option.textContent !== undefined) {
         option.textContent = data.text;
@@ -3497,7 +3571,7 @@ S2.define('select2/data/select',[
     normalizedData.element = option;
 
     // Override the option's data with the combined data
-    Utils.StoreData(option, 'data', normalizedData);
+    Utils.StoreData(option, "data", normalizedData);
 
     return option;
   };
@@ -3505,34 +3579,38 @@ S2.define('select2/data/select',[
   SelectAdapter.prototype.item = function (option) {
     var data = {};
 
-    data = Utils.GetData(option, 'data');
+    data = Utils.GetData(option, "data");
 
     if (data != null) {
       return data;
     }
 
-    if (option.tagName.toLowerCase() === 'option') {
+    if (option.tagName.toLowerCase() === "option") {
       data = {
         id: option.value,
         text: option.textContent,
         disabled: option.disabled,
         selected: option.selected,
-        title: option.title
+        title: option.title,
       };
-    } else if (option.tagName.toLowerCase() === 'optgroup') {
+    } else if (option.tagName.toLowerCase() === "optgroup") {
       data = {
         text: option.label,
         children: [],
-        title: option.title
+        title: option.title,
       };
 
-      var children = option.querySelectorAll('option');
+      var children = option.querySelectorAll("option");
       var childrenData = [];
 
-      Array.prototype.forEach.call(children, function (child) {
-        var childData = this.item(child);
-        childrenData.push(childData);
-      }, this);
+      Array.prototype.forEach.call(
+        children,
+        function (child) {
+          var childData = this.item(child);
+          childrenData.push(childData);
+        },
+        this
+      );
 
       data.children = childrenData;
     }
@@ -3540,7 +3618,7 @@ S2.define('select2/data/select',[
     data = this._normalizeItem(data);
     data.element = option;
 
-    Utils.StoreData(option, 'data', data);
+    Utils.StoreData(option, "data", data);
 
     return data;
   };
@@ -3549,17 +3627,21 @@ S2.define('select2/data/select',[
     if (item !== Object(item)) {
       item = {
         id: item,
-        text: item
+        text: item,
       };
     }
 
-    item = Object.assign({}, {
-      text: ''
-    }, item);
+    item = Object.assign(
+      {},
+      {
+        text: "",
+      },
+      item
+    );
 
     var defaults = {
       selected: false,
-      disabled: false
+      disabled: false,
     };
 
     if (item.id != null) {
@@ -3575,16 +3657,16 @@ S2.define('select2/data/select',[
     }
 
     if (item.children) {
-        item.children = item.children.map(
-            SelectAdapter.prototype._normalizeItem
-        );
+      item.children = item.children.map(
+        SelectAdapter.prototype._normalizeItem
+      );
     }
 
     return Object.assign({}, defaults, item);
   };
 
   SelectAdapter.prototype.matches = function (params, data) {
-    var matcher = this.options.get('matcher');
+    var matcher = this.options.get("matcher");
 
     return matcher(params, data);
   };
@@ -3608,19 +3690,21 @@ S2.define('select2/data/array',["./select", "../utils"], function (SelectAdapter
   };
 
   ArrayAdapter.prototype.select = function (data) {
-    var $option = this.element
-      .querySelectorAll("option")
-      .filter(function (i, elm) {
-        return elm.value == data.id.toString();
-      });
+    var self = this;
 
-    if ($option.length === 0) {
-      $option = this.option(data);
+    // Convert NodeList to array
+    var options = Array.prototype.slice.call(this.element.querySelectorAll('option'));
 
-      this.addOptions($option);
+    var option = options.filter(function (option) {
+      return option.value == data.id.toString();
+    });
+
+    if (option.length === 0) {
+      var option = this.option(data);
+      this.element.appendChild(option);
     }
 
-    ArrayAdapter.__super__.select.call(this, data);
+    option[0].selected = true;
   };
 
   ArrayAdapter.prototype.convertToOptions = function (data) {
@@ -3645,7 +3729,9 @@ S2.define('select2/data/array',["./select", "../utils"], function (SelectAdapter
 
       // Skip items which were pre-loaded, only merge the data
       if (existingIds.indexOf(item.id) >= 0) {
-        var $existingOption = Array.from($existing).filter(onlyItem(item));
+        var $existingOption = Array.from($existing).filter(
+          onlyItem(item)
+        );
 
         var existingData = this.item($existingOption);
         var newData = Object.assign({}, item, existingData);
@@ -3757,12 +3843,20 @@ S2.define('select2/data/ajax',["./array", "../utils"], function (ArrayAdapter, U
         function (data) {
           var results = self.processResults(data, params);
 
-          if (results && results.results && Array.isArray(results.results)) {
+          if (
+            results &&
+            results.results &&
+            Array.isArray(results.results)
+          ) {
             results.results = results.results.map(
               AjaxAdapter.prototype._normalizeItem
             );
           } else {
-            if (self.options.get("debug") && window.console && console.error) {
+            if (
+              self.options.get("debug") &&
+              window.console &&
+              console.error
+            ) {
               // Check to make sure that the response included a `results` key.
               console.error(
                 "Select2: The AJAX results did not return an array in the " +
@@ -3798,7 +3892,10 @@ S2.define('select2/data/ajax',["./array", "../utils"], function (ArrayAdapter, U
         window.clearTimeout(this._queryTimeout);
       }
 
-      this._queryTimeout = window.setTimeout(request, this.ajaxOptions.delay);
+      this._queryTimeout = window.setTimeout(
+        request,
+        this.ajaxOptions.delay
+      );
     } else {
       request();
     }
@@ -3808,19 +3905,19 @@ S2.define('select2/data/ajax',["./array", "../utils"], function (ArrayAdapter, U
 });
 
 S2.define('select2/data/tags',[], function () {
-  function Tags (decorated, element, options) {
-    var tags = options.get('tags');
+  function Tags(decorated, element, options) {
+    var tags = options.get("tags");
 
-    var createTag = options.get('createTag');
+    var createTag = options.get("createTag");
 
     if (createTag !== undefined) {
       this.createTag = createTag;
     }
 
-    var insertTag = options.get('insertTag');
+    var insertTag = options.get("insertTag");
 
     if (insertTag !== undefined) {
-        this.insertTag = insertTag;
+      this.insertTag = insertTag;
     }
 
     decorated.call(this, element, options);
@@ -3847,21 +3944,23 @@ S2.define('select2/data/tags',[], function () {
       return;
     }
 
-    function wrapper (obj, child) {
+    function wrapper(obj, child) {
       var data = obj.results;
 
       for (var i = 0; i < data.length; i++) {
         var option = data[i];
 
-        var checkChildren = (
+        var checkChildren =
           option.children != null &&
-          !wrapper({
-            results: option.children
-          }, true)
-        );
+          !wrapper(
+            {
+              results: option.children,
+            },
+            true
+          );
 
-        var optionText = (option.text || '').toUpperCase();
-        var paramsTerm = (params.term || '').toUpperCase();
+        var optionText = (option.text || "").toUpperCase();
+        var paramsTerm = (params.term || "").toUpperCase();
 
         var checkText = optionText === paramsTerm;
 
@@ -3885,7 +3984,7 @@ S2.define('select2/data/tags',[], function () {
 
       if (tag != null) {
         var option = self.option(tag);
-        option.setAttribute('data-select2-tag', 'true');
+        option.setAttribute("data-select2-tag", "true");
 
         self.addOptions([option]);
 
@@ -3907,13 +4006,13 @@ S2.define('select2/data/tags',[], function () {
 
     var term = params.term.trim();
 
-    if (term === '') {
+    if (term === "") {
       return null;
     }
 
     return {
       id: term,
-      text: term
+      text: term,
     };
   };
 
@@ -3922,7 +4021,7 @@ S2.define('select2/data/tags',[], function () {
   };
 
   Tags.prototype._removeOldTags = function (_) {
-    var options = this.element.querySelectorAll('option[data-select2-tag]');
+    var options = this.element.querySelectorAll("option[data-select2-tag]");
 
     options.forEach(function (option) {
       if (option.selected) {
@@ -3937,8 +4036,8 @@ S2.define('select2/data/tags',[], function () {
 });
 
 S2.define('select2/data/tokenizer',[], function () {
-  function Tokenizer (decorated, element, options) {
-    var tokenizer = options.get('tokenizer');
+  function Tokenizer(decorated, element, options) {
+    var tokenizer = options.get("tokenizer");
 
     if (tokenizer !== undefined) {
       this.tokenizer = tokenizer;
@@ -3947,30 +4046,38 @@ S2.define('select2/data/tokenizer',[], function () {
     decorated.call(this, element, options);
   }
 
-  Tokenizer.prototype.bind = function (decorated, container, containerElement) {
+  Tokenizer.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     decorated.call(this, container, containerElement);
 
-    this.searchElement = container.dropdown.searchElement || container.selection.searchElement ||
-      containerElement.querySelector('.select2-search__field');
+    this.searchElement =
+      container.dropdown.searchElement ||
+      container.selection.searchElement ||
+      containerElement.querySelector(".select2-search__field");
   };
 
   Tokenizer.prototype.query = function (decorated, params, callback) {
     var self = this;
 
-    function createAndSelect (data) {
+    function createAndSelect(data) {
       // Normalize the data object so we can use it for checks
       var item = self._normalizeItem(data);
 
       // Check if the data object already exists as a tag
       // Select it if it doesn't
-      var existingOptions = Array.from(self.element.querySelectorAll('option')).filter(function (option) {
+      var existingOptions = Array.from(
+        self.element.querySelectorAll("option")
+      ).filter(function (option) {
         return option.value === item.id;
       });
 
       // If an existing option wasn't found for it, create the option
       if (existingOptions.length === 0) {
         var option = self.option(item);
-        option.setAttribute('data-select2-tag', true);
+        option.setAttribute("data-select2-tag", true);
 
         self._removeOldTags();
         self.addOptions([option]);
@@ -3980,13 +4087,13 @@ S2.define('select2/data/tokenizer',[], function () {
       select(item);
     }
 
-    function select (data) {
-      self.trigger('select', {
-        data: data
+    function select(data) {
+      self.trigger("select", {
+        data: data,
       });
     }
 
-    params.term = params.term || '';
+    params.term = params.term || "";
 
     var tokenData = this.tokenizer(params, this.options, createAndSelect);
 
@@ -4004,16 +4111,18 @@ S2.define('select2/data/tokenizer',[], function () {
   };
 
   Tokenizer.prototype.tokenizer = function (_, params, options, callback) {
-    var separators = options.get('tokenSeparators') || [];
+    var separators = options.get("tokenSeparators") || [];
     var term = params.term;
     var i = 0;
 
-    var createTag = this.createTag || function (params) {
-      return {
-        id: params.term,
-        text: params.term
+    var createTag =
+      this.createTag ||
+      function (params) {
+        return {
+          id: params.term,
+          text: params.term,
+        };
       };
-    };
 
     while (i < term.length) {
       var termChar = term[i];
@@ -4026,7 +4135,7 @@ S2.define('select2/data/tokenizer',[], function () {
 
       var part = term.substr(0, i);
       var partParams = Object.assign({}, params, {
-        term: part
+        term: part,
       });
 
       var data = createTag(partParams);
@@ -4039,12 +4148,12 @@ S2.define('select2/data/tokenizer',[], function () {
       callback(data);
 
       // Reset the term to not include the tokenized portion
-      term = term.substr(i + 1) || '';
+      term = term.substr(i + 1) || "";
       i = 0;
     }
 
     return {
-      term: term
+      term: term,
     };
   };
 
@@ -4054,23 +4163,27 @@ S2.define('select2/data/tokenizer',[], function () {
 S2.define('select2/data/minimumInputLength',[
 
 ], function () {
-  function MinimumInputLength (decorated, $e, options) {
-    this.minimumInputLength = options.get('minimumInputLength');
+  function MinimumInputLength(decorated, $e, options) {
+    this.minimumInputLength = options.get("minimumInputLength");
 
     decorated.call(this, $e, options);
   }
 
-  MinimumInputLength.prototype.query = function (decorated, params, callback) {
-    params.term = params.term || '';
+  MinimumInputLength.prototype.query = function (
+    decorated,
+    params,
+    callback
+  ) {
+    params.term = params.term || "";
 
     if (params.term.length < this.minimumInputLength) {
-      this.trigger('results:message', {
-        message: 'inputTooShort',
+      this.trigger("results:message", {
+        message: "inputTooShort",
         args: {
           minimum: this.minimumInputLength,
           input: params.term,
-          params: params
-        }
+          params: params,
+        },
       });
 
       return;
@@ -4085,24 +4198,30 @@ S2.define('select2/data/minimumInputLength',[
 S2.define('select2/data/maximumInputLength',[
 
 ], function () {
-  function MaximumInputLength (decorated, $e, options) {
-    this.maximumInputLength = options.get('maximumInputLength');
+  function MaximumInputLength(decorated, $e, options) {
+    this.maximumInputLength = options.get("maximumInputLength");
 
     decorated.call(this, $e, options);
   }
 
-  MaximumInputLength.prototype.query = function (decorated, params, callback) {
-    params.term = params.term || '';
+  MaximumInputLength.prototype.query = function (
+    decorated,
+    params,
+    callback
+  ) {
+    params.term = params.term || "";
 
-    if (this.maximumInputLength > 0 &&
-        params.term.length > this.maximumInputLength) {
-      this.trigger('results:message', {
-        message: 'inputTooLong',
+    if (
+      this.maximumInputLength > 0 &&
+      params.term.length > this.maximumInputLength
+    ) {
+      this.trigger("results:message", {
+        message: "inputTooLong",
         args: {
           maximum: this.maximumInputLength,
           input: params.term,
-          params: params
-        }
+          params: params,
+        },
       });
 
       return;
@@ -4117,53 +4236,63 @@ S2.define('select2/data/maximumInputLength',[
 S2.define('select2/data/maximumSelectionLength',[
 
 ], function (){
-  function MaximumSelectionLength (decorated, $e, options) {
-    this.maximumSelectionLength = options.get('maximumSelectionLength');
+  function MaximumSelectionLength(decorated, $e, options) {
+    this.maximumSelectionLength = options.get("maximumSelectionLength");
 
     decorated.call(this, $e, options);
   }
 
-  MaximumSelectionLength.prototype.bind =
-    function (decorated, container, $container) {
-      var self = this;
+  MaximumSelectionLength.prototype.bind = function (
+    decorated,
+    container,
+    $container
+  ) {
+    var self = this;
 
-      decorated.call(this, container, $container);
+    decorated.call(this, container, $container);
 
-      container.on('select', function () {
-        self._checkIfMaximumSelected();
-      });
+    container.on("select", function () {
+      self._checkIfMaximumSelected();
+    });
   };
 
-  MaximumSelectionLength.prototype.query =
-    function (decorated, params, callback) {
-      var self = this;
+  MaximumSelectionLength.prototype.query = function (
+    decorated,
+    params,
+    callback
+  ) {
+    var self = this;
 
-      this._checkIfMaximumSelected(function () {
-        decorated.call(self, params, callback);
-      });
+    this._checkIfMaximumSelected(function () {
+      decorated.call(self, params, callback);
+    });
   };
 
-  MaximumSelectionLength.prototype._checkIfMaximumSelected =
-    function (_, successCallback) {
-      var self = this;
+  MaximumSelectionLength.prototype._checkIfMaximumSelected = function (
+    _,
+    successCallback
+  ) {
+    var self = this;
 
-      this.current(function (currentData) {
-        var count = currentData != null ? currentData.length : 0;
-        if (self.maximumSelectionLength > 0 &&
-          count >= self.maximumSelectionLength) {
-          self.trigger('results:message', {
-            message: 'maximumSelected',
-            args: {
-              maximum: self.maximumSelectionLength
-            }
-          });
-          return;
-        }
+    this.current(function (currentData) {
+      var count = currentData != null ? currentData.length : 0;
+      if (
+        self.maximumSelectionLength > 0 &&
+        count >= self.maximumSelectionLength
+      ) {
+        self.trigger("results:message", {
+          message: "maximumSelected",
+          args: {
+            maximum: self.maximumSelectionLength,
+          },
+        });
+        return;
+      }
 
-        if (successCallback) {
-          successCallback();
-        }
-      });
+      if (successCallback) {
+        successCallback();
+      }
+    });
   };
 
   return MaximumSelectionLength;
@@ -4172,7 +4301,7 @@ S2.define('select2/data/maximumSelectionLength',[
 S2.define('select2/dropdown',[
   './utils'
 ], function (Utils) {
-  function Dropdown (element, options) {
+  function Dropdown(element, options) {
     this.element = element;
     this.options = options;
 
@@ -4182,11 +4311,11 @@ S2.define('select2/dropdown',[
   Utils.Extend(Dropdown, Utils.Observable);
 
   Dropdown.prototype.render = function () {
-    var dropdown = document.createElement('span');
-    dropdown.className = 'select2-dropdown';
+    var dropdown = document.createElement("span");
+    dropdown.className = "select2-dropdown";
     dropdown.innerHTML = '<span class="select2-results"></span>';
 
-    dropdown.setAttribute('dir', this.options.get('dir'));
+    dropdown.setAttribute("dir", this.options.get("dir"));
 
     this.dropdown = dropdown;
 
@@ -4210,38 +4339,46 @@ S2.define('select2/dropdown',[
 });
 
 S2.define('select2/dropdown/search',[],function () {
-  function Search () { }
+  function Search() {}
 
   Search.prototype.render = function (decorated) {
     var rendered = decorated.call(this);
-    var searchLabel = this.options.get('translations').get('search');
+    var searchLabel = this.options.get("translations").get("search");
 
-    var search = document.createElement('span');
-    search.className = 'select2-search select2-search--dropdown';
-    search.innerHTML = '<input class="select2-search__field" type="search" tabindex="-1"' +
+    var search = document.createElement("span");
+    search.className = "select2-search select2-search--dropdown";
+    search.innerHTML =
+      '<input class="select2-search__field" type="search" tabindex="-1"' +
       ' autocorrect="off" autocapitalize="none"' +
       ' spellcheck="false" role="searchbox" aria-autocomplete="list" />';
 
     this.searchContainer = search;
-    this.search = search.querySelector('input');
+    this.search = search.querySelector("input");
 
-    this.search.setAttribute('autocomplete', this.options.get('autocomplete'));
-    this.search.setAttribute('aria-label', searchLabel());
+    this.search.setAttribute(
+      "autocomplete",
+      this.options.get("autocomplete")
+    );
+    this.search.setAttribute("aria-label", searchLabel());
 
     rendered.insertBefore(search, rendered.firstChild);
 
     return rendered;
   };
 
-  Search.prototype.bind = function (decorated, container, containerElement) {
+  Search.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     var self = this;
 
-    var resultsId = container.id + '-results';
+    var resultsId = container.id + "-results";
 
     decorated.call(this, container, containerElement);
 
-    this.search.addEventListener('keydown', function (evt) {
-      self.trigger('keypress', evt);
+    this.search.addEventListener("keydown", function (evt) {
+      self.trigger("keypress", evt);
 
       self.keyUpPrevented = evt.defaultPrevented;
     });
@@ -4249,22 +4386,22 @@ S2.define('select2/dropdown/search',[],function () {
     // Workaround for browsers which do not support the `input` event
     // This will prevent double-triggering of events for browsers which support
     // both the `keyup` and `input` events.
-    this.search.addEventListener('input', function (evt) {
+    this.search.addEventListener("input", function (evt) {
       // Unbind the duplicated `keyup` event
-      this.removeEventListener('keyup', arguments.callee);
+      this.removeEventListener("keyup", arguments.callee);
     });
 
-    this.search.addEventListener('keyup', function (evt) {
+    this.search.addEventListener("keyup", function (evt) {
       self.handleSearch(evt);
     });
 
-    this.search.addEventListener('input', function (evt) {
+    this.search.addEventListener("input", function (evt) {
       self.handleSearch(evt);
     });
 
-    container.on('open', function () {
-      self.search.setAttribute('tabindex', 0);
-      self.search.setAttribute('aria-controls', resultsId);
+    container.on("open", function () {
+      self.search.setAttribute("tabindex", 0);
+      self.search.setAttribute("aria-controls", resultsId);
 
       self.search.focus();
 
@@ -4273,38 +4410,41 @@ S2.define('select2/dropdown/search',[],function () {
       }, 0);
     });
 
-    container.on('close', function () {
-      self.search.setAttribute('tabindex', -1);
-      self.search.removeAttribute('aria-controls');
-      self.search.removeAttribute('aria-activedescendant');
+    container.on("close", function () {
+      self.search.setAttribute("tabindex", -1);
+      self.search.removeAttribute("aria-controls");
+      self.search.removeAttribute("aria-activedescendant");
 
-      self.search.value = '';
+      self.search.value = "";
       self.search.blur();
     });
 
-    container.on('focus', function () {
+    container.on("focus", function () {
       if (!container.isOpen()) {
         self.search.focus();
       }
     });
 
-    container.on('results:all', function (params) {
-      if (params.query.term == null || params.query.term === '') {
+    container.on("results:all", function (params) {
+      if (params.query.term == null || params.query.term === "") {
         var showSearch = self.showSearch(params);
 
         if (showSearch) {
-          self.searchContainer.classList.remove('select2-search--hide');
+          self.searchContainer.classList.remove("select2-search--hide");
         } else {
-          self.searchContainer.classList.add('select2-search--hide');
+          self.searchContainer.classList.add("select2-search--hide");
         }
       }
     });
 
-    container.on('results:focus', function (params) {
+    container.on("results:focus", function (params) {
       if (params.data._resultId) {
-        self.search.setAttribute('aria-activedescendant', params.data._resultId);
+        self.search.setAttribute(
+          "aria-activedescendant",
+          params.data._resultId
+        );
       } else {
-        self.search.removeAttribute('aria-activedescendant');
+        self.search.removeAttribute("aria-activedescendant");
       }
     });
   };
@@ -4313,8 +4453,8 @@ S2.define('select2/dropdown/search',[],function () {
     if (!this.keyUpPrevented) {
       var input = this.search.value;
 
-      this.trigger('query', {
-        term: input
+      this.trigger("query", {
+        term: input,
       });
     }
 
@@ -4331,8 +4471,10 @@ S2.define('select2/dropdown/search',[],function () {
 S2.define('select2/dropdown/hidePlaceholder',[
 
 ], function () {
-  function HidePlaceholder (decorated, $element, options, dataAdapter) {
-    this.placeholder = this.normalizePlaceholder(options.get('placeholder'));
+  function HidePlaceholder(decorated, $element, options, dataAdapter) {
+    this.placeholder = this.normalizePlaceholder(
+      options.get("placeholder")
+    );
 
     decorated.call(this, $element, options, dataAdapter);
   }
@@ -4343,11 +4485,14 @@ S2.define('select2/dropdown/hidePlaceholder',[
     decorated.call(this, data);
   };
 
-  HidePlaceholder.prototype.normalizePlaceholder = function (_, placeholder) {
-    if (typeof placeholder === 'string') {
+  HidePlaceholder.prototype.normalizePlaceholder = function (
+    _,
+    placeholder
+  ) {
+    if (typeof placeholder === "string") {
       placeholder = {
-        id: '',
-        text: placeholder
+        id: "",
+        text: placeholder,
       };
     }
 
@@ -4374,7 +4519,7 @@ S2.define('select2/dropdown/hidePlaceholder',[
 S2.define('select2/dropdown/infiniteScroll',[
   '../utils'
 ], function (Utils) {
-  function InfiniteScroll (decorated, element, options, dataAdapter) {
+  function InfiniteScroll(decorated, element, options, dataAdapter) {
     this.lastParams = {};
 
     decorated.call(this, element, options, dataAdapter);
@@ -4395,34 +4540,45 @@ S2.define('select2/dropdown/infiniteScroll',[
     }
   };
 
-  InfiniteScroll.prototype.bind = function (decorated, container, element) {
+  InfiniteScroll.prototype.bind = function (
+    decorated,
+    container,
+    element
+  ) {
     var self = this;
 
     decorated.call(this, container, element);
 
-    container.on('query', function (params) {
+    container.on("query", function (params) {
       self.lastParams = params;
       self.loading = true;
     });
 
-    container.on('query:append', function (params) {
+    container.on("query:append", function (params) {
       self.lastParams = params;
       self.loading = true;
     });
 
-    this.results.addEventListener('scroll', this.loadMoreIfNeeded.bind(this));
+    this.results.addEventListener(
+      "scroll",
+      this.loadMoreIfNeeded.bind(this)
+    );
   };
 
   InfiniteScroll.prototype.loadMoreIfNeeded = function () {
-    var isLoadMoreVisible = document.documentElement.contains(this.loadingMore);
+    var isLoadMoreVisible = document.documentElement.contains(
+      this.loadingMore
+    );
 
     if (this.loading || !isLoadMoreVisible) {
       return;
     }
 
-    var currentOffset = this.results.getBoundingClientRect().top +
+    var currentOffset =
+      this.results.getBoundingClientRect().top +
       this.results.offsetHeight;
-    var loadingMoreOffset = this.loadingMore.getBoundingClientRect().top +
+    var loadingMoreOffset =
+      this.loadingMore.getBoundingClientRect().top +
       this.loadingMore.offsetHeight;
 
     if (currentOffset + 50 >= loadingMoreOffset) {
@@ -4433,11 +4589,11 @@ S2.define('select2/dropdown/infiniteScroll',[
   InfiniteScroll.prototype.loadMore = function () {
     this.loading = true;
 
-    var params = Object.assign({}, {page: 1}, this.lastParams);
+    var params = Object.assign({}, { page: 1 }, this.lastParams);
 
     params.page++;
 
-    this.trigger('query:append', params);
+    this.trigger("query:append", params);
   };
 
   InfiniteScroll.prototype.showLoadingMore = function (_, data) {
@@ -4445,12 +4601,13 @@ S2.define('select2/dropdown/infiniteScroll',[
   };
 
   InfiniteScroll.prototype.createLoadingMore = function () {
-    var option = document.createElement('li');
-    option.className = 'select2-results__option select2-results__option--load-more';
-    option.setAttribute('role', 'option');
-    option.setAttribute('aria-disabled', 'true');
+    var option = document.createElement("li");
+    option.className =
+      "select2-results__option select2-results__option--load-more";
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-disabled", "true");
 
-    var message = this.options.get('translations').get('loadingMore');
+    var message = this.options.get("translations").get("loadingMore");
 
     option.innerHTML = message(this.lastParams);
 
@@ -4485,7 +4642,7 @@ S2.define('select2/dropdown/attachBody',["../utils"], function (Utils) {
       self._detachPositioningHandler(container);
     });
 
-    this.dropdownContainer.on("mousedown", function (evt) {
+    container.on("mousedown", function (evt) {
       evt.stopPropagation();
     });
   };
@@ -4496,7 +4653,11 @@ S2.define('select2/dropdown/attachBody',["../utils"], function (Utils) {
     this.dropdownContainer.remove();
   };
 
-  AttachBody.prototype.position = function (decorated, $dropdown, $container) {
+  AttachBody.prototype.position = function (
+    decorated,
+    $dropdown,
+    $container
+  ) {
     // Clone all of the container classes
     $dropdown.className = $container.className;
 
@@ -4672,10 +4833,12 @@ S2.define('select2/dropdown/attachBody',["../utils"], function (Utils) {
       height: this.dropdown.offsetHeight,
     };
 
+
     var viewport = {
       top: $window.scrollY,
       bottom: $window.scrollY + $window.innerHeight,
     };
+
 
     var enoughRoomAbove = viewport.top < offset.top - dropdown.height;
     var enoughRoomBelow = viewport.bottom > offset.bottom + dropdown.height;
@@ -4684,6 +4847,7 @@ S2.define('select2/dropdown/attachBody',["../utils"], function (Utils) {
       left: offset.left + "px",
       top: container.bottom + "px",
     };
+
 
     // Determine what the parent element is to use for calculating the offset
     var $offsetParent = this.dropdownParent;
@@ -4766,7 +4930,7 @@ S2.define('select2/dropdown/attachBody',["../utils"], function (Utils) {
 S2.define('select2/dropdown/minimumResultsForSearch',[
 
 ], function () {
-  function countResults (data) {
+  function countResults(data) {
     var count = 0;
 
     for (var d = 0; d < data.length; d++) {
@@ -4782,8 +4946,13 @@ S2.define('select2/dropdown/minimumResultsForSearch',[
     return count;
   }
 
-  function MinimumResultsForSearch (decorated, $element, options, dataAdapter) {
-    this.minimumResultsForSearch = options.get('minimumResultsForSearch');
+  function MinimumResultsForSearch(
+    decorated,
+    $element,
+    options,
+    dataAdapter
+  ) {
+    this.minimumResultsForSearch = options.get("minimumResultsForSearch");
 
     if (this.minimumResultsForSearch < 0) {
       this.minimumResultsForSearch = Infinity;
@@ -4792,7 +4961,10 @@ S2.define('select2/dropdown/minimumResultsForSearch',[
     decorated.call(this, $element, options, dataAdapter);
   }
 
-  MinimumResultsForSearch.prototype.showSearch = function (decorated, params) {
+  MinimumResultsForSearch.prototype.showSearch = function (
+    decorated,
+    params
+  ) {
     if (countResults(params.data.results) < this.minimumResultsForSearch) {
       return false;
     }
@@ -4806,14 +4978,18 @@ S2.define('select2/dropdown/minimumResultsForSearch',[
 S2.define('select2/dropdown/selectOnClose',[
   '../utils'
 ], function (Utils) {
-  function SelectOnClose () { }
+  function SelectOnClose() {}
 
-  SelectOnClose.prototype.bind = function (decorated, container, $container) {
+  SelectOnClose.prototype.bind = function (
+    decorated,
+    container,
+    $container
+  ) {
     var self = this;
 
     decorated.call(this, container, $container);
 
-    container.on('close', function (params) {
+    container.on("close", function (params) {
       self._handleSelectOnClose(params);
     });
   };
@@ -4824,7 +5000,7 @@ S2.define('select2/dropdown/selectOnClose',[
 
       // Don't select an item if the close event was triggered from a select or
       // unselect event
-      if (event._type === 'select' || event._type === 'unselect') {
+      if (event._type === "select" || event._type === "unselect") {
         return;
       }
     }
@@ -4836,7 +5012,7 @@ S2.define('select2/dropdown/selectOnClose',[
       return;
     }
 
-    var data = Utils.GetData($highlightedResults, 'data');
+    var data = Utils.GetData($highlightedResults, "data");
 
     // Don't re-select already selected resulte
     if (
@@ -4846,29 +5022,34 @@ S2.define('select2/dropdown/selectOnClose',[
       return;
     }
 
-    this.trigger('select', {
-        data: data
+    this.trigger("select", {
+      data: data,
     });
   };
 
   return SelectOnClose;
+
 });
 
 S2.define('select2/dropdown/closeOnSelect',[
 
 ], function () {
-  function CloseOnSelect () { }
+  function CloseOnSelect() {}
 
-  CloseOnSelect.prototype.bind = function (decorated, container, $container) {
+  CloseOnSelect.prototype.bind = function (
+    decorated,
+    container,
+    $container
+  ) {
     var self = this;
 
     decorated.call(this, container, $container);
 
-    container.on('select', function (evt) {
+    container.on("select", function (evt) {
       self._selectTriggered(evt);
     });
 
-    container.on('unselect', function (evt) {
+    container.on("unselect", function (evt) {
       self._selectTriggered(evt);
     });
   };
@@ -4881,9 +5062,9 @@ S2.define('select2/dropdown/closeOnSelect',[
       return;
     }
 
-    this.trigger('close', {
+    this.trigger("close", {
       originalEvent: originalEvent,
-      originalSelect2Event: evt
+      originalSelect2Event: evt,
     });
   };
 
@@ -4901,7 +5082,6 @@ S2.define('select2/dropdown/dropdownCss',["../utils"], function (Utils) {
     if (dropdownCssClass.indexOf(":all:") !== -1) {
       dropdownCssClass = dropdownCssClass.replace(":all:", "");
 
-      // TODO: Check if element[0] is correct
       Utils.copyNonInternalCssClasses($dropdown, this.element);
     }
 
@@ -4924,25 +5104,31 @@ S2.define('select2/dropdown/tagsSearchHighlight',["../utils"], function (Utils) 
   function TagsSearchHighlight() {}
 
   TagsSearchHighlight.prototype.highlightFirstItem = function (decorated) {
-    var $options = this.results.find(
-      ".select2-results__option--selectable" +
-        ":not(.select2-results__option--selected)"
-    );
 
-    if ($options.length > 0) {
-      var $firstOption = $options.first();
-      var data = Utils.GetData($firstOption, "data");
+    // Use querySelectorAll to find elements
+    var options = this.results.querySelectorAll(
+      ".select2-results__option--selectable:not(.select2-results__option--selected)"
+    );
+    if (options.length > 0) {
+      var firstOption = options[0]; // Get the first element
+      var data = Utils.GetData(firstOption, "data");
       var firstElement = data.element;
 
       if (firstElement && firstElement.getAttribute) {
         if (firstElement.getAttribute("data-select2-tag") === "true") {
-          $firstOption.trigger("mouseenter");
+          // Simulate mouseenter (rewrite the logic if necessary)
+          var mouseEnterEvent = new MouseEvent("mouseenter", {
+            bubbles: true,
+            cancelable: true,
+          });
+          firstOption.dispatchEvent(mouseEnterEvent);
 
           return;
         }
       }
     }
 
+    // Call the decorated method
     decorated.call(this);
   };
 
@@ -4953,15 +5139,15 @@ S2.define('select2/i18n/en',[],function () {
   // English
   return {
     errorLoading: function () {
-      return 'The results could not be loaded.';
+      return "The results could not be loaded.";
     },
     inputTooLong: function (args) {
       var overChars = args.input.length - args.maximum;
 
-      var message = 'Please delete ' + overChars + ' character';
+      var message = "Please delete " + overChars + " character";
 
       if (overChars != 1) {
-        message += 's';
+        message += "s";
       }
 
       return message;
@@ -4969,101 +5155,122 @@ S2.define('select2/i18n/en',[],function () {
     inputTooShort: function (args) {
       var remainingChars = args.minimum - args.input.length;
 
-      var message = 'Please enter ' + remainingChars + ' or more characters';
+      var message =
+        "Please enter " + remainingChars + " or more characters";
 
       return message;
     },
     loadingMore: function () {
-      return 'Loading more results…';
+      return "Loading more results…";
     },
     maximumSelected: function (args) {
-      var message = 'You can only select ' + args.maximum + ' item';
+      var message = "You can only select " + args.maximum + " item";
 
       if (args.maximum != 1) {
-        message += 's';
+        message += "s";
       }
 
       return message;
     },
     noResults: function () {
-      return 'No results found';
+      return "No results found";
     },
     searching: function () {
-      return 'Searching…';
+      return "Searching…";
     },
     removeAllItems: function () {
-      return 'Remove all items';
+      return "Remove all items";
     },
     removeItem: function () {
-      return 'Remove item';
+      return "Remove item";
     },
-    search: function() {
-      return 'Search';
-    }
+    search: function () {
+      return "Search";
+    },
   };
 });
 
 S2.define('select2/defaults',[
 
-  './results',
+  "./results",
 
-  './selection/single',
-  './selection/multiple',
-  './selection/placeholder',
-  './selection/allowClear',
-  './selection/search',
-  './selection/selectionCss',
-  './selection/eventRelay',
+  "./selection/single",
+  "./selection/multiple",
+  "./selection/placeholder",
+  "./selection/allowClear",
+  "./selection/search",
+  "./selection/selectionCss",
+  "./selection/eventRelay",
 
-  './utils',
-  './translation',
-  './diacritics',
+  "./utils",
+  "./translation",
+  "./diacritics",
 
-  './data/select',
-  './data/array',
-  './data/ajax',
-  './data/tags',
-  './data/tokenizer',
-  './data/minimumInputLength',
-  './data/maximumInputLength',
-  './data/maximumSelectionLength',
+  "./data/select",
+  "./data/array",
+  "./data/ajax",
+  "./data/tags",
+  "./data/tokenizer",
+  "./data/minimumInputLength",
+  "./data/maximumInputLength",
+  "./data/maximumSelectionLength",
 
-  './dropdown',
-  './dropdown/search',
-  './dropdown/hidePlaceholder',
-  './dropdown/infiniteScroll',
-  './dropdown/attachBody',
-  './dropdown/minimumResultsForSearch',
-  './dropdown/selectOnClose',
-  './dropdown/closeOnSelect',
-  './dropdown/dropdownCss',
-  './dropdown/tagsSearchHighlight',
+  "./dropdown",
+  "./dropdown/search",
+  "./dropdown/hidePlaceholder",
+  "./dropdown/infiniteScroll",
+  "./dropdown/attachBody",
+  "./dropdown/minimumResultsForSearch",
+  "./dropdown/selectOnClose",
+  "./dropdown/closeOnSelect",
+  "./dropdown/dropdownCss",
+  "./dropdown/tagsSearchHighlight",
 
-  './i18n/en'
-], function (
+  "./i18n/en",
+],
+function (
+  ResultsList,
 
-             ResultsList,
+  SingleSelection,
+  MultipleSelection,
+  Placeholder,
+  AllowClear,
+  SelectionSearch,
+  SelectionCSS,
+  EventRelay,
 
-             SingleSelection, MultipleSelection, Placeholder, AllowClear,
-             SelectionSearch, SelectionCSS, EventRelay,
+  Utils,
+  Translation,
+  DIACRITICS,
 
-             Utils, Translation, DIACRITICS,
+  SelectData,
+  ArrayData,
+  AjaxData,
+  Tags,
+  Tokenizer,
+  MinimumInputLength,
+  MaximumInputLength,
+  MaximumSelectionLength,
 
-             SelectData, ArrayData, AjaxData, Tags, Tokenizer,
-             MinimumInputLength, MaximumInputLength, MaximumSelectionLength,
+  Dropdown,
+  DropdownSearch,
+  HidePlaceholder,
+  InfiniteScroll,
+  AttachBody,
+  MinimumResultsForSearch,
+  SelectOnClose,
+  CloseOnSelect,
+  DropdownCSS,
+  TagsSearchHighlight,
 
-             Dropdown, DropdownSearch, HidePlaceholder, InfiniteScroll,
-             AttachBody, MinimumResultsForSearch, SelectOnClose, CloseOnSelect,
-             DropdownCSS, TagsSearchHighlight,
-
-             EnglishTranslation) {
-  function Defaults () {
+  EnglishTranslation
+) {
+  function Defaults() {
     this.reset();
   }
 
   Defaults.prototype.apply = function (options) {
     options = Object.assign({}, this.defaults, options);
-
     if (options.dataAdapter == null) {
       if (options.ajax != null) {
         options.dataAdapter = AjaxData;
@@ -5221,7 +5428,7 @@ S2.define('select2/defaults',[
     options.language = this._resolveLanguage(options.language);
 
     // Always fall back to English since it will always be complete
-    options.language.push('en');
+    options.language.push("en");
 
     var uniqueLanguages = [];
 
@@ -5244,7 +5451,7 @@ S2.define('select2/defaults',[
   };
 
   Defaults.prototype.reset = function () {
-    function stripDiacritics (text) {
+    function stripDiacritics(text) {
       // Used 'uni range + named function' from http://jsperf.com/diacritics/18
       function match(a) {
         return DIACRITICS[a] || a;
@@ -5253,9 +5460,9 @@ S2.define('select2/defaults',[
       return text.replace(/[^\u0000-\u007E]/g, match);
     }
 
-    function matcher (params, data) {
+    function matcher(params, data) {
       // Always return the object if there is nothing to compare
-      if (params.term == null || params.term.trim() === '') {
+      if (params.term == null || params.term.trim() === "") {
         return data;
       }
 
@@ -5299,8 +5506,8 @@ S2.define('select2/defaults',[
     }
 
     this.defaults = {
-      amdLanguageBase: './i18n/',
-      autocomplete: 'off',
+      amdLanguageBase: "./i18n/",
+      autocomplete: "off",
       closeOnSelect: true,
       debug: false,
       dropdownAutoWidth: false,
@@ -5322,16 +5529,20 @@ S2.define('select2/defaults',[
       templateSelection: function (selection) {
         return selection.text;
       },
-      theme: 'default',
-      width: 'resolve'
+      theme: "default",
+      width: "resolve",
     };
   };
 
   Defaults.prototype.applyFromElement = function (options, element) {
     var optionLanguage = options.language;
     var defaultLanguage = this.defaults.language;
-    var elementLanguage = element.getAttribute('lang');
-    var parentLanguage = element.closest('[lang]').getAttribute('lang');
+    if (!(element instanceof Element)) {
+      console.error("Utils.GetUniqueElementId: element is not a DOM element", element);
+      return null;
+    }
+    var elementLanguage = element.getAttribute("lang");
+    var parentLanguage = element.closest("[lang]") ? element.closest("[lang]").getAttribute("lang") : null;
 
     var languages = Array.prototype.concat.call(
       this._resolveLanguage(elementLanguage),
@@ -5354,7 +5565,7 @@ S2.define('select2/defaults',[
       return [];
     }
 
-    if (typeof language === 'object' && language.constructor === Object) {
+    if (typeof language === "object" && language.constructor === Object) {
       return [language];
     }
 
@@ -5371,9 +5582,12 @@ S2.define('select2/defaults',[
     for (var l = 0; l < languages.length; l++) {
       resolvedLanguages.push(languages[l]);
 
-      if (typeof languages[l] === 'string' && languages[l].indexOf('-') > 0) {
+      if (
+        typeof languages[l] === "string" &&
+        languages[l].indexOf("-") > 0
+      ) {
         // Extract the region information if it is included
-        var languageParts = languages[l].split('-');
+        var languageParts = languages[l].split("-");
         var baseLanguage = languageParts[0];
 
         resolvedLanguages.push(baseLanguage);
@@ -5391,7 +5605,7 @@ S2.define('select2/defaults',[
 
       var language = languages[l];
 
-      if (typeof language === 'string') {
+      if (typeof language === "string") {
         try {
           // Try to load it with the original name
           languageData = Translation.loadPath(language);
@@ -5406,13 +5620,18 @@ S2.define('select2/defaults',[
             // because of how Select2 helps load all possible translation files
             if (debug && window.console && console.warn) {
               console.warn(
-                'Select2: The language file for "' + language + '" could ' +
-                'not be automatically loaded. A fallback will be used instead.'
+                'Select2: The language file for "' +
+                  language +
+                  '" could ' +
+                  "not be automatically loaded. A fallback will be used instead."
               );
             }
           }
         }
-      } else if (typeof language === 'object' && language.constructor === Object) {
+      } else if (
+        typeof language === "object" &&
+        language.constructor === Object
+      ) {
         languageData = new Translation(language);
       } else {
         languageData = language;
@@ -5432,9 +5651,7 @@ S2.define('select2/defaults',[
 
     var data = {};
     data[camelKey] = value;
-
     var convertedData = Utils._convertData(data);
-
     Object.assign(this.defaults, convertedData);
   };
 
@@ -5447,7 +5664,7 @@ S2.define('select2/options',[
   './defaults',
   './utils'
 ], function (Defaults, Utils) {
-  function Options (options, element) {
+  function Options(options, element) {
     this.options = options;
 
     if (element != null) {
@@ -5462,7 +5679,7 @@ S2.define('select2/options',[
   }
 
   Options.prototype.fromElement = function (e) {
-    var excludedData = ['select2'];
+    var excludedData = ["select2"];
 
     if (this.options.multiple == null) {
       this.options.multiple = e.multiple;
@@ -5477,42 +5694,46 @@ S2.define('select2/options',[
     }
 
     if (this.options.dir == null) {
+
       if (e.dir) {
         this.options.dir = e.dir;
-      } else if (e.closest('[dir]').dir) {
-        this.options.dir = e.closest('[dir]').dir;
       } else {
-        this.options.dir = 'ltr';
+        const closestDirElement = e.closest("[dir]");
+        if (closestDirElement && closestDirElement.dir) {
+          this.options.dir = closestDirElement.dir;
+        } else {
+          this.options.dir = "ltr";
+        }
       }
     }
 
     e.disabled = this.options.disabled;
     e.multiple = this.options.multiple;
 
-    if (Utils.GetData(e, 'select2Tags')) {
+    if (Utils.GetData(e, "select2Tags")) {
       if (this.options.debug && window.console && console.warn) {
         console.warn(
-          'Select2: The `data-select2-tags` attribute has been changed to ' +
-          'use the `data-data` and `data-tags="true"` attributes and will be ' +
-          'removed in future versions of Select2.'
+          "Select2: The `data-select2-tags` attribute has been changed to " +
+            'use the `data-data` and `data-tags="true"` attributes and will be ' +
+            "removed in future versions of Select2."
         );
       }
 
-      Utils.StoreData(e, 'data', Utils.GetData(e, 'select2Tags'));
-      Utils.StoreData(e, 'tags', true);
+      Utils.StoreData(e, "data", Utils.GetData(e, "select2Tags"));
+      Utils.StoreData(e, "tags", true);
     }
 
-    if (Utils.GetData(e, 'ajaxUrl')) {
+    if (Utils.GetData(e, "ajaxUrl")) {
       if (this.options.debug && window.console && console.warn) {
         console.warn(
-          'Select2: The `data-ajax-url` attribute has been changed to ' +
-          '`data-ajax--url` and support for the old attribute will be removed' +
-          ' in future versions of Select2.'
+          "Select2: The `data-ajax-url` attribute has been changed to " +
+            "`data-ajax--url` and support for the old attribute will be removed" +
+            " in future versions of Select2."
         );
       }
 
-      e.setAttribute('ajax--url', Utils.GetData(e, 'ajaxUrl'));
-      Utils.StoreData(e, 'ajax-Url', Utils.GetData(e, 'ajaxUrl'));
+      e.setAttribute("ajax--url", Utils.GetData(e, "ajaxUrl"));
+      Utils.StoreData(e, "ajax-Url", Utils.GetData(e, "ajaxUrl"));
     }
 
     var dataset = {};
@@ -5520,11 +5741,10 @@ S2.define('select2/options',[
     function upperCaseLetter(_, letter) {
       return letter.toUpperCase();
     }
-
     // Pre-load all of the attributes which are prefixed with `data-`
     for (var attr = 0; attr < e.attributes.length; attr++) {
       var attributeName = e.attributes[attr].name;
-      var prefix = 'data-';
+      var prefix = "data-";
 
       if (attributeName.substr(0, prefix.length) == prefix) {
         // Get the contents of the attribute after `data-`
@@ -5532,9 +5752,11 @@ S2.define('select2/options',[
 
         // Get the data contents from the consistent source
         var dataValue = Utils.GetData(e, dataName);
-
         // camelCase the attribute name to match the spec
-        var camelDataName = dataName.replace(/-([a-z])/g, upperCaseLetter);
+        var camelDataName = dataName.replace(
+          /-([a-z])/g,
+          upperCaseLetter
+        );
 
         // Store the data attribute contents into the dataset since
         dataset[camelDataName] = dataValue;
@@ -5545,10 +5767,8 @@ S2.define('select2/options',[
     if (e.dataset) {
       dataset = Object.assign({}, e.dataset, dataset);
     }
-
     // Prefer our internal data cache if it exists
     var data = Object.assign({}, Utils.GetData(e), dataset);
-
     data = Utils._convertData(data);
 
     for (var key in data) {
@@ -5556,7 +5776,10 @@ S2.define('select2/options',[
         continue;
       }
 
-      if (typeof this.options[key] === 'object' && this.options[key] !== null) {
+      if (
+        typeof this.options[key] === "object" &&
+        this.options[key] !== null
+      ) {
         Object.assign(this.options[key], data[key]);
       } else {
         this.options[key] = data[key];
@@ -5583,8 +5806,8 @@ S2.define('select2/core',[
   './keys'
 ], function (Options, Utils, KEYS) {
   var Select2 = function (element, options) {
-    if (Utils.GetData(element, 'select2') != null) {
-      Utils.GetData(element, 'select2').destroy();
+    if (Utils.GetData(element, "select2") != null) {
+      Utils.GetData(element, "select2").destroy();
     }
 
     this.element = element;
@@ -5599,33 +5822,37 @@ S2.define('select2/core',[
 
     // Set up the tabindex
 
-    var tabindex = element.getAttribute('tabindex') || 0;
-    Utils.StoreData(element, 'old-tabindex', tabindex);
-    element.setAttribute('tabindex', '-1');
+    var tabindex = element.getAttribute("tabindex") || 0;
+    Utils.StoreData(element, "old-tabindex", tabindex);
+    element.setAttribute("tabindex", "-1");
 
     // Set up containers and adapters
 
-    var DataAdapter = this.options.get('dataAdapter');
+    var DataAdapter = this.options.get("dataAdapter");
     this.dataAdapter = new DataAdapter(element, this.options);
 
     var container = this.render();
 
     this._placeContainer(container);
 
-    var SelectionAdapter = this.options.get('selectionAdapter');
+    var SelectionAdapter = this.options.get("selectionAdapter");
     this.selection = new SelectionAdapter(element, this.options);
     this.selectionElement = this.selection.render();
 
     this.selection.position(this.selectionElement, container);
 
-    var DropdownAdapter = this.options.get('dropdownAdapter');
+    var DropdownAdapter = this.options.get("dropdownAdapter");
     this.dropdown = new DropdownAdapter(element, this.options);
     this.dropdownElement = this.dropdown.render();
 
     this.dropdown.position(this.dropdownElement, container);
 
-    var ResultsAdapter = this.options.get('resultsAdapter');
-    this.results = new ResultsAdapter(element, this.options, this.dataAdapter);
+    var ResultsAdapter = this.options.get("resultsAdapter");
+    this.results = new ResultsAdapter(
+      element,
+      this.options,
+      this.dataAdapter
+    );
     this.resultsElement = this.results.render();
 
     this.results.position(this.resultsElement, this.dropdownElement);
@@ -5649,19 +5876,19 @@ S2.define('select2/core',[
 
     // Set the initial state
     this.dataAdapter.current(function (initialData) {
-      self.trigger('selection:update', {
-        data: initialData
+      self.trigger("selection:update", {
+        data: initialData,
       });
     });
 
     // Hide the original select
-    element.classList.add('select2-hidden-accessible');
-    element.setAttribute('aria-hidden', 'true');
+    element.classList.add("select2-hidden-accessible");
+    element.setAttribute("aria-hidden", "true");
 
     // Synchronize any monitored attributes
     this._syncAttributes();
 
-    Utils.StoreData(element, 'select2', this);
+    Utils.StoreData(element, "select2", this);
 
     // Ensure backwards compatibility with element.data('select2').
     element.select2 = this;
@@ -5671,26 +5898,29 @@ S2.define('select2/core',[
   Utils.Extend(Select2, Utils.Observable);
 
   Select2.prototype._generateId = function (element) {
-    var id = '';
+    var id = "";
 
-    if (element.getAttribute('id') != null) {
-      id = element.getAttribute('id');
-    } else if (element.getAttribute('name') != null) {
-      id = element.getAttribute('name') + '-' + Utils.generateChars(2);
+    if (element.getAttribute("id") != null) {
+      id = element.getAttribute("id");
+    } else if (element.getAttribute("name") != null) {
+      id = element.getAttribute("name") + "-" + Utils.generateChars(2);
     } else {
       id = Utils.generateChars(4);
     }
 
-    id = id.replace(/(:|\.|\[|\]|,)/g, '');
-    id = 'select2-' + id;
+    id = id.replace(/(:|\.|\[|\]|,)/g, "");
+    id = "select2-" + id;
 
     return id;
   };
 
   Select2.prototype._placeContainer = function (container) {
-    container.insertAdjacentElement('afterend', this.element);
+    container.insertAdjacentElement("afterend", this.element);
 
-    var width = this._resolveWidth(this.element, this.options.get('width'));
+    var width = this._resolveWidth(
+      this.element,
+      this.options.get("width")
+    );
 
     if (width != null) {
       container.style.width = width;
@@ -5698,39 +5928,40 @@ S2.define('select2/core',[
   };
 
   Select2.prototype._resolveWidth = function (element, method) {
-    var WIDTH = /^width:(([-+]?([0-9]*\.)?[0-9]+)(px|em|ex|%|in|cm|mm|pt|pc))/i;
+    var WIDTH =
+      /^width:(([-+]?([0-9]*\.)?[0-9]+)(px|em|ex|%|in|cm|mm|pt|pc))/i;
 
-    if (method == 'resolve') {
-      var styleWidth = this._resolveWidth(element, 'style');
+    if (method == "resolve") {
+      var styleWidth = this._resolveWidth(element, "style");
 
       if (styleWidth != null) {
         return styleWidth;
       }
 
-      return this._resolveWidth(element, 'element');
+      return this._resolveWidth(element, "element");
     }
 
-    if (method == 'element') {
+    if (method == "element") {
       var elementWidth = element.offsetWidth;
 
       if (elementWidth <= 0) {
-        return 'auto';
+        return "auto";
       }
 
-      return elementWidth + 'px';
+      return elementWidth + "px";
     }
 
-    if (method == 'style') {
-      var style = element.getAttribute('style');
+    if (method == "style") {
+      var style = element.getAttribute("style");
 
-      if (typeof(style) !== 'string') {
+      if (typeof style !== "string") {
         return null;
       }
 
-      var attrs = style.split(';');
+      var attrs = style.split(";");
 
       for (var i = 0, l = attrs.length; i < l; i = i + 1) {
-        var attr = attrs[i].replace(/\s/g, '');
+        var attr = attrs[i].replace(/\s/g, "");
         var matches = attr.match(WIDTH);
 
         if (matches !== null && matches.length >= 1) {
@@ -5741,7 +5972,7 @@ S2.define('select2/core',[
       return null;
     }
 
-    if (method == 'computedstyle') {
+    if (method == "computedstyle") {
       var computedStyle = window.getComputedStyle(element);
 
       return computedStyle.width;
@@ -5761,16 +5992,16 @@ S2.define('select2/core',[
   Select2.prototype._registerDomEvents = function () {
     var self = this;
 
-    this.element.addEventListener('change', function () {
+    this.element.addEventListener("change", function () {
       self.dataAdapter.current(function (data) {
-        self.trigger('selection:update', {
-          data: data
+        self.trigger("selection:update", {
+          data: data,
         });
       });
     });
 
-    this.element.addEventListener('focus', function (evt) {
-      self.trigger('focus', evt);
+    this.element.addEventListener("focus", function (evt) {
+      self.trigger("focus", evt);
     });
 
     this._syncA = Utils.bind(this._syncAttributes, this);
@@ -5783,31 +6014,31 @@ S2.define('select2/core',[
     this._observer.observe(this.element, {
       attributes: true,
       childList: true,
-      subtree: false
+      subtree: false,
     });
   };
 
   Select2.prototype._registerDataEvents = function () {
     var self = this;
 
-    this.dataAdapter.on('*', function (name, params) {
+    this.dataAdapter.on("*", function (name, params) {
       self.trigger(name, params);
     });
   };
 
   Select2.prototype._registerSelectionEvents = function () {
     var self = this;
-    var nonRelayEvents = ['toggle', 'focus'];
+    var nonRelayEvents = ["toggle", "focus"];
 
-    this.selection.on('toggle', function () {
+    this.selection.on("toggle", function () {
       self.toggleDropdown();
     });
 
-    this.selection.on('focus', function (params) {
+    this.selection.on("focus", function (params) {
       self.focus(params);
     });
 
-    this.selection.on('*', function (name, params) {
+    this.selection.on("*", function (name, params) {
       if (nonRelayEvents.indexOf(name) !== -1) {
         return;
       }
@@ -5819,7 +6050,7 @@ S2.define('select2/core',[
   Select2.prototype._registerDropdownEvents = function () {
     var self = this;
 
-    this.dropdown.on('*', function (name, params) {
+    this.dropdown.on("*", function (name, params) {
       self.trigger(name, params);
     });
   };
@@ -5827,7 +6058,7 @@ S2.define('select2/core',[
   Select2.prototype._registerResultsEvents = function () {
     var self = this;
 
-    this.results.on('*', function (name, params) {
+    this.results.on("*", function (name, params) {
       self.trigger(name, params);
     });
   };
@@ -5835,49 +6066,49 @@ S2.define('select2/core',[
   Select2.prototype._registerEvents = function () {
     var self = this;
 
-    this.on('open', function () {
-      self.container.classList.add('select2-container--open');
+    this.on("open", function () {
+      self.container.classList.add("select2-container--open");
     });
 
-    this.on('close', function () {
-      self.container.classList.remove('select2-container--open');
+    this.on("close", function () {
+      self.container.classList.remove("select2-container--open");
     });
 
-    this.on('enable', function () {
-      self.container.classList.remove('select2-container--disabled');
+    this.on("enable", function () {
+      self.container.classList.remove("select2-container--disabled");
     });
 
-    this.on('disable', function () {
-      self.container.classList.add('select2-container--disabled');
+    this.on("disable", function () {
+      self.container.classList.add("select2-container--disabled");
     });
 
-    this.on('blur', function () {
-      self.container.classList.remove('select2-container--focus');
+    this.on("blur", function () {
+      self.container.classList.remove("select2-container--focus");
     });
 
-    this.on('query', function (params) {
+    this.on("query", function (params) {
       if (!self.isOpen()) {
-        self.trigger('open', {});
+        self.trigger("open", {});
       }
 
       this.dataAdapter.query(params, function (data) {
-        self.trigger('results:all', {
+        self.trigger("results:all", {
           data: data,
-          query: params
+          query: params,
         });
       });
     });
 
-    this.on('query:append', function (params) {
+    this.on("query:append", function (params) {
       this.dataAdapter.query(params, function (data) {
-        self.trigger('results:append', {
+        self.trigger("results:append", {
           data: data,
-          query: params
+          query: params,
         });
       });
     });
 
-    this.on('keypress', function (evt) {
+    this.on("keypress", function (evt) {
       var key = evt.which;
 
       if (self.isOpen()) {
@@ -5886,25 +6117,28 @@ S2.define('select2/core',[
 
           evt.preventDefault();
         } else if (key === KEYS.ENTER || key === KEYS.TAB) {
-          self.trigger('results:select', {});
+          self.trigger("results:select", {});
 
           evt.preventDefault();
-        } else if ((key === KEYS.SPACE && evt.ctrlKey)) {
-          self.trigger('results:toggle', {});
+        } else if (key === KEYS.SPACE && evt.ctrlKey) {
+          self.trigger("results:toggle", {});
 
           evt.preventDefault();
         } else if (key === KEYS.UP) {
-          self.trigger('results:previous', {});
+          self.trigger("results:previous", {});
 
           evt.preventDefault();
         } else if (key === KEYS.DOWN) {
-          self.trigger('results:next', {});
+          self.trigger("results:next", {});
 
           evt.preventDefault();
         }
       } else {
-        if (key === KEYS.ENTER || key === KEYS.SPACE ||
-            (key === KEYS.DOWN && evt.altKey)) {
+        if (
+          key === KEYS.ENTER ||
+          key === KEYS.SPACE ||
+          (key === KEYS.DOWN && evt.altKey)
+        ) {
           self.open();
 
           evt.preventDefault();
@@ -5914,16 +6148,16 @@ S2.define('select2/core',[
   };
 
   Select2.prototype._syncAttributes = function () {
-    this.options.set('disabled', this.element.disabled);
+    this.options.set("disabled", this.element.disabled);
 
     if (this.isDisabled()) {
       if (this.isOpen()) {
         this.close();
       }
 
-      this.trigger('disable', {});
+      this.trigger("disable", {});
     } else {
-      this.trigger('enable', {});
+      this.trigger("enable", {});
     }
   };
 
@@ -5938,7 +6172,10 @@ S2.define('select2/core',[
           return true;
         }
       }
-    } else if (mutations.removedNodes && mutations.removedNodes.length > 0) {
+    } else if (
+      mutations.removedNodes &&
+      mutations.removedNodes.length > 0
+    ) {
       return true;
     } else if (Array.isArray(mutations)) {
       return mutations.some(function (mutation) {
@@ -5956,8 +6193,8 @@ S2.define('select2/core',[
     // Only re-pull the data if we think there is a change
     if (changed) {
       this.dataAdapter.current(function (currentData) {
-        self.trigger('selection:update', {
-          data: currentData
+        self.trigger("selection:update", {
+          data: currentData,
         });
       });
     }
@@ -5970,11 +6207,11 @@ S2.define('select2/core',[
   Select2.prototype.trigger = function (name, args) {
     var actualTrigger = Select2.__super__.trigger;
     var preTriggerMap = {
-      'open': 'opening',
-      'close': 'closing',
-      'select': 'selecting',
-      'unselect': 'unselecting',
-      'clear': 'clearing'
+      open: "opening",
+      close: "closing",
+      select: "selecting",
+      unselect: "unselecting",
+      clear: "clearing",
     };
 
     if (args === undefined) {
@@ -5986,7 +6223,7 @@ S2.define('select2/core',[
       var preTriggerArgs = {
         prevented: false,
         name: name,
-        args: args
+        args: args,
       };
 
       actualTrigger.call(this, preTriggerName, preTriggerArgs);
@@ -6022,7 +6259,7 @@ S2.define('select2/core',[
       return;
     }
 
-    this.trigger('query', {});
+    this.trigger("query", {});
   };
 
   Select2.prototype.close = function (evt) {
@@ -6030,7 +6267,7 @@ S2.define('select2/core',[
       return;
     }
 
-    this.trigger('close', { originalEvent : evt });
+    this.trigger("close", { originalEvent: evt });
   };
 
   /**
@@ -6051,15 +6288,15 @@ S2.define('select2/core',[
    * @return {false} if the disabled option is false.
    */
   Select2.prototype.isDisabled = function () {
-    return this.options.get('disabled');
+    return this.options.get("disabled");
   };
 
   Select2.prototype.isOpen = function () {
-    return this.container.classList.contains('select2-container--open');
+    return this.container.classList.contains("select2-container--open");
   };
 
   Select2.prototype.hasFocus = function () {
-    return this.container.classList.contains('select2-container--focus');
+    return this.container.classList.contains("select2-container--focus");
   };
 
   Select2.prototype.focus = function (data) {
@@ -6068,16 +6305,16 @@ S2.define('select2/core',[
       return;
     }
 
-    this.container.classList.add('select2-container--focus');
-    this.trigger('focus', {});
+    this.container.classList.add("select2-container--focus");
+    this.trigger("focus", {});
   };
 
   Select2.prototype.enable = function (args) {
-    if (this.options.get('debug') && window.console && console.warn) {
+    if (this.options.get("debug") && window.console && console.warn) {
       console.warn(
         'Select2: The `select2("enable")` method has been deprecated and will' +
-        ' be removed in later Select2 versions. Use element.disabled' +
-        ' instead.'
+          " be removed in later Select2 versions. Use element.disabled" +
+          " instead."
       );
     }
 
@@ -6091,11 +6328,15 @@ S2.define('select2/core',[
   };
 
   Select2.prototype.data = function () {
-    if (this.options.get('debug') &&
-        arguments.length > 0 && window.console && console.warn) {
+    if (
+      this.options.get("debug") &&
+      arguments.length > 0 &&
+      window.console &&
+      console.warn
+    ) {
       console.warn(
         'Select2: Data can no longer be set using `select2("data")`. You ' +
-        'should consider setting the value instead using `element.value`.'
+          "should consider setting the value instead using `element.value`."
       );
     }
 
@@ -6109,15 +6350,14 @@ S2.define('select2/core',[
   };
 
   Select2.prototype.val = function (args) {
-    if (this.options.get('debug') && window.console && console.warn) {
+    if (this.options.get("debug") && window.console && console.warn) {
       console.warn(
         'Select2: The `select2("val")` method has been deprecated and will be' +
-        ' removed in later Select2 versions. Use element.value instead.'
+          " removed in later Select2 versions. Use element.value instead."
       );
     }
-
     if (args == null || args.length === 0) {
-      return this.element.value;
+      return Array.from(this.element.selectedOptions).map((option) => option.value)
     }
 
     var newVal = args[0];
@@ -6129,8 +6369,8 @@ S2.define('select2/core',[
     }
 
     this.element.value = newVal;
-    this.element.dispatchEvent(new Event('input'));
-    this.element.dispatchEvent(new Event('change'));
+    this.element.dispatchEvent(new Event("input"));
+    this.element.dispatchEvent(new Event("change"));
   };
 
   Select2.prototype.destroy = function () {
@@ -6143,13 +6383,15 @@ S2.define('select2/core',[
     this._syncA = null;
     this._syncS = null;
 
-    this.element.removeEventListener('change', this._syncA);
-    this.element.removeEventListener('focus', this._syncS);
-    this.element.setAttribute('tabindex',
-    Utils.GetData(this.element, 'old-tabindex'));
+    this.element.removeEventListener("change", this._syncA);
+    this.element.removeEventListener("focus", this._syncS);
+    this.element.setAttribute(
+      "tabindex",
+      Utils.GetData(this.element, "old-tabindex")
+    );
 
-    this.element.classList.remove('select2-hidden-accessible');
-    this.element.setAttribute('aria-hidden', 'false');
+    this.element.classList.remove("select2-hidden-accessible");
+    this.element.setAttribute("aria-hidden", "false");
     Utils.RemoveData(this.element);
     delete this.element.select2;
 
@@ -6165,19 +6407,21 @@ S2.define('select2/core',[
   };
 
   Select2.prototype.render = function () {
-    var container = document.createElement('span');
-    container.className = 'select2 select2-container';
-    container.innerHTML = '<span class="selection"></span>' +
-                          '<span class="dropdown-wrapper" aria-hidden="true"></span>';
+    var container = document.createElement("span");
+    container.className = "select2 select2-container";
+    container.innerHTML =
+      '<span class="selection"></span>' +
+      '<span class="dropdown-wrapper" aria-hidden="true"></span>';
 
-    container.setAttribute('dir', this.options.get('dir'));
+    container.setAttribute("dir", this.options.get("dir"));
 
     this.container = container;
 
-    this.container.classList
-      .add('select2-container--' + this.options.get('theme'));
+    this.container.classList.add(
+      "select2-container--" + this.options.get("theme")
+    );
 
-    Utils.StoreData(container, 'element', this.element);
+    Utils.StoreData(container, "element", this.element);
 
     return container;
   };
@@ -6190,27 +6434,27 @@ S2.define('select2',[
   './select2/defaults',
   './select2/utils'
 ], function (Select2, Defaults, Utils) {
-  if (typeof window.Select2 === 'undefined') {
+  if (typeof window.Select2 === "undefined") {
     window.Select2 = Select2;
   }
 
-  if (typeof window.Select2.defaults === 'undefined') {
+  if (typeof window.Select2.defaults === "undefined") {
     window.Select2.defaults = Defaults;
   }
 
-  if (typeof window.Select2.Utils === 'undefined') {
+  if (typeof window.Select2.Utils === "undefined") {
     window.Select2.Utils = Utils;
   }
 
-  if (typeof window.Select2.fn === 'undefined') {
+  if (typeof window.Select2.fn === "undefined") {
     window.Select2.fn = {};
   }
 
-  if (typeof window.Select2.fn.select2 === 'undefined') {
+  if (typeof window.Select2.fn.select2 === "undefined") {
     window.Select2.fn.select2 = function (options) {
       options = options || {};
 
-      if (typeof options === 'object') {
+      if (typeof options === "object") {
         this.each(function () {
           var instanceOptions = Object.assign({}, options);
 
@@ -6218,17 +6462,19 @@ S2.define('select2',[
         });
 
         return this;
-      } else if (typeof options === 'string') {
+      } else if (typeof options === "string") {
         var ret;
         var args = Array.prototype.slice.call(arguments, 1);
 
         this.each(function () {
-          var instance = Utils.GetData(this, 'select2');
+          var instance = Utils.GetData(this, "select2");
 
           if (instance == null && window.console && console.error) {
             console.error(
-              'The select2(\'' + options + '\') method was called on an ' +
-              'element that is not using Select2.'
+              "The select2('" +
+                options +
+                "') method was called on an " +
+                "element that is not using Select2."
             );
           }
 
@@ -6236,13 +6482,13 @@ S2.define('select2',[
         });
 
         // Check if we should be returning `this`
-        if (['open', 'close', 'destroy'].indexOf(options) > -1) {
+        if (["open", "close", "destroy"].indexOf(options) > -1) {
           return this;
         }
 
         return ret;
       } else {
-        throw new Error('Invalid arguments for Select2: ' + options);
+        throw new Error("Invalid arguments for Select2: " + options);
       }
     };
   }
@@ -6251,6 +6497,8 @@ S2.define('select2',[
 });
 
   // Return the AMD loader configuration so it can be used outside of this file
+  window.require = S2.require;
+  window.define = S2.define;
   return {
     define: S2.define,
     require: S2.require

@@ -81,12 +81,20 @@ define(["./array", "../utils"], function (ArrayAdapter, Utils) {
         function (data) {
           var results = self.processResults(data, params);
 
-          if (results && results.results && Array.isArray(results.results)) {
+          if (
+            results &&
+            results.results &&
+            Array.isArray(results.results)
+          ) {
             results.results = results.results.map(
               AjaxAdapter.prototype._normalizeItem
             );
           } else {
-            if (self.options.get("debug") && window.console && console.error) {
+            if (
+              self.options.get("debug") &&
+              window.console &&
+              console.error
+            ) {
               // Check to make sure that the response included a `results` key.
               console.error(
                 "Select2: The AJAX results did not return an array in the " +
@@ -122,7 +130,10 @@ define(["./array", "../utils"], function (ArrayAdapter, Utils) {
         window.clearTimeout(this._queryTimeout);
       }
 
-      this._queryTimeout = window.setTimeout(request, this.ajaxOptions.delay);
+      this._queryTimeout = window.setTimeout(
+        request,
+        this.ajaxOptions.delay
+      );
     } else {
       request();
     }

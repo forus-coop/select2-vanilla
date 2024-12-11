@@ -1,7 +1,11 @@
 define([], function () {
   function StopPropagation() {}
 
-  StopPropagation.prototype.bind = function (decorated, container, $container) {
+  StopPropagation.prototype.bind = function (
+    decorated,
+    container,
+    $container
+  ) {
     decorated.call(this, container, $container);
 
     var stoppedEvents = [
@@ -27,8 +31,10 @@ define([], function () {
       "touchstart",
     ];
 
-    this.selection.on(stoppedEvents.join(" "), function (evt) {
-      evt.stopPropagation();
+    stoppedEvents.forEach((event) => {
+      this.selection.addEventListener(event, function (evt) {
+        evt.stopPropagation();
+      });
     });
   };
 

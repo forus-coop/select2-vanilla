@@ -1,7 +1,7 @@
 define([
   './utils'
 ], function (Utils) {
-  function Dropdown (element, options) {
+  function Dropdown(element, options) {
     this.element = element;
     this.options = options;
 
@@ -11,11 +11,11 @@ define([
   Utils.Extend(Dropdown, Utils.Observable);
 
   Dropdown.prototype.render = function () {
-    var dropdown = document.createElement('span');
-    dropdown.className = 'select2-dropdown';
+    var dropdown = document.createElement("span");
+    dropdown.className = "select2-dropdown";
     dropdown.innerHTML = '<span class="select2-results"></span>';
 
-    dropdown.setAttribute('dir', this.options.get('dir'));
+    dropdown.setAttribute("dir", this.options.get("dir"));
 
     this.dropdown = dropdown;
 

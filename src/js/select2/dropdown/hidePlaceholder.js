@@ -1,8 +1,10 @@
 define([
 
 ], function () {
-  function HidePlaceholder (decorated, $element, options, dataAdapter) {
-    this.placeholder = this.normalizePlaceholder(options.get('placeholder'));
+  function HidePlaceholder(decorated, $element, options, dataAdapter) {
+    this.placeholder = this.normalizePlaceholder(
+      options.get("placeholder")
+    );
 
     decorated.call(this, $element, options, dataAdapter);
   }
@@ -13,11 +15,14 @@ define([
     decorated.call(this, data);
   };
 
-  HidePlaceholder.prototype.normalizePlaceholder = function (_, placeholder) {
-    if (typeof placeholder === 'string') {
+  HidePlaceholder.prototype.normalizePlaceholder = function (
+    _,
+    placeholder
+  ) {
+    if (typeof placeholder === "string") {
       placeholder = {
-        id: '',
-        text: placeholder
+        id: "",
+        text: placeholder,
       };
     }
 

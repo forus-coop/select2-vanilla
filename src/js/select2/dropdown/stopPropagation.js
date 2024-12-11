@@ -27,8 +27,10 @@ define([], function () {
       "touchstart",
     ];
 
-    this.dropdown.on(stoppedEvents.join(" "), function (evt) {
-      evt.stopPropagation();
+    stoppedEvents.forEach((event) => {
+      this.dropdown.addEventListener(event, function (evt) {
+        evt.stopPropagation();
+      });
     });
   };
 

@@ -14,19 +14,21 @@ define(["./select", "../utils"], function (SelectAdapter, Utils) {
   };
 
   ArrayAdapter.prototype.select = function (data) {
-    var $option = this.element
-      .querySelectorAll("option")
-      .filter(function (i, elm) {
-        return elm.value == data.id.toString();
-      });
+    var self = this;
 
-    if ($option.length === 0) {
-      $option = this.option(data);
+    // Convert NodeList to array
+    var options = Array.prototype.slice.call(this.element.querySelectorAll('option'));
 
-      this.addOptions($option);
+    var option = options.filter(function (option) {
+      return option.value == data.id.toString();
+    });
+
+    if (option.length === 0) {
+      var option = this.option(data);
+      this.element.appendChild(option);
     }
 
-    ArrayAdapter.__super__.select.call(this, data);
+    option[0].selected = true;
   };
 
   ArrayAdapter.prototype.convertToOptions = function (data) {
@@ -51,7 +53,9 @@ define(["./select", "../utils"], function (SelectAdapter, Utils) {
 
       // Skip items which were pre-loaded, only merge the data
       if (existingIds.indexOf(item.id) >= 0) {
-        var $existingOption = Array.from($existing).filter(onlyItem(item));
+        var $existingOption = Array.from($existing).filter(
+          onlyItem(item)
+        );
 
         var existingData = this.item($existingOption);
         var newData = Object.assign({}, item, existingData);

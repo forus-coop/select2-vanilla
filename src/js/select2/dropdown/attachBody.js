@@ -23,7 +23,7 @@ define(["../utils"], function (Utils) {
       self._detachPositioningHandler(container);
     });
 
-    this.dropdownContainer.on("mousedown", function (evt) {
+    container.on("mousedown", function (evt) {
       evt.stopPropagation();
     });
   };
@@ -34,7 +34,11 @@ define(["../utils"], function (Utils) {
     this.dropdownContainer.remove();
   };
 
-  AttachBody.prototype.position = function (decorated, $dropdown, $container) {
+  AttachBody.prototype.position = function (
+    decorated,
+    $dropdown,
+    $container
+  ) {
     // Clone all of the container classes
     $dropdown.className = $container.className;
 
@@ -210,10 +214,12 @@ define(["../utils"], function (Utils) {
       height: this.dropdown.offsetHeight,
     };
 
+
     var viewport = {
       top: $window.scrollY,
       bottom: $window.scrollY + $window.innerHeight,
     };
+
 
     var enoughRoomAbove = viewport.top < offset.top - dropdown.height;
     var enoughRoomBelow = viewport.bottom > offset.bottom + dropdown.height;
@@ -222,6 +228,7 @@ define(["../utils"], function (Utils) {
       left: offset.left + "px",
       top: container.bottom + "px",
     };
+
 
     // Determine what the parent element is to use for calculating the offset
     var $offsetParent = this.dropdownParent;

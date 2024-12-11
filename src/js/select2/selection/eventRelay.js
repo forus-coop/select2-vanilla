@@ -1,23 +1,36 @@
 define(function () {
-  function EventRelay () { }
+  function EventRelay() {}
 
-  EventRelay.prototype.bind = function (decorated, container, containerElement) {
+  EventRelay.prototype.bind = function (
+    decorated,
+    container,
+    containerElement
+  ) {
     var self = this;
     var relayEvents = [
-      'open', 'opening',
-      'close', 'closing',
-      'select', 'selecting',
-      'unselect', 'unselecting',
-      'clear', 'clearing'
+      "open",
+      "opening",
+      "close",
+      "closing",
+      "select",
+      "selecting",
+      "unselect",
+      "unselecting",
+      "clear",
+      "clearing",
     ];
 
     var preventableEvents = [
-      'opening', 'closing', 'selecting', 'unselecting', 'clearing'
+      "opening",
+      "closing",
+      "selecting",
+      "unselecting",
+      "clearing",
     ];
 
     decorated.call(this, container, containerElement);
 
-    container.on('*', function (name, params) {
+    container.on("*", function (name, params) {
       // Ignore events that should not be relayed
       if (relayEvents.indexOf(name) === -1) {
         return;
@@ -27,12 +40,12 @@ define(function () {
       params = params || {};
 
       // Generate the custom event for the Select2 event
-      var evt = new CustomEvent('select2:' + name, {
+      var evt = new CustomEvent("select2:" + name, {
         detail: {
-          params: params
+          params: params,
         },
         bubbles: true,
-        cancelable: true
+        cancelable: true,
       });
 
       self.element.dispatchEvent(evt);

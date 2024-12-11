@@ -2,7 +2,7 @@ define([
   './base',
   '../utils'
 ], function (BaseAdapter, Utils) {
-  function SelectAdapter (element, options) {
+  function SelectAdapter(element, options) {
     this.element = element;
     this.options = options;
 
@@ -15,7 +15,7 @@ define([
     var self = this;
 
     var data = Array.prototype.map.call(
-      this.element.querySelectorAll(':checked'),
+      this.element.querySelectorAll(":checked"),
       function (selectedElement) {
         return self.item(selectedElement);
       }
@@ -31,12 +31,13 @@ define([
 
     // If data.element is a DOM node, use it instead
     if (
-      data.element != null && data.element.tagName.toLowerCase() === 'option'
+      data.element != null &&
+      data.element.tagName.toLowerCase() === "option"
     ) {
       data.element.selected = true;
 
-      this.element.dispatchEvent(new Event('input'));
-      this.element.dispatchEvent(new Event('change'));
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
 
       return;
     }
@@ -54,18 +55,29 @@ define([
           if (val.indexOf(id) === -1) {
             val.push(id);
           }
+
+          // Find the corresponding <option> element and mark it as selected
+          var option = Array.from(self.element.options).find(option => option.value === id);
+          if (option) {
+            option.selected = true;
+          }
         }
 
-        self.element.value = val;
-        self.element.dispatchEvent(new Event('input'));
-        self.element.dispatchEvent(new Event('change'));
+        // Dispatch events to notify the change
+        self.element.dispatchEvent(new Event("input"));
+        self.element.dispatchEvent(new Event("change"));
       });
     } else {
       var val = data.id;
 
-      this.element.value = val;
-      this.element.dispatchEvent(new Event('input'));
-      this.element.dispatchEvent(new Event('change'));
+      // Find the corresponding <option> element and mark it as selected
+      var option = Array.from(this.element.options).find(option => option.value === val);
+      if (option) {
+        option.selected = true;
+      }
+
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
     }
   };
 
@@ -80,12 +92,12 @@ define([
 
     if (
       data.element != null &&
-      data.element.tagName.toLowerCase() === 'option'
+      data.element.tagName.toLowerCase() === "option"
     ) {
       data.element.selected = false;
 
-      this.element.dispatchEvent(new Event('input'));
-      this.element.dispatchEvent(new Event('change'));
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
 
       return;
     }
@@ -103,8 +115,8 @@ define([
 
       self.element.value = val;
 
-      self.element.dispatchEvent(new Event('input'));
-      self.element.dispatchEvent(new Event('change'));
+      self.element.dispatchEvent(new Event("input"));
+      self.element.dispatchEvent(new Event("change"));
     });
   };
 
@@ -113,18 +125,18 @@ define([
 
     this.container = container;
 
-    container.on('select', function (params) {
+    container.on("select", function (params) {
       self.select(params.data);
     });
 
-    container.on('unselect', function (params) {
+    container.on("unselect", function (params) {
       self.unselect(params.data);
     });
   };
 
   SelectAdapter.prototype.destroy = function () {
     // Remove anything added to child elements
-    var elements = this.element.querySelectorAll('*');
+    var elements = this.element.querySelectorAll("*");
     elements.forEach(function (el) {
       // Remove any custom data set by Select2
       Utils.RemoveData(el);
@@ -139,8 +151,8 @@ define([
 
     Array.prototype.forEach.call(options, function (option) {
       if (
-        option.tagName.toLowerCase() !== 'option' &&
-        option.tagName.toLowerCase() !== 'optgroup'
+        option.tagName.toLowerCase() !== "option" &&
+        option.tagName.toLowerCase() !== "optgroup"
       ) {
         return;
       }
@@ -155,7 +167,7 @@ define([
     });
 
     callback({
-      results: data
+      results: data,
     });
   };
 
@@ -170,10 +182,10 @@ define([
     var option;
 
     if (data.children) {
-      option = document.createElement('optgroup');
+      option = document.createElement("optgroup");
       option.label = data.text;
     } else {
-      option = document.createElement('option');
+      option = document.createElement("option");
 
       if (option.textContent !== undefined) {
         option.textContent = data.text;
@@ -202,7 +214,7 @@ define([
     normalizedData.element = option;
 
     // Override the option's data with the combined data
-    Utils.StoreData(option, 'data', normalizedData);
+    Utils.StoreData(option, "data", normalizedData);
 
     return option;
   };
@@ -210,34 +222,38 @@ define([
   SelectAdapter.prototype.item = function (option) {
     var data = {};
 
-    data = Utils.GetData(option, 'data');
+    data = Utils.GetData(option, "data");
 
     if (data != null) {
       return data;
     }
 
-    if (option.tagName.toLowerCase() === 'option') {
+    if (option.tagName.toLowerCase() === "option") {
       data = {
         id: option.value,
         text: option.textContent,
         disabled: option.disabled,
         selected: option.selected,
-        title: option.title
+        title: option.title,
       };
-    } else if (option.tagName.toLowerCase() === 'optgroup') {
+    } else if (option.tagName.toLowerCase() === "optgroup") {
       data = {
         text: option.label,
         children: [],
-        title: option.title
+        title: option.title,
       };
 
-      var children = option.querySelectorAll('option');
+      var children = option.querySelectorAll("option");
       var childrenData = [];
 
-      Array.prototype.forEach.call(children, function (child) {
-        var childData = this.item(child);
-        childrenData.push(childData);
-      }, this);
+      Array.prototype.forEach.call(
+        children,
+        function (child) {
+          var childData = this.item(child);
+          childrenData.push(childData);
+        },
+        this
+      );
 
       data.children = childrenData;
     }
@@ -245,7 +261,7 @@ define([
     data = this._normalizeItem(data);
     data.element = option;
 
-    Utils.StoreData(option, 'data', data);
+    Utils.StoreData(option, "data", data);
 
     return data;
   };
@@ -254,17 +270,21 @@ define([
     if (item !== Object(item)) {
       item = {
         id: item,
-        text: item
+        text: item,
       };
     }
 
-    item = Object.assign({}, {
-      text: ''
-    }, item);
+    item = Object.assign(
+      {},
+      {
+        text: "",
+      },
+      item
+    );
 
     var defaults = {
       selected: false,
-      disabled: false
+      disabled: false,
     };
 
     if (item.id != null) {
@@ -280,16 +300,16 @@ define([
     }
 
     if (item.children) {
-        item.children = item.children.map(
-            SelectAdapter.prototype._normalizeItem
-        );
+      item.children = item.children.map(
+        SelectAdapter.prototype._normalizeItem
+      );
     }
 
     return Object.assign({}, defaults, item);
   };
 
   SelectAdapter.prototype.matches = function (params, data) {
-    var matcher = this.options.get('matcher');
+    var matcher = this.options.get("matcher");
 
     return matcher(params, data);
   };

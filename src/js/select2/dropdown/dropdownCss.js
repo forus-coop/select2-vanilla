@@ -9,7 +9,6 @@ define(["../utils"], function (Utils) {
     if (dropdownCssClass.indexOf(":all:") !== -1) {
       dropdownCssClass = dropdownCssClass.replace(":all:", "");
 
-      // TODO: Check if element[0] is correct
       Utils.copyNonInternalCssClasses($dropdown, this.element);
     }
 

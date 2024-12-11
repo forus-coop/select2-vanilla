@@ -10,7 +10,8 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
 
     $selection.classList.add("select2-selection--multiple");
 
-    $selection.innerHTML = '<ul class="select2-selection__rendered"></ul>';
+    $selection.innerHTML =
+      '<ul class="select2-selection__rendered"></ul>';
 
     return $selection;
   };
@@ -32,7 +33,9 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
     });
 
     this.selection.addEventListener("click", function (evt) {
-      if (evt.target.classList.contains("select2-selection__choice__remove")) {
+      if (
+        evt.target.classList.contains("select2-selection__choice__remove")
+      ) {
         // Ignore the event if it is disabled
         if (self.isDisabled()) {
           return;
@@ -51,7 +54,9 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
     });
 
     this.selection.addEventListener("keydown", function (evt) {
-      if (evt.target.classList.contains("select2-selection__choice__remove")) {
+      if (
+        evt.target.classList.contains("select2-selection__choice__remove")
+      ) {
         // Ignore the event if it is disabled
         if (self.isDisabled()) {
           return;
@@ -112,7 +117,6 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
 
     for (var d = 0; d < data.length; d++) {
       var selection = data[d];
-
       var $selection = this.selectionContainer();
       var formatted = this.display(selection, $selection);
 
@@ -124,10 +128,10 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
         selectionId += Utils.generateChars(4);
       }
 
-      $selection
-        .querySelector(".select2-selection__choice__display")
-        .appendChild(document.createTextNode(formatted))
-        .setAttribute("id", selectionId);
+      var $choiceDisplay = $selection.querySelector(".select2-selection__choice__display");
+      var textNode = document.createTextNode(formatted);
+      $choiceDisplay.appendChild(textNode);
+      $choiceDisplay.setAttribute("id", selectionId);
 
       var title = selection.title || selection.text;
 
@@ -137,9 +141,7 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
 
       var removeItem = this.options.get("translations").get("removeItem");
 
-      var $remove = $selection.querySelector(
-        ".select2-selection__choice__remove"
-      );
+      var $remove = $selection.querySelector(".select2-selection__choice__remove");
 
       $remove.setAttribute("title", removeItem());
       $remove.setAttribute("aria-label", removeItem());
@@ -150,9 +152,7 @@ define(["./base", "../utils"], function (BaseSelection, Utils) {
       $selections.push($selection);
     }
 
-    var $rendered = this.selection.querySelector(
-      ".select2-selection__rendered"
-    );
+    var $rendered = this.selection.querySelector(".select2-selection__rendered");
 
     $rendered.append(...$selections);
   };

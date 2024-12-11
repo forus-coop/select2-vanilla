@@ -1,17 +1,17 @@
 define([], function () {
-  function Tags (decorated, element, options) {
-    var tags = options.get('tags');
+  function Tags(decorated, element, options) {
+    var tags = options.get("tags");
 
-    var createTag = options.get('createTag');
+    var createTag = options.get("createTag");
 
     if (createTag !== undefined) {
       this.createTag = createTag;
     }
 
-    var insertTag = options.get('insertTag');
+    var insertTag = options.get("insertTag");
 
     if (insertTag !== undefined) {
-        this.insertTag = insertTag;
+      this.insertTag = insertTag;
     }
 
     decorated.call(this, element, options);
@@ -38,21 +38,23 @@ define([], function () {
       return;
     }
 
-    function wrapper (obj, child) {
+    function wrapper(obj, child) {
       var data = obj.results;
 
       for (var i = 0; i < data.length; i++) {
         var option = data[i];
 
-        var checkChildren = (
+        var checkChildren =
           option.children != null &&
-          !wrapper({
-            results: option.children
-          }, true)
-        );
+          !wrapper(
+            {
+              results: option.children,
+            },
+            true
+          );
 
-        var optionText = (option.text || '').toUpperCase();
-        var paramsTerm = (params.term || '').toUpperCase();
+        var optionText = (option.text || "").toUpperCase();
+        var paramsTerm = (params.term || "").toUpperCase();
 
         var checkText = optionText === paramsTerm;
 
@@ -76,7 +78,7 @@ define([], function () {
 
       if (tag != null) {
         var option = self.option(tag);
-        option.setAttribute('data-select2-tag', 'true');
+        option.setAttribute("data-select2-tag", "true");
 
         self.addOptions([option]);
 
@@ -98,13 +100,13 @@ define([], function () {
 
     var term = params.term.trim();
 
-    if (term === '') {
+    if (term === "") {
       return null;
     }
 
     return {
       id: term,
-      text: term
+      text: term,
     };
   };
 
@@ -113,7 +115,7 @@ define([], function () {
   };
 
   Tags.prototype._removeOldTags = function (_) {
-    var options = this.element.querySelectorAll('option[data-select2-tag]');
+    var options = this.element.querySelectorAll("option[data-select2-tag]");
 
     options.forEach(function (option) {
       if (option.selected) {
