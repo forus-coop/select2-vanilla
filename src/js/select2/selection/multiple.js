@@ -1,9 +1,5 @@
-define([
-  'jquery',
-  './base',
-  '../utils'
-], function ($, BaseSelection, Utils) {
-  function MultipleSelection ($element, options) {
+define(["./base", "../utils"], function (BaseSelection, Utils) {
+  function MultipleSelection($element, options) {
     MultipleSelection.__super__.constructor.apply(this, arguments);
   }
 
@@ -12,11 +8,10 @@ define([
   MultipleSelection.prototype.render = function () {
     var $selection = MultipleSelection.__super__.render.call(this);
 
-    $selection[0].classList.add('select2-selection--multiple');
+    $selection.classList.add("select2-selection--multiple");
 
-    $selection.html(
-      '<ul class="select2-selection__rendered"></ul>'
-    );
+    $selection.innerHTML =
+      '<ul class="select2-selection__rendered"></ul>';
 
     return $selection;
   };
@@ -26,40 +21,42 @@ define([
 
     MultipleSelection.__super__.bind.apply(this, arguments);
 
-    var id = container.id + '-container';
-    this.$selection.find('.select2-selection__rendered').attr('id', id);
+    var id = container.id + "-container";
+    this.selection
+      .querySelector(".select2-selection__rendered")
+      .setAttribute("id", id);
 
-    this.$selection.on('click', function (evt) {
-      self.trigger('toggle', {
-        originalEvent: evt
+    this.selection.addEventListener("click", function (evt) {
+      self.trigger("toggle", {
+        originalEvent: evt,
       });
     });
 
-    this.$selection.on(
-      'click',
-      '.select2-selection__choice__remove',
-      function (evt) {
+    this.selection.addEventListener("click", function (evt) {
+      if (
+        evt.target.classList.contains("select2-selection__choice__remove")
+      ) {
         // Ignore the event if it is disabled
         if (self.isDisabled()) {
           return;
         }
 
-        var $remove = $(this);
-        var $selection = $remove.parent();
+        var $remove = evt.target;
+        var $selection = $remove.parentElement;
 
-        var data = Utils.GetData($selection[0], 'data');
+        var data = Utils.GetData($selection, "data");
 
-        self.trigger('unselect', {
+        self.trigger("unselect", {
           originalEvent: evt,
-          data: data
+          data: data,
         });
       }
-    );
+    });
 
-    this.$selection.on(
-      'keydown',
-      '.select2-selection__choice__remove',
-      function (evt) {
+    this.selection.addEventListener("keydown", function (evt) {
+      if (
+        evt.target.classList.contains("select2-selection__choice__remove")
+      ) {
         // Ignore the event if it is disabled
         if (self.isDisabled()) {
           return;
@@ -67,32 +64,39 @@ define([
 
         evt.stopPropagation();
       }
-    );
+    });
   };
 
   MultipleSelection.prototype.clear = function () {
-    var $rendered = this.$selection.find('.select2-selection__rendered');
-    $rendered.empty();
-    $rendered.removeAttr('title');
+    var $rendered = this.selection.querySelector(
+      ".select2-selection__rendered"
+    );
+    $rendered.innerHTML = "";
+    $rendered.removeAttribute("title");
   };
 
   MultipleSelection.prototype.display = function (data, container) {
-    var template = this.options.get('templateSelection');
-    var escapeMarkup = this.options.get('escapeMarkup');
+    var template = this.options.get("templateSelection");
+    var escapeMarkup = this.options.get("escapeMarkup");
 
     return escapeMarkup(template(data, container));
   };
 
   MultipleSelection.prototype.selectionContainer = function () {
-    var $container = $(
-      '<li class="select2-selection__choice">' +
-        '<button type="button" class="select2-selection__choice__remove" ' +
-        'tabindex="-1">' +
-          '<span aria-hidden="true">&times;</span>' +
-        '</button>' +
-        '<span class="select2-selection__choice__display"></span>' +
-      '</li>'
-    );
+    var $container = document.createElement("li");
+    $container.classList.add("select2-selection__choice");
+
+    var $button = document.createElement("button");
+    $button.type = "button";
+    $button.classList.add("select2-selection__choice__remove");
+    $button.tabIndex = -1;
+    $button.innerHTML = '<span aria-hidden="true">&times;</span>';
+
+    var $span = document.createElement("span");
+    $span.classList.add("select2-selection__choice__display");
+
+    $container.appendChild($button);
+    $container.appendChild($span);
 
     return $container;
   };
@@ -106,16 +110,17 @@ define([
 
     var $selections = [];
 
-    var selectionIdPrefix = this.$selection.find('.select2-selection__rendered')
-      .attr('id') + '-choice-';
+    var selectionIdPrefix =
+      this.selection
+        .querySelector(".select2-selection__rendered")
+        .getAttribute("id") + "-choice-";
 
     for (var d = 0; d < data.length; d++) {
       var selection = data[d];
-
       var $selection = this.selectionContainer();
       var formatted = this.display(selection, $selection);
 
-      var selectionId = selectionIdPrefix + Utils.generateChars(4) + '-';
+      var selectionId = selectionIdPrefix + Utils.generateChars(4) + "-";
 
       if (selection.id) {
         selectionId += selection.id;
@@ -123,32 +128,33 @@ define([
         selectionId += Utils.generateChars(4);
       }
 
-      $selection.find('.select2-selection__choice__display')
-        .append(formatted)
-        .attr('id', selectionId);
+      var $choiceDisplay = $selection.querySelector(".select2-selection__choice__display");
+      var textNode = document.createTextNode(formatted);
+      $choiceDisplay.appendChild(textNode);
+      $choiceDisplay.setAttribute("id", selectionId);
 
       var title = selection.title || selection.text;
 
       if (title) {
-        $selection.attr('title', title);
+        $selection.setAttribute("title", title);
       }
 
-      var removeItem = this.options.get('translations').get('removeItem');
+      var removeItem = this.options.get("translations").get("removeItem");
 
-      var $remove = $selection.find('.select2-selection__choice__remove');
+      var $remove = $selection.querySelector(".select2-selection__choice__remove");
 
-      $remove.attr('title', removeItem());
-      $remove.attr('aria-label', removeItem());
-      $remove.attr('aria-describedby', selectionId);
+      $remove.setAttribute("title", removeItem());
+      $remove.setAttribute("aria-label", removeItem());
+      $remove.setAttribute("aria-describedby", selectionId);
 
-      Utils.StoreData($selection[0], 'data', selection);
+      Utils.StoreData($selection, "data", selection);
 
       $selections.push($selection);
     }
 
-    var $rendered = this.$selection.find('.select2-selection__rendered');
+    var $rendered = this.selection.querySelector(".select2-selection__rendered");
 
-    $rendered.append($selections);
+    $rendered.append(...$selections);
   };
 
   return MultipleSelection;

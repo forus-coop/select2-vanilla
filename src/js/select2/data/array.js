@@ -1,10 +1,6 @@
-define([
-  './select',
-  '../utils',
-  'jquery'
-], function (SelectAdapter, Utils, $) {
-  function ArrayAdapter ($element, options) {
-    this._dataToConvert = options.get('data') || [];
+define(["./select", "../utils"], function (SelectAdapter, Utils) {
+  function ArrayAdapter($element, options) {
+    this._dataToConvert = options.get("data") || [];
 
     ArrayAdapter.__super__.constructor.call(this, $element, options);
   }
@@ -18,33 +14,37 @@ define([
   };
 
   ArrayAdapter.prototype.select = function (data) {
-    var $option = this.$element.find('option').filter(function (i, elm) {
-      return elm.value == data.id.toString();
+    var self = this;
+
+    // Convert NodeList to array
+    var options = Array.prototype.slice.call(this.element.querySelectorAll('option'));
+
+    var option = options.filter(function (option) {
+      return option.value == data.id.toString();
     });
 
-    if ($option.length === 0) {
-      $option = this.option(data);
-
-      this.addOptions($option);
+    if (option.length === 0) {
+      var option = this.option(data);
+      this.element.appendChild(option);
     }
 
-    ArrayAdapter.__super__.select.call(this, data);
+    option[0].selected = true;
   };
 
   ArrayAdapter.prototype.convertToOptions = function (data) {
     var self = this;
 
-    var $existing = this.$element.find('option');
-    var existingIds = $existing.map(function () {
-      return self.item($(this)).id;
-    }).get();
+    var $existing = this.element.querySelectorAll("option");
+    var existingIds = Array.from($existing).map(function (option) {
+      return self.item(option).id;
+    });
 
     var $options = [];
 
     // Filter out all items except for the one passed in the argument
-    function onlyItem (item) {
-      return function () {
-        return $(this).val() == item.id;
+    function onlyItem(item) {
+      return function (option) {
+        return option.value == item.id;
       };
     }
 
@@ -53,10 +53,12 @@ define([
 
       // Skip items which were pre-loaded, only merge the data
       if (existingIds.indexOf(item.id) >= 0) {
-        var $existingOption = $existing.filter(onlyItem(item));
+        var $existingOption = Array.from($existing).filter(
+          onlyItem(item)
+        );
 
         var existingData = this.item($existingOption);
-        var newData = $.extend(true, {}, item, existingData);
+        var newData = Object.assign({}, item, existingData);
 
         var $newOption = this.option(newData);
 

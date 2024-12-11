@@ -1,10 +1,8 @@
 QUnit.module('Selection containers - Single');
 
-var SingleSelection = require('select2/selection/single');
-
-var $ = require('jquery');
-var Options = require('select2/options');
-var Utils = require('select2/utils');
+var SingleSelection = window.require('select2/selection/single');
+var Options = window.require('select2/options');
+var Utils = window.require('select2/utils');
 
 var options = new Options({});
 
@@ -20,7 +18,7 @@ QUnit.test('display uses templateSelection', function (assert) {
   });
 
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     templateOptions
   );
 
@@ -39,44 +37,44 @@ QUnit.test('templateSelection can addClass', function (assert) {
   var templateOptions = new Options({
     templateSelection: function (data, container) {
       called = true;
-      container.addClass('testclass');
+      container.classList.add('testclass');
       return data.text;
     }
   });
 
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     templateOptions
   );
 
-  var $container = selection.selectionContainer();
+  var container = selection.selectionContainer();
 
   var out = selection.display({
     text: 'test'
-  }, $container);
+  }, container);
 
   assert.ok(called);
 
   assert.equal(out, 'test');
 
-  assert.ok($container.hasClass('testclass'));
+  assert.ok(container.classList.contains('testclass'));
 });
 
 QUnit.test('empty update clears the selection', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
-  $rendered.text('testing');
+  renderedElement.textContent = 'testing';
 
   selection.update([]);
 
   assert.equal(
-    $rendered.text(),
+    renderedElement.textContent,
     '',
     'There should have been nothing rendered'
   );
@@ -84,55 +82,55 @@ QUnit.test('empty update clears the selection', function (assert) {
 
 QUnit.test('empty update clears the selection title', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
-  $rendered.attr('title', 'testing');
+  renderedElement.setAttribute('title', 'testing');
 
   selection.update([]);
 
   assert.equal(
-    $rendered.attr('title'),
-    undefined,
+    renderedElement.getAttribute('title'),
+    null,
     'The title should be removed if nothing is rendered'
   );
 });
 
 QUnit.test('update renders the data text', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
   selection.update([{
     text: 'test'
   }]);
 
-  assert.equal($rendered.text(), 'test');
+  assert.equal(renderedElement.textContent, 'test');
 });
 
 QUnit.test('update sets the title to the data text', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
   selection.update([{
     text: 'test'
   }]);
 
   assert.equal(
-    $rendered.attr('title'),
+    renderedElement.getAttribute('title'),
     'test',
     'The title should have been set to the text'
   );
@@ -140,12 +138,12 @@ QUnit.test('update sets the title to the data text', function (assert) {
 
 QUnit.test('update sets the title to the data title', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
   selection.update([{
     text: 'test',
@@ -153,7 +151,7 @@ QUnit.test('update sets the title to the data title', function (assert) {
   }]);
 
   assert.equal(
-    $rendered.attr('title'),
+    renderedElement.getAttribute('title'),
     'correct',
     'The title should have taken precedence over the text'
   );
@@ -161,14 +159,14 @@ QUnit.test('update sets the title to the data title', function (assert) {
 
 QUnit.test('update should clear title for placeholder options', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
-  $rendered.attr('title', 'testing');
+  renderedElement.setAttribute('title', 'testing');
 
   selection.update([{
     id: '',
@@ -176,42 +174,42 @@ QUnit.test('update should clear title for placeholder options', function (assert
   }]);
 
   assert.equal(
-    $rendered.attr('title'),
-    undefined,
+    renderedElement.getAttribute('title'),
+    null,
     'The title should be removed if a placeholder is rendered'
   );
 });
 
 QUnit.test('update should clear title for options without text', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
-  $rendered.attr('title', 'testing');
+  renderedElement.setAttribute('title', 'testing');
 
   selection.update([{
     id: ''
   }]);
 
   assert.equal(
-    $rendered.attr('title'),
-    undefined,
+    renderedElement.getAttribute('title'),
+    null,
     'The title should be removed if there is no text or title property'
   );
 });
 
 QUnit.test('escapeMarkup is being used', function (assert) {
   var selection = new SingleSelection(
-    $('#qunit-fixture .single'),
+    document.querySelector('#qunit-fixture .single'),
     options
   );
 
-  var $selection = selection.render();
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var selectionElement = selection.render();
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
   var unescapedText = '<script>bad("stuff");</script>';
 
@@ -220,7 +218,7 @@ QUnit.test('escapeMarkup is being used', function (assert) {
   }]);
 
   assert.equal(
-    $rendered.text(),
+    renderedElement.textContent,
     unescapedText,
     'The text should be escaped by default to prevent injection'
   );

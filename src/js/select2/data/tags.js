@@ -1,31 +1,29 @@
-define([
-  'jquery'
-], function ($) {
-  function Tags (decorated, $element, options) {
-    var tags = options.get('tags');
+define([], function () {
+  function Tags(decorated, element, options) {
+    var tags = options.get("tags");
 
-    var createTag = options.get('createTag');
+    var createTag = options.get("createTag");
 
     if (createTag !== undefined) {
       this.createTag = createTag;
     }
 
-    var insertTag = options.get('insertTag');
+    var insertTag = options.get("insertTag");
 
     if (insertTag !== undefined) {
-        this.insertTag = insertTag;
+      this.insertTag = insertTag;
     }
 
-    decorated.call(this, $element, options);
+    decorated.call(this, element, options);
 
     if (Array.isArray(tags)) {
       for (var t = 0; t < tags.length; t++) {
         var tag = tags[t];
         var item = this._normalizeItem(tag);
 
-        var $option = this.option(item);
+        var option = this.option(item);
 
-        this.$element.append($option);
+        element.append(option);
       }
     }
   }
@@ -40,21 +38,23 @@ define([
       return;
     }
 
-    function wrapper (obj, child) {
+    function wrapper(obj, child) {
       var data = obj.results;
 
       for (var i = 0; i < data.length; i++) {
         var option = data[i];
 
-        var checkChildren = (
+        var checkChildren =
           option.children != null &&
-          !wrapper({
-            results: option.children
-          }, true)
-        );
+          !wrapper(
+            {
+              results: option.children,
+            },
+            true
+          );
 
-        var optionText = (option.text || '').toUpperCase();
-        var paramsTerm = (params.term || '').toUpperCase();
+        var optionText = (option.text || "").toUpperCase();
+        var paramsTerm = (params.term || "").toUpperCase();
 
         var checkText = optionText === paramsTerm;
 
@@ -77,10 +77,10 @@ define([
       var tag = self.createTag(params);
 
       if (tag != null) {
-        var $option = self.option(tag);
-        $option.attr('data-select2-tag', 'true');
+        var option = self.option(tag);
+        option.setAttribute("data-select2-tag", "true");
 
-        self.addOptions([$option]);
+        self.addOptions([option]);
 
         self.insertTag(data, tag);
       }
@@ -100,13 +100,13 @@ define([
 
     var term = params.term.trim();
 
-    if (term === '') {
+    if (term === "") {
       return null;
     }
 
     return {
       id: term,
-      text: term
+      text: term,
     };
   };
 
@@ -115,14 +115,14 @@ define([
   };
 
   Tags.prototype._removeOldTags = function (_) {
-    var $options = this.$element.find('option[data-select2-tag]');
+    var options = this.element.querySelectorAll("option[data-select2-tag]");
 
-    $options.each(function () {
-      if (this.selected) {
+    options.forEach(function (option) {
+      if (option.selected) {
         return;
       }
 
-      $(this).remove();
+      option.remove();
     });
   };
 

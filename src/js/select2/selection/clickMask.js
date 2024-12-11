@@ -1,28 +1,33 @@
-define([
-  'jquery'
-], function ($) {
+define(function () {
   function ClickMask () { }
 
-  ClickMask.prototype.bind = function (decorate, $container, container) {
+  ClickMask.prototype.bind = function (decorate, container, containerElement) {
     var self = this;
 
-    decorate.call(this, $container, container);
+    decorate.call(this, container, containerElement);
 
-    this.$mask = $(
-      '<div class="select2-close-mask"></div>'
-    );
+    this.mask = document.createElement('div');
+    this.mask.className = 'select2-close-mask';
 
-    this.$mask.on('mousedown touchstart click', function () {
+    this.mask.addEventListener('mousedown', function () {
+      self.trigger('close', {});
+    });
+
+    this.mask.addEventListener('touchstart', function () {
+      self.trigger('close', {});
+    });
+
+    this.mask.addEventListener('click', function () {
       self.trigger('close', {});
     });
   };
 
   ClickMask.prototype._attachCloseHandler = function (decorate, container) {
-    $(document.body).append(this.$mask);
+    document.body.appendChild(this.mask);
   };
 
-  ClickMask.prototype._detachCloseHandler = function (deocrate, container) {
-    this.$mask.detach();
+  ClickMask.prototype._detachCloseHandler = function (decorate, container) {
+    this.mask.remove();
   };
 
   return ClickMask;

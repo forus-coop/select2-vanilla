@@ -1,9 +1,8 @@
 define([
-  'jquery',
   './base',
   '../utils',
   '../keys'
-], function ($, BaseSelection, Utils, KEYS) {
+], function (BaseSelection, Utils, KEYS) {
   function SingleSelection () {
     SingleSelection.__super__.constructor.apply(this, arguments);
   }
@@ -11,35 +10,34 @@ define([
   Utils.Extend(SingleSelection, BaseSelection);
 
   SingleSelection.prototype.render = function () {
-    var $selection = SingleSelection.__super__.render.call(this);
+    var selection = SingleSelection.__super__.render.call(this);
 
-    $selection[0].classList.add('select2-selection--single');
+    selection.classList.add('select2-selection--single');
 
-    $selection.html(
+    selection.innerHTML =
       '<span class="select2-selection__rendered"></span>' +
       '<span class="select2-selection__arrow" role="presentation">' +
         '<b role="presentation"></b>' +
-      '</span>'
-    );
+      '</span>';
 
-    return $selection;
+    return selection;
   };
 
-  SingleSelection.prototype.bind = function (container, $container) {
+  SingleSelection.prototype.bind = function (container, containerElement) {
     var self = this;
 
     SingleSelection.__super__.bind.apply(this, arguments);
 
     var id = container.id + '-container';
 
-    this.$selection.find('.select2-selection__rendered')
-      .attr('id', id)
-      .attr('role', 'textbox')
-      .attr('aria-readonly', 'true');
-    this.$selection.attr('aria-labelledby', id);
-    this.$selection.attr('aria-controls', id);
+    var rendered = this.selection.querySelector('.select2-selection__rendered');
+    rendered.setAttribute('id', id);
+    rendered.setAttribute('role', 'textbox');
+    rendered.setAttribute('aria-readonly', 'true');
+    this.selection.setAttribute('aria-labelledby', id);
+    this.selection.setAttribute('aria-controls', id);
 
-    this.$selection.on('mousedown', function (evt) {
+    this.selection.addEventListener('mousedown', function (evt) {
       // Only respond to left clicks
       if (evt.which !== 1) {
         return;
@@ -50,25 +48,25 @@ define([
       });
     });
 
-    this.$selection.on('focus', function (evt) {
+    this.selection.addEventListener('focus', function (evt) {
       // User focuses on the container
     });
 
-    this.$selection.on('blur', function (evt) {
+    this.selection.addEventListener('blur', function (evt) {
       // User exits the container
     });
 
     container.on('focus', function (evt) {
       if (!container.isOpen()) {
-        self.$selection.trigger('focus');
+        self.selection.focus();
       }
     });
   };
 
   SingleSelection.prototype.clear = function () {
-    var $rendered = this.$selection.find('.select2-selection__rendered');
-    $rendered.empty();
-    $rendered[0].removeAttribute('title'); // clear tooltip on empty
+    var rendered = this.selection.querySelector('.select2-selection__rendered');
+    rendered.innerHTML = '';
+    rendered.removeAttribute('title'); // clear tooltip on empty
   };
 
   SingleSelection.prototype.display = function (data, container) {
@@ -79,7 +77,8 @@ define([
   };
 
   SingleSelection.prototype.selectionContainer = function () {
-    return $('<span></span>');
+    var container = document.createElement('span');
+    return container;
   };
 
   SingleSelection.prototype.update = function (data) {
@@ -90,17 +89,17 @@ define([
 
     var selection = data[0];
 
-    var $rendered = this.$selection.find('.select2-selection__rendered');
-    var formatted = this.display(selection, $rendered);
+    var rendered = this.selection.querySelector('.select2-selection__rendered');
+    var formatted = this.display(selection, rendered);
 
-    $rendered.empty().append(formatted);
+    rendered.innerHTML = formatted;
 
     var title = selection.title || selection.text;
 
     if (title) {
-      $rendered.attr('title', title);
+      rendered.setAttribute('title', title);
     } else {
-      $rendered[0].removeAttribute('title');
+      rendered.removeAttribute('title');
     }
   };
 

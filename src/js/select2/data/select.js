@@ -1,10 +1,9 @@
 define([
   './base',
-  '../utils',
-  'jquery'
-], function (BaseAdapter, Utils, $) {
-  function SelectAdapter ($element, options) {
-    this.$element = $element;
+  '../utils'
+], function (BaseAdapter, Utils) {
+  function SelectAdapter(element, options) {
+    this.element = element;
     this.options = options;
 
     SelectAdapter.__super__.constructor.call(this);
@@ -16,9 +15,9 @@ define([
     var self = this;
 
     var data = Array.prototype.map.call(
-      this.$element[0].querySelectorAll(':checked'),
+      this.element.querySelectorAll(":checked"),
       function (selectedElement) {
-        return self.item($(selectedElement));
+        return self.item(selectedElement);
       }
     );
 
@@ -32,16 +31,18 @@ define([
 
     // If data.element is a DOM node, use it instead
     if (
-      data.element != null && data.element.tagName.toLowerCase() === 'option'
+      data.element != null &&
+      data.element.tagName.toLowerCase() === "option"
     ) {
       data.element.selected = true;
 
-      this.$element.trigger('input').trigger('change');
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
 
       return;
     }
 
-    if (this.$element.prop('multiple')) {
+    if (this.element.multiple) {
       this.current(function (currentData) {
         var val = [];
 
@@ -54,23 +55,36 @@ define([
           if (val.indexOf(id) === -1) {
             val.push(id);
           }
+
+          // Find the corresponding <option> element and mark it as selected
+          var option = Array.from(self.element.options).find(option => option.value === id);
+          if (option) {
+            option.selected = true;
+          }
         }
 
-        self.$element.val(val);
-        self.$element.trigger('input').trigger('change');
+        // Dispatch events to notify the change
+        self.element.dispatchEvent(new Event("input"));
+        self.element.dispatchEvent(new Event("change"));
       });
     } else {
       var val = data.id;
 
-      this.$element.val(val);
-      this.$element.trigger('input').trigger('change');
+      // Find the corresponding <option> element and mark it as selected
+      var option = Array.from(this.element.options).find(option => option.value === val);
+      if (option) {
+        option.selected = true;
+      }
+
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
     }
   };
 
   SelectAdapter.prototype.unselect = function (data) {
     var self = this;
 
-    if (!this.$element.prop('multiple')) {
+    if (!this.element.multiple) {
       return;
     }
 
@@ -78,11 +92,12 @@ define([
 
     if (
       data.element != null &&
-      data.element.tagName.toLowerCase() === 'option'
+      data.element.tagName.toLowerCase() === "option"
     ) {
       data.element.selected = false;
 
-      this.$element.trigger('input').trigger('change');
+      this.element.dispatchEvent(new Event("input"));
+      this.element.dispatchEvent(new Event("change"));
 
       return;
     }
@@ -98,31 +113,33 @@ define([
         }
       }
 
-      self.$element.val(val);
+      self.element.value = val;
 
-      self.$element.trigger('input').trigger('change');
+      self.element.dispatchEvent(new Event("input"));
+      self.element.dispatchEvent(new Event("change"));
     });
   };
 
-  SelectAdapter.prototype.bind = function (container, $container) {
+  SelectAdapter.prototype.bind = function (container) {
     var self = this;
 
     this.container = container;
 
-    container.on('select', function (params) {
+    container.on("select", function (params) {
       self.select(params.data);
     });
 
-    container.on('unselect', function (params) {
+    container.on("unselect", function (params) {
       self.unselect(params.data);
     });
   };
 
   SelectAdapter.prototype.destroy = function () {
     // Remove anything added to child elements
-    this.$element.find('*').each(function () {
+    var elements = this.element.querySelectorAll("*");
+    elements.forEach(function (el) {
       // Remove any custom data set by Select2
-      Utils.RemoveData(this);
+      Utils.RemoveData(el);
     });
   };
 
@@ -130,21 +147,19 @@ define([
     var data = [];
     var self = this;
 
-    var $options = this.$element.children();
+    var options = this.element.children;
 
-    $options.each(function () {
+    Array.prototype.forEach.call(options, function (option) {
       if (
-        this.tagName.toLowerCase() !== 'option' &&
-        this.tagName.toLowerCase() !== 'optgroup'
+        option.tagName.toLowerCase() !== "option" &&
+        option.tagName.toLowerCase() !== "optgroup"
       ) {
         return;
       }
 
-      var $option = $(this);
+      var item = self.item(option);
 
-      var option = self.item($option);
-
-      var matches = self.matches(params, option);
+      var matches = self.matches(params, item);
 
       if (matches !== null) {
         data.push(matches);
@@ -152,22 +167,25 @@ define([
     });
 
     callback({
-      results: data
+      results: data,
     });
   };
 
-  SelectAdapter.prototype.addOptions = function ($options) {
-    this.$element.append($options);
+  SelectAdapter.prototype.addOptions = function (options) {
+    var self = this;
+    options.forEach(function (option) {
+      self.element.appendChild(option);
+    });
   };
 
   SelectAdapter.prototype.option = function (data) {
     var option;
 
     if (data.children) {
-      option = document.createElement('optgroup');
+      option = document.createElement("optgroup");
       option.label = data.text;
     } else {
-      option = document.createElement('option');
+      option = document.createElement("option");
 
       if (option.textContent !== undefined) {
         option.textContent = data.text;
@@ -196,55 +214,54 @@ define([
     normalizedData.element = option;
 
     // Override the option's data with the combined data
-    Utils.StoreData(option, 'data', normalizedData);
+    Utils.StoreData(option, "data", normalizedData);
 
-    return $(option);
+    return option;
   };
 
-  SelectAdapter.prototype.item = function ($option) {
+  SelectAdapter.prototype.item = function (option) {
     var data = {};
 
-    data = Utils.GetData($option[0], 'data');
+    data = Utils.GetData(option, "data");
 
     if (data != null) {
       return data;
     }
 
-    var option = $option[0];
-
-    if (option.tagName.toLowerCase() === 'option') {
+    if (option.tagName.toLowerCase() === "option") {
       data = {
-        id: $option.val(),
-        text: $option.text(),
-        disabled: $option.prop('disabled'),
-        selected: $option.prop('selected'),
-        title: $option.prop('title')
+        id: option.value,
+        text: option.textContent,
+        disabled: option.disabled,
+        selected: option.selected,
+        title: option.title,
       };
-    } else if (option.tagName.toLowerCase() === 'optgroup') {
+    } else if (option.tagName.toLowerCase() === "optgroup") {
       data = {
-        text: $option.prop('label'),
+        text: option.label,
         children: [],
-        title: $option.prop('title')
+        title: option.title,
       };
 
-      var $children = $option.children('option');
-      var children = [];
+      var children = option.querySelectorAll("option");
+      var childrenData = [];
 
-      for (var c = 0; c < $children.length; c++) {
-        var $child = $($children[c]);
+      Array.prototype.forEach.call(
+        children,
+        function (child) {
+          var childData = this.item(child);
+          childrenData.push(childData);
+        },
+        this
+      );
 
-        var child = this.item($child);
-
-        children.push(child);
-      }
-
-      data.children = children;
+      data.children = childrenData;
     }
 
     data = this._normalizeItem(data);
-    data.element = $option[0];
+    data.element = option;
 
-    Utils.StoreData($option[0], 'data', data);
+    Utils.StoreData(option, "data", data);
 
     return data;
   };
@@ -253,17 +270,21 @@ define([
     if (item !== Object(item)) {
       item = {
         id: item,
-        text: item
+        text: item,
       };
     }
 
-    item = $.extend({}, {
-      text: ''
-    }, item);
+    item = Object.assign(
+      {},
+      {
+        text: "",
+      },
+      item
+    );
 
     var defaults = {
       selected: false,
-      disabled: false
+      disabled: false,
     };
 
     if (item.id != null) {
@@ -279,16 +300,16 @@ define([
     }
 
     if (item.children) {
-        item.children = item.children.map(
-            SelectAdapter.prototype._normalizeItem
-        );
+      item.children = item.children.map(
+        SelectAdapter.prototype._normalizeItem
+      );
     }
 
-    return $.extend({}, defaults, item);
+    return Object.assign({}, defaults, item);
   };
 
   SelectAdapter.prototype.matches = function (params, data) {
-    var matcher = this.options.get('matcher');
+    var matcher = this.options.get("matcher");
 
     return matcher(params, data);
   };

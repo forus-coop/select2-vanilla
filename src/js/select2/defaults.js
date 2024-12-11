@@ -1,65 +1,84 @@
 define([
-  'jquery',
 
-  './results',
+  "./results",
 
-  './selection/single',
-  './selection/multiple',
-  './selection/placeholder',
-  './selection/allowClear',
-  './selection/search',
-  './selection/selectionCss',
-  './selection/eventRelay',
+  "./selection/single",
+  "./selection/multiple",
+  "./selection/placeholder",
+  "./selection/allowClear",
+  "./selection/search",
+  "./selection/selectionCss",
+  "./selection/eventRelay",
 
-  './utils',
-  './translation',
-  './diacritics',
+  "./utils",
+  "./translation",
+  "./diacritics",
 
-  './data/select',
-  './data/array',
-  './data/ajax',
-  './data/tags',
-  './data/tokenizer',
-  './data/minimumInputLength',
-  './data/maximumInputLength',
-  './data/maximumSelectionLength',
+  "./data/select",
+  "./data/array",
+  "./data/ajax",
+  "./data/tags",
+  "./data/tokenizer",
+  "./data/minimumInputLength",
+  "./data/maximumInputLength",
+  "./data/maximumSelectionLength",
 
-  './dropdown',
-  './dropdown/search',
-  './dropdown/hidePlaceholder',
-  './dropdown/infiniteScroll',
-  './dropdown/attachBody',
-  './dropdown/minimumResultsForSearch',
-  './dropdown/selectOnClose',
-  './dropdown/closeOnSelect',
-  './dropdown/dropdownCss',
-  './dropdown/tagsSearchHighlight',
+  "./dropdown",
+  "./dropdown/search",
+  "./dropdown/hidePlaceholder",
+  "./dropdown/infiniteScroll",
+  "./dropdown/attachBody",
+  "./dropdown/minimumResultsForSearch",
+  "./dropdown/selectOnClose",
+  "./dropdown/closeOnSelect",
+  "./dropdown/dropdownCss",
+  "./dropdown/tagsSearchHighlight",
 
-  './i18n/en'
-], function ($,
+  "./i18n/en",
+],
+function (
+  ResultsList,
 
-             ResultsList,
+  SingleSelection,
+  MultipleSelection,
+  Placeholder,
+  AllowClear,
+  SelectionSearch,
+  SelectionCSS,
+  EventRelay,
 
-             SingleSelection, MultipleSelection, Placeholder, AllowClear,
-             SelectionSearch, SelectionCSS, EventRelay,
+  Utils,
+  Translation,
+  DIACRITICS,
 
-             Utils, Translation, DIACRITICS,
+  SelectData,
+  ArrayData,
+  AjaxData,
+  Tags,
+  Tokenizer,
+  MinimumInputLength,
+  MaximumInputLength,
+  MaximumSelectionLength,
 
-             SelectData, ArrayData, AjaxData, Tags, Tokenizer,
-             MinimumInputLength, MaximumInputLength, MaximumSelectionLength,
+  Dropdown,
+  DropdownSearch,
+  HidePlaceholder,
+  InfiniteScroll,
+  AttachBody,
+  MinimumResultsForSearch,
+  SelectOnClose,
+  CloseOnSelect,
+  DropdownCSS,
+  TagsSearchHighlight,
 
-             Dropdown, DropdownSearch, HidePlaceholder, InfiniteScroll,
-             AttachBody, MinimumResultsForSearch, SelectOnClose, CloseOnSelect,
-             DropdownCSS, TagsSearchHighlight,
-
-             EnglishTranslation) {
-  function Defaults () {
+  EnglishTranslation
+) {
+  function Defaults() {
     this.reset();
   }
 
   Defaults.prototype.apply = function (options) {
-    options = $.extend(true, {}, this.defaults, options);
-
+    options = Object.assign({}, this.defaults, options);
     if (options.dataAdapter == null) {
       if (options.ajax != null) {
         options.dataAdapter = AjaxData;
@@ -217,7 +236,7 @@ define([
     options.language = this._resolveLanguage(options.language);
 
     // Always fall back to English since it will always be complete
-    options.language.push('en');
+    options.language.push("en");
 
     var uniqueLanguages = [];
 
@@ -240,7 +259,7 @@ define([
   };
 
   Defaults.prototype.reset = function () {
-    function stripDiacritics (text) {
+    function stripDiacritics(text) {
       // Used 'uni range + named function' from http://jsperf.com/diacritics/18
       function match(a) {
         return DIACRITICS[a] || a;
@@ -249,9 +268,9 @@ define([
       return text.replace(/[^\u0000-\u007E]/g, match);
     }
 
-    function matcher (params, data) {
+    function matcher(params, data) {
       // Always return the object if there is nothing to compare
-      if (params.term == null || params.term.trim() === '') {
+      if (params.term == null || params.term.trim() === "") {
         return data;
       }
 
@@ -259,7 +278,7 @@ define([
       if (data.children && data.children.length > 0) {
         // Clone the data object if there are children
         // This is required as we modify the object to remove any non-matches
-        var match = $.extend(true, {}, data);
+        var match = Object.assign({}, data);
 
         // Check each child of the option
         for (var c = data.children.length - 1; c >= 0; c--) {
@@ -295,8 +314,8 @@ define([
     }
 
     this.defaults = {
-      amdLanguageBase: './i18n/',
-      autocomplete: 'off',
+      amdLanguageBase: "./i18n/",
+      autocomplete: "off",
       closeOnSelect: true,
       debug: false,
       dropdownAutoWidth: false,
@@ -318,16 +337,20 @@ define([
       templateSelection: function (selection) {
         return selection.text;
       },
-      theme: 'default',
-      width: 'resolve'
+      theme: "default",
+      width: "resolve",
     };
   };
 
-  Defaults.prototype.applyFromElement = function (options, $element) {
+  Defaults.prototype.applyFromElement = function (options, element) {
     var optionLanguage = options.language;
     var defaultLanguage = this.defaults.language;
-    var elementLanguage = $element.prop('lang');
-    var parentLanguage = $element.closest('[lang]').prop('lang');
+    if (!(element instanceof Element)) {
+      console.error("Utils.GetUniqueElementId: element is not a DOM element", element);
+      return null;
+    }
+    var elementLanguage = element.getAttribute("lang");
+    var parentLanguage = element.closest("[lang]") ? element.closest("[lang]").getAttribute("lang") : null;
 
     var languages = Array.prototype.concat.call(
       this._resolveLanguage(elementLanguage),
@@ -346,11 +369,11 @@ define([
       return [];
     }
 
-    if ($.isEmptyObject(language)) {
+    if (Object.keys(language).length === 0) {
       return [];
     }
 
-    if ($.isPlainObject(language)) {
+    if (typeof language === "object" && language.constructor === Object) {
       return [language];
     }
 
@@ -367,9 +390,12 @@ define([
     for (var l = 0; l < languages.length; l++) {
       resolvedLanguages.push(languages[l]);
 
-      if (typeof languages[l] === 'string' && languages[l].indexOf('-') > 0) {
+      if (
+        typeof languages[l] === "string" &&
+        languages[l].indexOf("-") > 0
+      ) {
         // Extract the region information if it is included
-        var languageParts = languages[l].split('-');
+        var languageParts = languages[l].split("-");
         var baseLanguage = languageParts[0];
 
         resolvedLanguages.push(baseLanguage);
@@ -387,7 +413,7 @@ define([
 
       var language = languages[l];
 
-      if (typeof language === 'string') {
+      if (typeof language === "string") {
         try {
           // Try to load it with the original name
           languageData = Translation.loadPath(language);
@@ -402,13 +428,18 @@ define([
             // because of how Select2 helps load all possible translation files
             if (debug && window.console && console.warn) {
               console.warn(
-                'Select2: The language file for "' + language + '" could ' +
-                'not be automatically loaded. A fallback will be used instead.'
+                'Select2: The language file for "' +
+                  language +
+                  '" could ' +
+                  "not be automatically loaded. A fallback will be used instead."
               );
             }
           }
         }
-      } else if ($.isPlainObject(language)) {
+      } else if (
+        typeof language === "object" &&
+        language.constructor === Object
+      ) {
         languageData = new Translation(language);
       } else {
         languageData = language;
@@ -428,10 +459,8 @@ define([
 
     var data = {};
     data[camelKey] = value;
-
     var convertedData = Utils._convertData(data);
-
-    $.extend(true, this.defaults, convertedData);
+    Object.assign(this.defaults, convertedData);
   };
 
   var defaults = new Defaults();

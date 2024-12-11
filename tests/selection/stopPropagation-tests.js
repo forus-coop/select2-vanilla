@@ -1,33 +1,32 @@
 QUnit.module('Selection containers - Stopping event propagation');
 
-var SingleSelection = require('select2/selection/single');
-var StopPropagation = require('select2/selection/stopPropagation');
+var SingleSelection = window.require('select2/selection/single');
+var StopPropagation = window.require('select2/selection/stopPropagation');
+var Options = window.require('select2/options');
+var Utils = window.require('select2/utils');
 
-var $ = require('jquery');
-var Options = require('select2/options');
-var Utils = require('select2/utils');
-
-var CutomSelection = Utils.Decorate(SingleSelection, StopPropagation);
+var CustomSelection = Utils.Decorate(SingleSelection, StopPropagation);
 
 var options = new Options();
 
 QUnit.test('click event does not propagate', function (assert) {
   assert.expect(1);
 
-  var $container = $('#qunit-fixture .event-container');
+  var containerElement = document.querySelector('#qunit-fixture .event-container');
   var container = new MockContainer();
 
-  var selection = new CutomSelection($('#qunit-fixture select'), options);
+  var selection = new CustomSelection(document.querySelector('#qunit-fixture select'), options);
 
-  var $selection = selection.render();
-  selection.bind(container, $container);
+  var selectionElement = selection.render();
+  selection.bind(container, containerElement);
 
-  $container.append($selection);
-  $container.on('click', function () {
+  containerElement.appendChild(selectionElement);
+  containerElement.addEventListener('click', function () {
     assert.ok(false, 'The click event should have been stopped');
   });
 
-  $selection.trigger('click');
+  var clickEvent = new Event('click', { bubbles: true, cancelable: true });
+  selectionElement.dispatchEvent(clickEvent);
 
   assert.ok(true, 'Something went wrong if this failed');
 });

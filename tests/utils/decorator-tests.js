@@ -1,6 +1,6 @@
 QUnit.module('Decorators');
 
-var Utils = require('select2/utils');
+var Utils = window.require('select2/utils');
 
 QUnit.test('overridden - method', function (assert) {
   function BaseClass () {}

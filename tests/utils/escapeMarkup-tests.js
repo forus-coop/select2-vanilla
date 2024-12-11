@@ -1,6 +1,6 @@
 QUnit.module('Utils - escapeMarkup');
 
-var Utils = require('select2/utils');
+var Utils = window.require('select2/utils');
 
 QUnit.test('text passes through', function (assert) {
   var text = 'testing this';
@@ -28,7 +28,9 @@ QUnit.test('quotes are killed as well', function (assert) {
 
 QUnit.test('DocumentFragment options pass through', function (assert) {
   var frag = document.createDocumentFragment();
-  frag.innerHTML = '<strong>test</strong>';
+  var strong = document.createElement('strong');
+  strong.textContent = 'test';
+  frag.appendChild(strong);
 
   var escaped = Utils.escapeMarkup(frag);
 

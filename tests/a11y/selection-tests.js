@@ -1,39 +1,35 @@
 QUnit.module('Accessibility - All');
 
-var BaseSelection = require('select2/selection/base');
-var SingleSelection = require('select2/selection/single');
-var MultipleSelection = require('select2/selection/multiple');
-
-var $ = require('jquery');
-
-var Options = require('select2/options');
+var BaseSelection = window.require('select2/selection/base');
+var SingleSelection = window.require('select2/selection/single');
+var MultipleSelection = window.require('select2/selection/multiple');
+var Options = window.require('select2/options');
 var options = new Options({});
 
 QUnit.test('title is carried over from original element', function (assert) {
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
-  var selection = new BaseSelection($select, options);
-  var $selection = selection.render();
-
+  var selection = new BaseSelection(select, options);
+  var selectionElement = selection.render();
   assert.equal(
-    $selection.attr('title'),
-    $select.attr('title'),
+    selectionElement.getAttribute('title'),
+    select.getAttribute('title') || 'null',
     'The title should have been copied over from the original element'
   );
 });
 
 QUnit.test('aria-expanded reflects the state of the container', function (assert) {
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
-  var selection = new BaseSelection($select, options);
-  var $selection = selection.render();
+  var selection = new BaseSelection(select, options);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
 
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
   assert.equal(
-    $selection.attr('aria-expanded'),
+    selectionElement.getAttribute('aria-expanded'),
     'false',
     'The container should not be expanded when it is closed'
   );
@@ -41,42 +37,42 @@ QUnit.test('aria-expanded reflects the state of the container', function (assert
   container.trigger('open');
 
   assert.equal(
-    $selection.attr('aria-expanded'),
+    selectionElement.getAttribute('aria-expanded'),
     'true',
     'The container should be expanded when it is opened'
   );
 });
 
 QUnit.test('static aria attributes are present', function (assert) {
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
-  var selection = new BaseSelection($select, options);
-  var $selection = selection.render();
+  var selection = new BaseSelection(select, options);
+  var selectionElement = selection.render();
 
   assert.equal(
-    $selection.attr('role'),
+    selectionElement.getAttribute('role'),
     'combobox',
     'The container should identify as a combobox'
   );
 
   assert.equal(
-    $selection.attr('aria-haspopup'),
+    selectionElement.getAttribute('aria-haspopup'),
     'true',
     'The dropdown is considered a popup of the container'
   );
 });
 
 QUnit.test('the container should be in the tab order', function (assert) {
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
-  var selection = new BaseSelection($select, options);
-  var $selection = selection.render();
+  var selection = new BaseSelection(select, options);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
   assert.equal(
-    $selection.attr('tabindex'),
+    selectionElement.getAttribute('tabindex'),
     '0',
     'The tab index should allow it to fit in the natural tab order'
   );
@@ -84,7 +80,7 @@ QUnit.test('the container should be in the tab order', function (assert) {
   container.trigger('disable');
 
   assert.equal(
-    $selection.attr('tabindex'),
+    selectionElement.getAttribute('tabindex'),
     '-1',
     'The selection should be dropped out of the tab order when disabled'
   );
@@ -92,24 +88,24 @@ QUnit.test('the container should be in the tab order', function (assert) {
   container.trigger('enable');
 
   assert.equal(
-    $selection.attr('tabindex'),
+    selectionElement.getAttribute('tabindex'),
     '0',
     'The tab index should be restored when re-enabled'
   );
 });
 
 QUnit.test('a custom tabindex is copied', function (assert) {
-  var $select = $('#qunit-fixture .single');
-  $select.attr('tabindex', '999');
+  var select = document.querySelector('#qunit-fixture .single');
+  select.setAttribute('tabindex', '999');
 
-  var selection = new BaseSelection($select, options);
-  var $selection = selection.render();
+  var selection = new BaseSelection(select, options);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
   assert.equal(
-    $selection.attr('tabindex'),
+    selectionElement.getAttribute('tabindex'),
     '999',
     'The tab index should match the original tab index'
   );
@@ -117,7 +113,7 @@ QUnit.test('a custom tabindex is copied', function (assert) {
   container.trigger('disable');
 
   assert.equal(
-    $selection.attr('tabindex'),
+    selectionElement.getAttribute('tabindex'),
     '-1',
     'The selection should be dropped out of the tab order when disabled'
   );
@@ -125,60 +121,60 @@ QUnit.test('a custom tabindex is copied', function (assert) {
   container.trigger('enable');
 
   assert.equal(
-    $selection.attr('tabindex'),
+    selectionElement.getAttribute('tabindex'),
     '999',
     'The tab index should be restored when re-enabled'
   );
 });
 
-QUnit.test('aria-disabled should reflected disabled state', function (assert) {
-  var $select = $('#qunit-fixture .single');
+QUnit.test('aria-disabled should reflect disabled state', function (assert) {
+  var select = document.querySelector('#qunit-fixture .single');
 
-  var selection = new BaseSelection($select, options);
-  var $selection = selection.render();
+  var selection = new BaseSelection(select, options);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
   assert.equal(
-    $selection.attr('aria-disabled'),
+    selectionElement.getAttribute('aria-disabled'),
     'false',
-    'The tab index should match the original tab index'
+    'The aria-disabled attribute should match the original state'
   );
 
   container.trigger('disable');
 
   assert.equal(
-    $selection.attr('aria-disabled'),
+    selectionElement.getAttribute('aria-disabled'),
     'true',
-    'The selection should be dropped out of the tab order when disabled'
+    'The aria-disabled attribute should be true when disabled'
   );
 
   container.trigger('enable');
 
   assert.equal(
-    $selection.attr('aria-disabled'),
+    selectionElement.getAttribute('aria-disabled'),
     'false',
-    'The tab index should be restored when re-enabled'
+    'The aria-disabled attribute should be false when re-enabled'
   );
 });
 
 QUnit.module('Accessibility - Single');
 
 QUnit.test('aria-labelledby should match the rendered container', function (assert) {
-  var $select = $('#qunit-fixture .single');
+  var select = document.querySelector('#qunit-fixture .single');
 
-  var selection = new SingleSelection($select, options);
-  var $selection = selection.render();
+  var selection = new SingleSelection(select, options);
+  var selectionElement = selection.render();
 
   var container = new MockContainer();
-  selection.bind(container, $('<span></span>'));
+  selection.bind(container, document.createElement('span'));
 
-  var $rendered = $selection.find('.select2-selection__rendered');
+  var renderedElement = selectionElement.querySelector('.select2-selection__rendered');
 
   assert.equal(
-    $selection.attr('aria-labelledby'),
-    $rendered.attr('id'),
+    selectionElement.getAttribute('aria-labelledby'),
+    renderedElement.getAttribute('id'),
     'The rendered selection should label the container'
   );
 });

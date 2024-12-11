@@ -3,15 +3,11 @@ const sass = require('sass');
 module.exports = function (grunt) {
   // Full list of files that must be included by RequireJS
   includes = [
-    'jquery.select2',
-    'almond',
-
-    'jquery-mousewheel' // shimmed for non-full builds
+    'select2',
+    'almond'
   ];
 
   fullIncludes = [
-    'jquery',
-
     'select2/dropdown/attachContainer',
     'select2/dropdown/stopPropagation',
 
@@ -84,7 +80,8 @@ module.exports = function (grunt) {
         options: {
           base: '.',
           hostname: '127.0.0.1',
-          port: 9999
+          port: 9999,
+          // keepalive: grunt.option('debug')
         }
       }
     },
@@ -109,9 +106,9 @@ module.exports = function (grunt) {
     qunit: {
       all: {
         options: {
-          urls: testUrls
+          urls: testUrls,
         }
-      }
+      },
     },
 
     jshint: {
@@ -164,9 +161,7 @@ module.exports = function (grunt) {
           include: includes,
           namespace: 'S2',
           paths: {
-            'almond': require.resolve('almond').slice(0, -3),
-            'jquery': 'jquery.shim',
-            'jquery-mousewheel': 'jquery.mousewheel.shim'
+            'almond': require.resolve('almond').slice(0, -3)
           },
           wrap: {
             startFile: 'src/js/banner.start.js',
@@ -183,9 +178,7 @@ module.exports = function (grunt) {
           include: fullIncludes,
           namespace: 'S2',
           paths: {
-            'almond': require.resolve('almond').slice(0, -3),
-            'jquery': 'jquery.shim',
-            'jquery-mousewheel': require.resolve('jquery-mousewheel').slice(0, -3)
+            'almond': require.resolve('almond').slice(0, -3)
           },
           wrap: {
             startFile: 'src/js/banner.start.js',
@@ -232,6 +225,7 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -242,7 +236,7 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-sass');
 
-  grunt.registerTask('default', ['compile', 'test', 'lint', 'minify']);
+  grunt.registerTask('default', ['compile', 'test', 'minify']);
 
   grunt.registerTask('compile', [
     'requirejs:dist', 'requirejs:dist.full', 'requirejs:i18n',

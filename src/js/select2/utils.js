@@ -1,12 +1,10 @@
-define([
-  'jquery'
-], function ($) {
+define([], function () {
   var Utils = {};
 
   Utils.Extend = function (ChildClass, SuperClass) {
     var __hasProp = {}.hasOwnProperty;
 
-    function BaseConstructor () {
+    function BaseConstructor() {
       this.constructor = ChildClass;
     }
 
@@ -23,7 +21,7 @@ define([
     return ChildClass;
   };
 
-  function getMethods (theClass) {
+  function getMethods(theClass) {
     var proto = theClass.prototype;
 
     var methods = [];
@@ -31,11 +29,11 @@ define([
     for (var methodName in proto) {
       var m = proto[methodName];
 
-      if (typeof m !== 'function') {
+      if (typeof m !== "function") {
         continue;
       }
 
-      if (methodName === 'constructor') {
+      if (methodName === "constructor") {
         continue;
       }
 
@@ -49,7 +47,7 @@ define([
     var decoratedMethods = getMethods(DecoratorClass);
     var superMethods = getMethods(SuperClass);
 
-    function DecoratedClass () {
+    function DecoratedClass() {
       var unshift = Array.prototype.unshift;
 
       var argCount = DecoratorClass.prototype.constructor.length;
@@ -67,7 +65,7 @@ define([
 
     DecoratorClass.displayName = SuperClass.displayName;
 
-    function ctr () {
+    function ctr() {
       this.constructor = DecoratedClass;
     }
 
@@ -102,7 +100,8 @@ define([
     for (var d = 0; d < decoratedMethods.length; d++) {
       var decoratedMethod = decoratedMethods[d];
 
-      DecoratedClass.prototype[decoratedMethod] = calledMethod(decoratedMethod);
+      DecoratedClass.prototype[decoratedMethod] =
+        calledMethod(decoratedMethod);
     }
 
     return DecoratedClass;
@@ -145,8 +144,8 @@ define([
       this.invoke(this.listeners[event], slice.call(arguments, 1));
     }
 
-    if ('*' in this.listeners) {
-      this.invoke(this.listeners['*'], arguments);
+    if ("*" in this.listeners) {
+      this.invoke(this.listeners["*"], arguments);
     }
   };
 
@@ -159,7 +158,7 @@ define([
   Utils.Observable = Observable;
 
   Utils.generateChars = function (length) {
-    var chars = '';
+    var chars = "";
 
     for (var i = 0; i < length; i++) {
       var randomChar = Math.floor(Math.random() * 36);
@@ -177,7 +176,7 @@ define([
 
   Utils._convertData = function (data) {
     for (var originalKey in data) {
-      var keys = originalKey.split('-');
+      var keys = originalKey.split("-");
 
       var dataLevel = data;
 
@@ -205,48 +204,52 @@ define([
 
       delete data[originalKey];
     }
-
     return data;
   };
 
-  Utils.hasScroll = function (index, el) {
+  Utils.hasScroll = function (el) {
     // Adapted from the function created by @ShadowScripter
     // and adapted by @BillBarry on the Stack Exchange Code Review website.
     // The original code can be found at
     // http://codereview.stackexchange.com/q/13338
     // and was designed to be used with the Sizzle selector engine.
 
-    var $el = $(el);
+    if (!el) {
+      return false;
+    }
     var overflowX = el.style.overflowX;
     var overflowY = el.style.overflowY;
 
     //Check both x and y declarations
-    if (overflowX === overflowY &&
-        (overflowY === 'hidden' || overflowY === 'visible')) {
+    if (
+      overflowX === overflowY &&
+      (overflowY === "hidden" || overflowY === "visible")
+    ) {
       return false;
     }
 
-    if (overflowX === 'scroll' || overflowY === 'scroll') {
+    if (overflowX === "scroll" || overflowY === "scroll") {
       return true;
     }
 
-    return ($el.innerHeight() < el.scrollHeight ||
-      $el.innerWidth() < el.scrollWidth);
+    return (
+      el.clientHeight < el.scrollHeight || el.clientWidth < el.scrollWidth
+    );
   };
 
   Utils.escapeMarkup = function (markup) {
     var replaceMap = {
-      '\\': '&#92;',
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      '\'': '&#39;',
-      '/': '&#47;'
+      "\\": "&#92;",
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+      "/": "&#47;",
     };
 
     // Do not try to escape the markup if it's not a string
-    if (typeof markup !== 'string') {
+    if (typeof markup !== "string") {
       return markup;
     }
 
@@ -264,22 +267,24 @@ define([
     // creates a new unique number, stores it in the id
     // attribute and returns the new id with a prefix.
     // If an id already exists, it simply returns it with a prefix.
-
-    var select2Id = element.getAttribute('data-select2-id');
-
+    if (!(element instanceof Element || element[0] instanceof HTMLElement)) {
+      console.error("Utils.GetUniqueElementId: element is not a DOM element", element);
+      return null;
+    }
+    var select2Id = element[0] ? element[0].getAttribute("data-select2-id"): element.getAttribute("data-select2-id"); ;
     if (select2Id != null) {
       return select2Id;
     }
 
     // If element has id, use it.
     if (element.id) {
-      select2Id = 'select2-data-' + element.id;
+      select2Id = "select2-data-" + element.id;
     } else {
-      select2Id = 'select2-data-' + (++id).toString() +
-        '-' + Utils.generateChars(4);
+      select2Id =
+        "select2-data-" + (++id).toString() + "-" + Utils.generateChars(4);
     }
 
-    element.setAttribute('data-select2-id', select2Id);
+    element.setAttribute("data-select2-id", select2Id);
 
     return select2Id;
   };
@@ -301,14 +306,20 @@ define([
     // all cache items for the specified element.
     // and for a specified element.
     var id = Utils.GetUniqueElementId(element);
+
     if (name) {
       if (Utils.__cache[id]) {
         if (Utils.__cache[id][name] != null) {
           return Utils.__cache[id][name];
         }
-        return $(element).data(name); // Fallback to HTML5 data attribs.
+        return element.dataset[name]; // Fallback to HTML5 data attribs.
       }
-      return $(element).data(name); // Fallback to HTML5 data attribs.
+      // Normalize double dashes to a single dash
+      var normalizedName = name
+      .replace(/--/g, '-') // Replace double dashes with single dashes
+      .replace(/-(\w)/g, (_, letter) => `-${letter.toUpperCase()}`); // Capitalize letters after a single dash
+      // Attempt to fetch from the dataset using both the original and normalized names
+      return element.dataset[name] || element.dataset[normalizedName]; // Fallbac
     } else {
       return Utils.__cache[id];
     }
@@ -321,29 +332,28 @@ define([
       delete Utils.__cache[id];
     }
 
-    element.removeAttribute('data-select2-id');
+    element.removeAttribute("data-select2-id");
   };
 
   Utils.copyNonInternalCssClasses = function (dest, src) {
     var classes;
-
-    var destinationClasses = dest.getAttribute('class').trim().split(/\s+/);
+    var destinationClasses = dest.getAttribute("class").trim().split(/\s+/);
 
     destinationClasses = destinationClasses.filter(function (clazz) {
       // Save all Select2 classes
-      return clazz.indexOf('select2-') === 0;
+      return clazz.indexOf("select2-") === 0;
     });
 
-    var sourceClasses = src.getAttribute('class').trim().split(/\s+/);
+    var sourceClasses = src.getAttribute("class").trim().split(/\s+/);
 
     sourceClasses = sourceClasses.filter(function (clazz) {
       // Only copy non-Select2 classes
-      return clazz.indexOf('select2-') !== 0;
+      return clazz.indexOf("select2-") !== 0;
     });
 
     var replacements = destinationClasses.concat(sourceClasses);
 
-    dest.setAttribute('class', replacements.join(' '));
+    dest.setAttribute("class", replacements.join(" "));
   };
 
   return Utils;
