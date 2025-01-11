@@ -8,13 +8,10 @@
 (function (factory) {
   if (typeof define === "function" && define.amd) {
     // AMD. Register as an anonymous module.
-    define("select2", factory);
+    define('select2', [], factory);
   } else if (typeof module === "object" && module.exports) {
     // Node/CommonJS
-    module.exports = function (root) {
-      factory();
-      return {};
-    };
+    module.exports = factory();
   } else {
     // Browser globals
     factory();
