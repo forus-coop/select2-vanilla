@@ -83,7 +83,6 @@ define(["../utils", "../keys"], function (Utils, KEYS) {
       if (evt.target === self.search) {
         evt.stopPropagation();
 
-        self.trigger("keypress", evt);
         self._keyUpPrevented = evt.defaultPrevented;
 
         if (evt.key === "Backspace" && self.search.value === "") {

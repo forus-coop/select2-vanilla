@@ -933,22 +933,26 @@ S2.define('select2/results',["./utils"], function (Utils) {
   };
 
   Results.prototype.highlightFirstItem = function () {
-    var options = this.results.querySelectorAll(
-      ".select2-results__option--selectable"
-    );
-    var selected = Array.prototype.filter.call(
-      options,
-      function (option) {
-        return option.classList.contains(
-          "select2-results__option--selected"
-        );
-      }
-    );
-    if (selected.length > 0) {
-      selected[0].dispatchEvent(new Event("mouseenter"));
-    } else if (options.length > 0) {
-      options[0].dispatchEvent(new Event("mouseenter"));
+    var options = this.results.querySelectorAll(".select2-results__option--selectable");
+
+    if (options.length === 0) {
+        return;
     }
+
+    var selected = Array.from(options).find(option =>
+        option.classList.contains("select2-results__option--selected")
+    );
+
+    var highlightTarget = selected || options[0];
+
+    // Ensure the target is visible before dispatching event
+    highlightTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+
+
+    highlightTarget.classList.add("select2-results__option--highlighted");
+    highlightTarget.setAttribute("aria-selected", "true");
+
+    highlightTarget.dispatchEvent(new Event("mouseenter", { bubbles: true }));
 
     this.ensureHighlightVisible();
   };
@@ -2159,7 +2163,6 @@ S2.define('select2/selection/search',["../utils", "../keys"], function (Utils, K
       if (evt.target === self.search) {
         evt.stopPropagation();
 
-        self.trigger("keypress", evt);
         self._keyUpPrevented = evt.defaultPrevented;
 
         if (evt.key === "Backspace" && self.search.value === "") {
