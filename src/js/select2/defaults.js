@@ -268,37 +268,43 @@ function (
       return text.replace(/[^\u0000-\u007E]/g, match);
     }
 
+
     function matcher(params, data) {
-      // Always return the object if there is nothing to compare
       if (params.term == null || params.term.trim() === "") {
         return data;
       }
 
-      // Do a recursive check for options with children
       if (data.children && data.children.length > 0) {
-        // Clone the data object if there are children
-        // This is required as we modify the object to remove any non-matches
-        var match = Object.assign({}, data);
+        // Create a shell for the group result.
+        var groupShell = Object.assign({}, data);
+        var matchedChildren = [];
 
-        // Check each child of the option
-        for (var c = data.children.length - 1; c >= 0; c--) {
+        // Iterate over the original data.children to avoid issues with modifying during iteration
+        for (var c = 0; c < data.children.length; c++) {
           var child = data.children[c];
+          var childMatches = matcher(params, child);
 
-          var matches = matcher(params, child);
-
-          // If there wasn't a match, remove the object in the array
-          if (matches == null) {
-            match.children.splice(c, 1);
+          if (childMatches != null) {
+            matchedChildren.push(childMatches);
           }
         }
 
-        // If any children matched, return the new object
-        if (match.children.length > 0) {
-          return match;
+        if (matchedChildren.length > 0) {
+          groupShell.children = matchedChildren;
+          return groupShell;
         }
 
-        // If there were no matching children, check just the plain object
-        return matcher(params, match);
+        var groupLabelData = Object.assign({}, data);
+        delete groupLabelData.children;
+
+        if (matcher(params, groupLabelData) != null) {
+          var emptyGroupMatch = Object.assign({}, data);
+          emptyGroupMatch.children = [];
+          return emptyGroupMatch;
+        }
+
+        // Neither children nor the group label matched.
+        return null;
       }
 
       var original = stripDiacritics(data.text).toUpperCase();
